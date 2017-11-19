@@ -29,5 +29,5 @@ set_command = set(list_command1)     # преобразование к множ�
 print (list(set_command))
 
 # пересечение
-list_command = list(set_list)         # преобразование множества к списку
+list_command = list(set_list)        # преобразование множества к списку
 print (list_command)

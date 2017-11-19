@@ -27,7 +27,7 @@ rev_list = word_list.copy() #создаем копию списка
                             # узнаем с каким номером с конца находится необходимый элемет
 rev_list.reverse()          # инвертируем список
 #print(rev_list)
-s = rev_list.index(word)  # под каким номером c в списке идет 1 элемент
+s = rev_list.index(word)    # под каким номером c в списке идет 1 элемент
 c = len(word_list)
 #print(c)
 print (c-s-1," - last  " )

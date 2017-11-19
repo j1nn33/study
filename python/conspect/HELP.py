@@ -74,7 +74,26 @@ nums = map ( int , input().split())
 print ( list (nums))
 "[1, 2, 3, 4, 5, 6, 7]"
 
+############################################################
+access_template = ['switchport mode access',
+'switchport access vlan {}',
+'switchport nonegotiate',
+'spanning-tree portfast',
+'spanning-tree bpduguard enable']
+print('\n'.join(access_template).format(5))
 
+"""
+Сначала элементы списка объединяются в строку, которая разделена символом \n , а
+в строку подставляется номер VLAN, используя форматирование строк.
+
+
+switchport mode access
+switchport access vlan 5
+switchport nonegotiate
+spanning-tree portfast
+spanning-tree bpduguard enable
+"""
+#######################################################
 "--------------Условные операторы и циклы"
 a = int ( input ( "введите число:" ))
 
