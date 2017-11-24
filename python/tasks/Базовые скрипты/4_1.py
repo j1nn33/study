@@ -12,14 +12,14 @@
 
 # ВВОД ДАННЫХ
 
-IPN = input(' Ввод IP-сети в формате: 10.1.1.0/04  ')
-#IPN =  '10.1.1.0/24'
+#IPN = input(' Ввод IP-сети в формате: 10.1.1.0/04  ')
+IPN =  '10.1.1.0/24'
 print(IPN)
 # РАЗБОР ДАННЫХ
 IP = IPN[:-3]     # все символы кроме последних трех
 MASK = IPN[-3:]   # 3 последних символа
-#print (IP)
-#print (MASK)
+print (IP)
+print (MASK)
 
 # ОБРАБОТКА IP   (см 3_8)  
 
@@ -34,15 +34,20 @@ a=int(list_mac[0], 16)   # преобразование строкового э�
 print(bin(a))            # преобразование в бинарное число 
 
 """
-element_bin_IP = (bin(int(list_IP[0], 10)))   
+print ("ip - part ")
+element_bin_IP = (bin(int(list_IP[0], 10)))  
+
 list_bin_IP.append (element_bin_IP[2::])     # добавление элемента в бинарный список и удаление 2-х первых символов
+print (element_bin_IP)
+print ()
+print ("ip - part end ")
 element_bin_IP = (bin(int(list_IP[1], 10))) 
 list_bin_IP.append (element_bin_IP[2::])
 element_bin_IP = (bin(int(list_IP[2], 10)))  
 list_bin_IP.append (element_bin_IP[2::])
 element_bin_IP = (bin(int(list_IP[3], 10)))
 list_bin_IP.append (element_bin_IP[2::])
-
+#print (list_bin_IP)
 # ОБРАБОТКА МАСКИ
 
 int_mask = int (MASK[1:])                    # удаление / у маски и преобразование его в число
@@ -67,18 +72,20 @@ one_okt_dec_mask = (int(a[0])*2**7+int(a[1])*2**6+int(a[2])*2**5+int(a[3])*2**4+
 two_okt_dec_mask = (int(b[0])*2**7+int(b[1])*2**6+int(b[2])*2**5+int(b[3])*2**4+int(b[4])*2**3+int(b[5])*2**2+int(b[6])*2**1+int(b[7])*2**0)
 three_okt_dec_mask = (int(c[0])*2**7+int(c[1])*2**6+int(c[2])*2**5+int(c[3])*2**4+int(c[4])*2**3+int(c[5])*2**2+int(c[6])*2**1+int(c[7])*2**0)
 four_okt_dec_mask = (int(d[0])*2**7+int(d[1])*2**6+int(d[2])*2**5+int(d[3])*2**4+int(d[4])*2**3+int(d[5])*2**2+int(d[6])*2**1+int(d[7])*2**0)
+#print ('type(one_okt_dec_mask)')
+#print (type(one_okt_dec_mask))
 
 # ВЫВОД ИНФОРМАЦИИ
 print ("Network:")
 print("{:10} {:10}  {:10}  {:10}".format(list_IP[0], list_IP[1], list_IP[2], list_IP[3]))
-print("{:010} {:010}  {:010}  {:010}".format(int(list_bin_IP[0]), int(list_bin_IP[1]), int(list_bin_IP[2]), int(list_bin_IP[3])))
+print("{:010} {:010} {:010} {:010}".format(int(list_bin_IP[0]), int(list_bin_IP[1]), int(list_bin_IP[2]), int(list_bin_IP[3])))
 print ("Mask:")
 print (MASK)
 
 
 print("{:<8} {:<8} {:<8} {:<8}".format(one_okt_dec_mask, two_okt_dec_mask, three_okt_dec_mask, four_okt_dec_mask))
 print("{:8} {:8} {:8} {:8}".format(one_okt_bin_mask, two_okt_bin_mask, three_okt_bin_mask, four_okt_bin_mask))
-
+print (type(one_okt_bin_mask))
 
 
 # /24
