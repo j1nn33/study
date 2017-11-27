@@ -17,3 +17,6 @@ TabError: inconsistent use of tabs and spaces in indentation
 UnboundLocalError: local variable ‘a’ referenced before assignment.
             "попытка обращения к локаольной переменной которая еще не была создана"
 
+undefined variable true
+            "true написано с маленькой буквы надо True"
+
