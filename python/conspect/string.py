@@ -10,7 +10,7 @@ string2 = 'tunnel 0'
 string2.capitalize()
 # 'Tunnel 0'
 
-# find()
+# find()  поиск подстроки
 string1 = 'interface FastEthernet0/1'
 string1.find('Fast')
 # 10

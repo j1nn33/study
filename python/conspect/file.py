@@ -13,29 +13,40 @@
 #  ./file.txt фал лежит в той же папке. 
 # ../dir/file.txt (файл лежит в папке dir, которая расположена на один уровень выше от текущей)
 # ../../file.txtp (файл лежит в папке, которая расположена на два уровня выше от текущей)
-
+# with open('/home/ubuntu/workspace/python/tasks/6_files/ospf.txt', 'r') as f:
+# with open('./ospf.txt', 'r') as f:
+# with open('../6_files/ospf.txt', 'r') as f:
 
 
 with open('r1.txt', 'r') as f:
     for line in f:
-    print(line)
+        print(line)
 
 # при выводе, между строками файла были лишние пустые строки, так как print добавляет ещё один перевод строки.
 # чтобы избавиться от этого, можно использовать метод rstrip :
 
 with open('r1.txt', 'r') as f:
     for line in f:
-    print(line.rstrip())
+        print(line.rstrip())
 
 # использование с другими конструкциями
 with open('r1.txt', 'r') as f:
     print(f.read())
 
+# определяем для открытого файла переменую f
+# и выполняет набор инструкций. После их выполнения файл автоматически закрывается. 
+# Даже если при выполнении инструкций в блоке with возникнут какие-либо исключения,
+# то файл все равно закрывается.
+
+with open(file_name, 'w') as f:        # определяем для открытого файла переменую f
+    for	line in temp_list_three:
+        f.write(line+'\n')             # +'\n' для переноса строк
+        
 # Открытие двух файлов
-# записать некоторые	строки	из	одного	файла,	в	другой
-with	open('r1.txt')	as	src,	open('result.txt',	'w')	as	dest:
-    for	line	in	src:
-        if	line.startswith('service'):
+# записать некоторые строки из одного файла, в другой
+with open('r1.txt') as src, open('result.txt', 'w') as dest:
+    for	line in src:
+        if line.startswith('service'):
             dest.write(line)
 
 cat	result.txt
@@ -48,10 +59,10 @@ cat	result.txt
 # или
 
 
-with	open('r1.txt')	as	src:
-    with	open('result.txt',	'w')	as	dest:
-        for	line	in	src:
-            if	line.startswith('service'):
+with open('r1.txt') as src:
+    with open('result.txt',	'w') as dest:
+        for line in src:
+            if line.startswith('service'):
                 dest.write(line)
 
 
