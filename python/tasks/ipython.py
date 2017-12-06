@@ -1,3 +1,5 @@
+# ЗАМЕНА ipython notebook
+
 
 string1 = 'interface FastEthernet0/1'
 
