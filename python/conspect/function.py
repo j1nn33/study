@@ -102,6 +102,18 @@ def sum_arg(a, *args):
 # def sum_arg(*args):       тоже вариант
     print(a, args)
     return a + sum(args)
+    
+sum_arg(a,*args)
+
+
+# ПРИМЕР
+def generate_trunk_config(*trunk):
+    pass
+
+# вызов функции
+generate_trunk_config(*trunk_dict) 
+
+
 
 #  Функция sum_arg создана с двумя параметрами:
 #       параметр a
@@ -116,7 +128,7 @@ def sum_arg(a,**kwargs):
     print(a, kwargs)
     return a + sum(kwargs.values())
 
-#  Ключевые аргументы переменной длины
+# Ключевые аргументы переменной длины
 # Параметр, который принимает ключевые аргументы переменной длины, создается
 # добавлением перед именем параметра двух звездочек. Имя параметра может быть
 # любым, но, по договоренности, чаще всего, используют имя **kwargs (от keyword arguments).
