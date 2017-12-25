@@ -1,5 +1,7 @@
 
 IndentationError: expected an indented block
+IndentationError: unindent does not match any outer indentation level
+IndentationError: unexpected indent
             "проблема в отступах"
 
 TypeError: Can't convert 'int' object to str implicitly

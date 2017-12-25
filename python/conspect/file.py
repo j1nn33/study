@@ -17,6 +17,19 @@
 # with open('./ospf.txt', 'r') as f:
 # with open('../6_files/ospf.txt', 'r') as f:
 
+- открытие файла с обработкой исключения 
+temp_list=[]    
+                                              # открытие файла
+try:                                          # обработка исключения на наличие файла
+    with open('/home/ubuntu/workspace/python/tasks/6_files/CAM_table.txt', 'r') as f:
+        for line in f:
+           temp_list.append(line.rstrip())  # исключиние дополнитеьлного символа перевода строки и заполнение вспомогательного списка
+except IOError:
+    print('No such file')
+
+print('\n'.join(temp_list)) 
+---------------------------------------
+
 
 with open('r1.txt', 'r') as f:
     for line in f:
