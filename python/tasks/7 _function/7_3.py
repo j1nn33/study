@@ -18,7 +18,7 @@
         иначе ничего 
   - вывод в функции
 """
-from sys import argv 
+#from sys import argv 
 
 def get_int_vlan_map(in_cfg):
 

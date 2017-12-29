@@ -7,6 +7,7 @@ print (d1)
 # {'Ivan': 'manager', 'Mark': 'worker'}
 
 # "добавление элемента"
+A[key] = value
 d1[ "China" ] = "Beijing"
 
 # "Удаление элемента через ключ"
@@ -35,6 +36,34 @@ london_co = {
 london_co['r1']['ios']
 # '15.4'
 # Методы работы со словарем
+
+# создание вложенного словаря  см задание 7_4_2
+dict_temp={}
+command_level_final={}
+command_level_final[key_1]=dict_temp
+
+d_keys = ['x', 'y', 'z']
+data = {'f': ['x_1', 'y_1', 'z_1']}
+london_co = {}
+for k in data.keys():
+    london_co[k] = dict(zip(d_keys,data[k]))
+print(london_co)
+
+# {'f': {'y': 'y_1', 'z': 'z_1', 'x': 'x_1'}}
+"""
+
+
+a = [1,2,3]
+b = "xyz"
+c = (None, True)
+ 
+res = list(zip(a, b, c))
+print (res)
+ 
+[(1, 'x', None), (2, 'y', True)]
+
+"""
+
 
 clear() # очистить словарь
 copy()  # создать полную копию словаря
