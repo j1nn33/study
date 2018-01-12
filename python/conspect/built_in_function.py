@@ -117,6 +117,15 @@ for position, string in enumerate(list1, 100):
 
 # 100 str1
 
+
+list_a = ['a','b','c']
+for counter, value in enumerate(list_a):
+    print(counter, value)
+    
+# 0 a
+# 1 b
+# 2 c
+
 # проверить, что сгенерировал итератор. 
 list(enumerate(list1, 100))
 # [(100, 'str1'), (101, 'str2'), (102, 'str3')]
