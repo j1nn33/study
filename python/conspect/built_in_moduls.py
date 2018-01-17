@@ -301,10 +301,140 @@ False
 check_if_ip_is_network(IP2)
 True
 """pprint
+позволяет красиво отображать объекты Python. При этом сохраняется
+структура объекта и отображение, которое выводит pprint, можно использовать для
+создания объекта.
 """
 
+from pprint import pprint
+
+print (tunnel)
+# '\ninterface Tunnel0\n ip address 10.10.10.1 255.255.255.0\n ip mtu 1416\n ip
+# ospf hello-interval 5\n tunnel source FastEthernet1/0\n tunnel protection ipsec profi
+# le DMVPN\n'
+pprint(tunnel)
+#('\n'
+#'interface Tunnel0\n'
+#' ip address 10.10.10.1 255.255.255.0\n'
+#' ip mtu 1416\n'
+#' ip ospf hello-interval 5\n'
+#' tunnel source FastEthernet1/0\n'
+#' tunnel protection ipsec profile DMVPN\n')
+
+
+# depth позволяет ограничивать глубину отображения структуры данных.
+# Можно отобразить только ключи, указав глубину равной 1
+
+# pformat - это функция, которая отображает результат в виде строки. Ее удобно
+# использовать, если необходимо записать структуру данных в какой-то файл,
+# например, для логирования.
 
 
 
 """tabulate
 """
+pip install tabulate
+
+# список списков (в общем случае iterable of iterables)
+# список словарей (или любой другой итерируемый объект со словарями). Ключи используются как имена столбцов
+# словарь с итерируемыми объектами. Ключи используются как имена столбцов
+
+from tabulate import tabulate
+sh_ip_int_br = [('FastEthernet0/0', '15.0.15.1', 'up', 'up'),
+                ('FastEthernet0/1', '10.0.12.1', 'up', 'up'),
+                ('FastEthernet0/2', '10.0.13.1', 'up', 'up'),
+                ('Loopback0', '10.1.1.1', 'up', 'up'),
+                ('Loopback100', '100.0.0.1', 'up', 'up')]
+
+print(tabulate(sh_ip_int_br))
+# --------------- --------- -- --
+# FastEthernet0/0 15.0.15.1 up up
+# FastEthernet0/1 10.0.12.1 up up
+# FastEthernet0/2 10.0.13.1 up up
+# Loopback0 10.1.1.1 up up
+# Loopback100 100.0.0.1 up up
+# --------------- --------- -- --
+
+# headers - позволяет передавать дополнительный аргумент, в котором указаны имена столбцов
+columns=['Interface', 'IP', 'Status', 'Protocol']
+print(tabulate(sh_ip_int_br, headers=columns))
+
+# Interface IP Status Protocol
+# --------------- --------- -------- ----------
+# FastEthernet0/0 15.0.15.1 up       up
+# FastEthernet0/1 10.0.12.1 up       up
+# FastEthernet0/2 10.0.13.1 up       up
+# Loopback0       10.1.1.1  up       up
+# Loopback100     100.0.0.1 up       up
+
+# часто первый набор данных - это заголовки. достаточно указать headers равным "firstrow":
+print (data)
+
+# [('Interface', 'IP', 'Status', 'Protocol'),
+# ('FastEthernet0/0', '15.0.15.1', 'up', 'up'),
+# ('FastEthernet0/1', '10.0.12.1', 'up', 'up'),
+# ('FastEthernet0/2', '10.0.13.1', 'up', 'up'),
+# ('Loopback0', '10.1.1.1', 'up', 'up'),
+# ('Loopback100', '100.0.0.1', 'up', 'up')]
+print(tabulate(data, headers='firstrow'))
+# Interface IP Status Protocol
+# --------------- --------- -------- ----------
+# FastEthernet0/0 15.0.15.1 up       up
+# FastEthernet0/1 10.0.12.1 up       up
+# FastEthernet0/2 10.0.13.1 up       up
+# Loopback0       10.1.1.1  up       up
+# Loopback100     100.0.0.1 up       up
+
+# Если данные в виде списка словарей, надо указать headers равным "keys":
+print(list_of_dict)
+# [{'IP': '15.0.15.1',
+# 'Interface': 'FastEthernet0/0',
+# 'Protocol': 'up',
+# 'Status': 'up'},
+# {'IP': '10.0.12.1',
+# 'Interface': 'FastEthernet0/1',
+# 'Protocol': 'up',
+# 'Status': 'up'}]
+print(tabulate(list_of_dict, headers='keys'))
+# Interface IP Status Protocol
+# --------------- --------- -------- ----------
+# FastEthernet0/0 15.0.15.1 up up
+# FastEthernet0/1 10.0.12.1 up up
+
+# СТИЛИ grid
+
+print(tabulate(list_of_dict, headers='keys', tablefmt="grid"))
+#+-----------------+-----------+----------+------------+
+#| Interface       | IP        | Status   | Protocol   |
+#+=================+===========+==========+============+
+#| FastEthernet0/0 | 15.0.15.1 | up       | up         |
+#+-----------------+-----------+----------+------------+
+#| FastEthernet0/1 | 10.0.12.1 | up       | up         |
+#+-----------------+-----------+----------+------------+
+
+print(tabulate(list_of_dict, headers='keys', tablefmt='pipe'))
+#| Interface       | IP        | Status   | Protocol   |
+#|:----------------|:----------|:---------|:-----------|
+#| FastEthernet0/0 | 15.0.15.1 | up       | up         |
+#| FastEthernet0/1 | 10.0.12.1 | up       | up         |
+
+# Выравнивание столбцов
+print(tabulate(list_of_dict, headers='keys', tablefmt='pipe', stralign='center'))
+
+
+# Таблица в формате HTML:
+print(tabulate(list_of_dict, headers='keys', tablefmt='html'))
+# <table>
+# <thead>
+# <tr><th>Interface </th><th>IP </th><th>Status </th><th>Protocol </th></tr
+# >
+# </thead>
+# <tbody>
+# <tr><td>FastEthernet0/0</td><td>15.0.15.1</td><td>up </td><td>up </td></tr
+# >
+# <tr><td>FastEthernet0/1</td><td>10.0.12.1</td><td>up </td><td>up </td></tr
+# >
+# </tbody>
+# </table>
+
+

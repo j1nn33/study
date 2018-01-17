@@ -45,6 +45,7 @@ subparsers = parser.add_subparsers(title='subcommands',
 
 # задание аргумекнтов
 create_parser = subparsers.add_parser('create_db', help='create new db')
+# metavar позволяет указывать имя аргумента для вывода в сообщении usage и help
 create_parser.add_argument('-n', metavar='db-filename', dest='name',
                            default=DFLT_DB_NAME, help='db filename')
 create_parser.add_argument('-s', dest='schema', default=DFLT_DB_SCHEMA,
@@ -55,6 +56,17 @@ create_parser.set_defaults( func=create )
 
 add_parser = subparsers.add_parser('add', help='add data to db')
 # Метод add_argument добавляет аргумент
+
+# nargs позволяет указать, что в этот аргумент должно попасть определенное количество элементов
+# В этом случае все аргументы, которые были переданы скрипту после имени аргумента
+# filename, попадут в список nargs
+# nargs поддерживает такие значения:
+# N - должно быть указанное количество аргументов. Аргументы будут в списке
+# (даже если указан 1)
+# ? - 0 или 1 аргумент
+# * - все аргументы попадут в список
+# + - все аргументы попадут в список, но должен быть передан хотя бы один аргумент
+
 add_parser.add_argument('filename', nargs='+', help='file(s) to add to db')
 add_parser.add_argument('--db', dest='db_file', default=DFLT_DB_NAME, help='db name')
 add_parser.add_argument('-s', dest='sw_true', action='store_true',
@@ -64,6 +76,7 @@ add_parser.set_defaults( func=add )
 
 get_parser = subparsers.add_parser('get', help='get data from db')
 get_parser.add_argument('--db', dest='db_file', default=DFLT_DB_NAME, help='db name')
+# choices Для некоторых аргументов важно, чтобы значение было выбрано только из определенных вариантов
 get_parser.add_argument('-k', dest='key',
                         choices=['mac', 'ip', 'vlan', 'interface', 'switch'],
                         help='host key (parameter) to search')

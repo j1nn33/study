@@ -1,0 +1,9 @@
+$ mkdir myproject
+$ cd myproject
+$ python3 -m venv myvenv
+
+$ source myvenv/bin/activate
+
+ПРИМЕЧАНИЕ: иногда команда source может быть недоступна. В таком случае используй следующий метод:
+$ . myvenv/bin/activate
+

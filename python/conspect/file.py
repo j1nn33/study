@@ -17,6 +17,27 @@
 # with open('./ospf.txt', 'r') as f:
 # with open('../6_files/ospf.txt', 'r') as f:
 
+from sys import argv 
+# запуск скрипта 
+# $ python3 /home/ubuntu/workspace/python/tasks/8_module/8_1/<имя этой программы.py> <имя открываемого файла.txt>
+file_name = argv[1] 
+file_name="/home/ubuntu/workspace/python/tasks/8_module/8_1/"+file_name 
+
+temp_list=[]  
+try:                                        # обработка исключения на наличие файла
+    with open(file_name, 'r') as f:
+        for line in f:
+           #print(line)
+           temp_list.append(line.rstrip())            # исключиние дополнитеьлного символа перевода строки и заполнение вспомогательного списка
+except IOError:
+    print('---MAIN---No such file')
+
+rint('\n'.join(temp_list))
+
+
+
+
+
 - открытие файла с обработкой исключения 
 temp_list=[]    
                                               # открытие файла
@@ -29,6 +50,17 @@ except IOError:
 
 print('\n'.join(temp_list)) 
 ---------------------------------------
+
+
+
+
+
+
+
+
+
+
+
 
 
 with open('r1.txt', 'r') as f:
