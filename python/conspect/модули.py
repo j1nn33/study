@@ -5,6 +5,11 @@ import - выполняет загрузку другого файла и обе
 # cat myfile.py       -  содержимое файла myfile.py
 title = "The Meaning of Life"
 """
+
+
+IMPORT VS FROM
+
+
 - доступ к атрибуту title
 1 способ
 import myfile               # получение доступа к атрибутам модуля
