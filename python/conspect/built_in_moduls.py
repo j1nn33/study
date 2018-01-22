@@ -7,7 +7,7 @@ pprint
 tabulate
 """
 
-"""subprocess
+"""subprocess  см пример 8_3
 """
 # Модуль subprocess позволяет создавать новые процессы.
 
@@ -16,7 +16,7 @@ tabulate
 # выполнилась без ошибок
 
 import subprocess
-result = subprocess.run('ls')
+result = subprocess.call('ls')
 
 # В переменной result теперь содержится специальный объект CompletedProcess. Из
 # этого объекта можно получить информацию о выполнении процесса, например, о коде возврата:
@@ -26,30 +26,30 @@ result.returncode
 # 0                   Код 0 означает, что программа выполнилась успешно.
 
 # если необходимо вызвать команду с аргументами, её нужно передавать таким образом (как список):
-result = subprocess.run(['ls', '-ls'])
+result = subprocess.call(['ls', '-ls'])
 
 # При попытке выполнить команду с использованием wildcard выражений, например, использовать * , возникнет ошибка:
-result = subprocess.run(['ls', '-ls', '*md'])
+result = subprocess.call(['ls', '-ls', '*md'])
 # ls: cannot access *md: No such file or directory
 # Чтобы вызывать команды, в которых используются wildcard выражения, нужно добавлять аргумент shell и вызывать команду таким образом:
-result = subprocess.run('ls -ls *md', shell=True)
-result = subprocess.run(['ping', '-c', '3', '-n', '8.8.8.8'])
+result = subprocess.call('ls -ls *md', shell=True)
+result = subprocess.call(['ping', '-c', '3', '-n', '8.8.8.8'])
 
 # Получение результата выполнения команды
 
 #По умолчанию функция run возвращает результат выполнения команды на стандартный поток вывода.
 #Если нужно получить результат выполнения команды, надо добавить аргумент stdout и указать ему значение subprocess.PIPE:
 
-result = subprocess.run(['ls', '-ls'], stdout=subprocess.PIPE
+result = subprocess.call(['ls', '-ls'], stdout=subprocess.PIPE
 print(result.stdout)
 
 # b'total 28\n4 -rw-r--r-- 1            b - еред строкой. Она означает, что модуль вернул вывод в виде байтовой строки.
 # Для перевода её в unicode есть два варианта: выполнить decode полученной строки; указать аргумент encoding
 print(result.stdout.decode('utf-8'))
-result = subprocess.run(['ls', '-ls'], stdout=subprocess.PIPE, encoding='utf-8')
+result = subprocess.call(['ls', '-ls'], stdout=subprocess.PIPE, encoding='utf-8')
 print(result.stdout)
 
-result = subprocess.run(['ls', '-ls'], stdout=subprocess.DEVNULL) # отключение вывода, но можно получить код возврата
+result = subprocess.call(['ls', '-ls'], stdout=subprocess.DEVNULL) # отключение вывода, но можно получить код возврата
 print(result.stdout)
 # None
 print(result.returncode)
@@ -59,7 +59,7 @@ print(result.returncode)
 
 # Если команда была выполнена с ошибкой или не отработала корректно, вывод команды попадет на стандартный поток ошибок
 
-result = subprocess.run(['ping', '-c', '3', '-n', 'a'], stderr=subprocess.PIPE, encoding='utf-8')
+result = subprocess.call(['ping', '-c', '3', '-n', 'a'], stderr=subprocess.PIPE, encoding='utf-8')
 
 # Теперь в result.stdout пустая строка, а в result.stderr находится стандартный поток вывода:
 print(result.stdout)
@@ -69,7 +69,7 @@ print(result.stderr)
 print(result.returncode)
 # 2
 
-# пример 
+# пример    см пример 8_3
 import subprocess
 
 
@@ -83,7 +83,7 @@ def ping_ip(ip_address):
         * False
         * error output (stderr)
     '''
-    reply = subprocess.run(['ping', '-c', '3', '-n', ip_address],
+    reply = subprocess.call(['ping', '-c', '3', '-n', ip_address],
                            stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE,
                            encoding='utf-8')
@@ -95,6 +95,20 @@ def ping_ip(ip_address):
 print(ping_ip('8.8.8.8'))
 print(ping_ip('a'))
 
+# Пример 2 см пример 8_3
+
+import subprocess
+
+def ping_ip(ip_address):
+
+    if  subprocess.call (['ping','-c','3',ip_address]) ==0:
+        print ('yes')
+    else:
+        print ('no')
+    return
+
+
+ping_ip('192.168.40.254')
 
 """os Модуль os позволяет работать с файловой системой, с окружением, управлять процессами.
 """

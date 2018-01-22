@@ -17,6 +17,34 @@ file.closed – возвращает true если файл закрыт
               и false в противном случае;
 file.mode   – возвращает режим доступа к файлу, 
               при этом файл должен быть открыт;
+""" Получение пути файлов
+
+import os
+import getpass
+
+# получение каталога где лежит файл path.py
+
+p = os.path.dirname(__file__)
+# D:/SOURCE/python/untitled/venv
+
+# получение полного имени файла
+
+l = os.path.join(os.path.dirname(__file__),'path.py')
+
+# если файл находиться в папке folder которая находиться в этом каталоге
+# D:/SOURCE/python/untitled/venv\folder\path.py True
+s = os.path.join(os.path.dirname(__file__),'folder','path.py')
+
+print(getpass.getuser())
+
+print('-----------')
+print (p)
+# D:/SOURCE/python/untitled/venv\path.py True
+print (l, os.path.exists(l))
+print('-----------')
+
+
+
 """
     "ОТКРЫТИЕ И ЗАКРЫТИЕ ФАЙЛОВ"
 f = open("test.txt", "r")

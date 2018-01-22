@@ -62,4 +62,7 @@ optional arguments:
 -h, --help show this help message and exit
 -c COUNT Number of packets
 
+
+print('\n'.join(generate_access_cfg(sw1_fast_int)))
+
 """
