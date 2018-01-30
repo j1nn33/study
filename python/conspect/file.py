@@ -52,17 +52,6 @@ print('\n'.join(temp_list))
 ---------------------------------------
 
 
-
-
-
-
-
-
-
-
-
-
-
 with open('r1.txt', 'r') as f:
     for line in f:
         print(line)
