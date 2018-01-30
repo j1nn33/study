@@ -41,7 +41,7 @@ def read_file(file_name):                                   # открытие �
 if __name__ == '__main__':
     info_list = []
     result = []
-    info_list = (read_file('/home/ubuntu/workspace/python/tasks/9_regular/9-1/sh_ip_int_br.txt'))
+    info_list = (read_file('/home/ubuntu/workspace/python/tasks/9_regular/9_1/sh_ip_int_br.txt'))
     #print(info_list)
     #regular_str = "Fas" 
     #regular_str = "manual"
