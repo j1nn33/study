@@ -1,30 +1,37 @@
 import re
-regular = "0/1, 0/3, 0/10"
-#regular1 = re.search('\S\S\S', regular).group()
-#regular2 = re.search('(\S+)\s+(\S+)', regular).group(2)
-#reg = re.search('()',regular)
-#regular1 = reg.group(1)
-#regular2 = reg.group(2)
-#regular1 = re.findall('0/[\d]', regular)
+"""
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            15.0.15.1       YES manual up                    up
+FastEthernet0/1            10.0.12.1       YES manual up                    up
+FastEthernet0/2            10.0.13.1       YES manual up                    up
+FastEthernet0/3            unassigned      YES unset  administratively down down
+Loopback0                  10.1.1.1        YES manual up                    up
+Loopback100                100.0.0.1       YES manual up                    up
 
-#print ('regular1 ', regular1)
-#print ('regular2 ', regular2)
+"""
+#line ='FastEthernet0/3            unassigned      YES unset  administratively down down'
+#line = 'FastEthernet0/2            10.0.13.1       YES manual up                    up'
+#line = 'R1#show ip interface brief'
+line = 'Interface                  IP-Address      OK? Method Status                Protocol'
 
-#match = re.search('(\S+)\s+([\w.]+)\s+.*', line)
 
-reg_list = []
-reg_list_1 = []
-reg_list = re.findall('0/[\d]\D', regular)
-#myString = '_'.join(myList)
-#reg_list_1 = re.findall('0/[\d]', reg_list)
-print (reg_list)
-myString = '_'.join(reg_list)
-print (myString)
+#regex = ('(?P<interface>\S+)\s+(?P<ipadd>\S+)\s+\S+\s\S+\s(?P<status>\S+)\s+(?P<protocol>\S+)')
+#regex = ('(?P<interface>\S+)\s+(?P<ipadd>\S+)\s+\S+\s\S+\s+(?P<status>\S+\s\S+)\s+(?P<protocol>\S+)')
+regex = ('(?P<interface>\S+)\s+(?P<ipadd>\S+)\s+\S+\s\S+\s+(?P<status>\D{21})\s+(?P<protocol>\S+)')
 
-reg_list = re.findall('0/[\d]', myString)
+# разбор стороки 
+# (?P<interface>\S+)\s+           - имя интерфейса и проблы после него 
+# (?P<ipadd>\S+)\s+\S+\s\S+\s+    - IP_Address. пробелы полсе него колонка ОК? и прблел, колонока Method и пробел 
+# (?P<status>\D{21})\s+           - статус 21 символ кроме цифр ипробелы полсе него  
 
-regular1=reg_list[0]+' '
-regular2=reg_list[1]
 
-print ('regular1 ', regular1)
-print ('regular2 ', regular2)
+match = re.search(regex,line)
+
+Interface = match.group('interface')
+print ('Interface ',  Interface)
+IP_Address = match.group('ipadd')
+print ('IP-Address ', IP_Address)
+Status = match.group('status')
+print ('Status ', Status)
+Protocol = match.group('protocol')
+print ('Protocol ', Protocol)
