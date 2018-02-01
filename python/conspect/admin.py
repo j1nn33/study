@@ -18,6 +18,13 @@ file.closed – возвращает true если файл закрыт
 file.mode   – возвращает режим доступа к файлу, 
               при этом файл должен быть открыт;
 """ Получение пути файлов
+import glob
+# позволяет получить список фйлов в каталоге по маске
+
+sh_version_files = glob.glob('sh_vers*')
+print(sh_version_files)
+# ['sh_version_r2.txt', 'sh_version_r3.txt', 'sh_version_r1.txt']
+
 
 import os
 import getpass
