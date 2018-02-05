@@ -17,6 +17,30 @@
 # with open('./ospf.txt', 'r') as f:
 # with open('../6_files/ospf.txt', 'r') as f:
 
+#####################################################
+#чтение файла и вывод как список строк
+# читает файлы и передает результат в виде списка 
+def read_file (file_name):
+    temp_list=[]    
+    try:                                          # обработка исключения на наличие файла
+        with open(file_name, 'r') as f:
+            for line in f:
+               temp_list.append(line.rstrip())    # исключиние дополнитеьлного символа перевода строки и заполнение вспомогательного списка
+    except IOError:
+        print('---FUNCTION---No such file')
+    return temp_list
+#####################################################
+#чтение файла целиком и поиск в нем совпадений 
+with open('sh_cdp_neighbors_sw1.txt') as f:
+    print (f.read())
+    match_iter = re.finditer(regex, f.read())
+    for match in match_iter:
+######################################################
+
+
+
+
+
 from sys import argv 
 # запуск скрипта 
 # $ python3 /home/ubuntu/workspace/python/tasks/8_module/8_1/<имя этой программы.py> <имя открываемого файла.txt>
@@ -51,6 +75,12 @@ except IOError:
 print('\n'.join(temp_list)) 
 ---------------------------------------
 
+
+
+
+
+
+_______________________________________
 
 with open('r1.txt', 'r') as f:
     for line in f:

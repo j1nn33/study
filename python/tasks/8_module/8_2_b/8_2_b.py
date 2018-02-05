@@ -138,13 +138,14 @@ print('CONVERT INFO IS COMPLETE')
 print()
 
 total_dic_r1 = parse_cdp_neighbors_r(str_info_r1, str_info_r1[2:4:])
-total_dic_r2 = parse_cdp_neighbors_r(str_info_r2, str_info_r1[2:4:])
-total_dic_r3 = parse_cdp_neighbors_r(str_info_r3, str_info_r1[2:4:])
+total_dic_r2 = parse_cdp_neighbors_r(str_info_r2, str_info_r2[2:4:])
+total_dic_r3 = parse_cdp_neighbors_r(str_info_r3, str_info_r3[2:4:])
 total_dic_sw1 = parse_cdp_neighbors_sw(str_info_sw1,str_info_sw1[2:5:])
-#print(total_dic_r1)
-#print(total_dic_r2)
-#print(total_dic_r3)
-#print(total_dic_sw1)
+print ('total dict')
+print('======',total_dic_r1)
+print('======',total_dic_r2)
+print('======',total_dic_r3)
+print('======',total_dic_sw1)
 
 #total_dic
 
@@ -152,9 +153,10 @@ total_dic.update(total_dic_r1)
 total_dic.update(total_dic_r2) 
 total_dic.update(total_dic_r3) 
 total_dic.update(total_dic_sw1) 
+
 print('parse_cdp_neighbors is COMLETE')
 print()
-print(total_dic)
+print('итог',total_dic)
 print ('DRAWING TOPOLOGY')
 #draw_network_graph.draw_topology(total_dic)     
 

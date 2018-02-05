@@ -21,10 +21,18 @@ file.mode   – возвращает режим доступа к файлу,
 import glob
 # позволяет получить список фйлов в каталоге по маске
 
+
 sh_version_files = glob.glob('sh_vers*')
 print(sh_version_files)
 # ['sh_version_r2.txt', 'sh_version_r3.txt', 'sh_version_r1.txt']
 
+
+import os
+print(os.getcwd())
+# /home/ubuntu/workspace/python/tasks
+
+#.  - данная папка
+#.. - родительская папка 
 
 import os
 import getpass

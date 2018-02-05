@@ -38,6 +38,29 @@ london_co['r1']['ios']
 # Методы работы со словарем
 
 # создание вложенного словаря  см задание 7_4_2
+##########################################
+# вложенные словари
+rec = {'name':{'first':'Bob','last':'Smith'},
+        'job':['dev','mgr'],
+        'age':40.5}
+print (rec)        
+# {'job': ['dev', 'mgr'], 'name': {'first': 'Bob', 'last': 'Smith'}, 'age': 40.5}        
+
+print (rec['name'])      # name - вложенный словарь
+# {'last': 'Smith', 'first': 'Bob'}
+
+print (rec['name']['last']) # обращение к элементу вложенного словаря
+# Smith
+
+print (rec['job'][-1])   # обращение к элементу вложенного списка
+# mgr
+
+rec['job'].append('driver')     #Расширение списка должностей Bob
+print (rec)
+# {'job': ['dev', 'mgr', 'driver'], 'name': {'last': 'Smith', 'first': 'Bob'}, 'age': 40.5}
+
+
+##############################
 dict_temp={}
 command_level_final={}
 command_level_final[key_1]=dict_temp
