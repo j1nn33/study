@@ -37,6 +37,16 @@ print(os.getcwd())
 import os
 import getpass
 
+-------------
+dir_db=os.getcwd()        # получение пути /home/ubuntu/workspace/python/tasks/11_sql/11_1
+db_filename=dir_db+'/'+db_filename                 # /home/ubuntu/workspace/python/tasks/11_sql/11_1/dhcp_snooping.db
+
+db_filename=os.path.join(os.getcwd(),db_filename)  # /home/ubuntu/workspace/python/tasks/11_sql/11_1/dhcp_snooping.db
+
+    
+
+----------
+
 # получение каталога где лежит файл path.py
 
 p = os.path.dirname(__file__)

@@ -37,6 +37,26 @@ london_co['r1']['ios']
 # '15.4'
 # Методы работы со словарем
 
+
+ """
+    {'switches': {'sw1': 'London, 21 New Globe Walk',
+              'sw2': 'London, 21 New Globe Walk',
+              'sw3': 'London, 21 New Globe Walk'}}
+    методика обхода словаря
+    1 цикл пробегаемся по первичным ключам 'switches'
+        2 цикл пробегаемся по вториным ключам sw1, sw2, sw3
+        
+    """
+    
+    for key in templates.keys():
+        print(key)                         # вывод первичного ключа  
+        for value in templates[key]:
+            print (value)                  # вывод вторичного ключа 
+            print (templates[key][value])  # вывод значения втричного ключа
+
+
+
+
 # создание вложенного словаря  см задание 7_4_2
 ##########################################
 # вложенные словари

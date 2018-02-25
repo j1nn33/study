@@ -1,6 +1,6 @@
 sqlite3 .help
 sqlite3 .exit
-ctrl+z  - 
+ctrl+z  - exit
 .database      # инфа по базам полдключенным к  одному сервису
 .schema switch # инфа по таблице
 --------------------
