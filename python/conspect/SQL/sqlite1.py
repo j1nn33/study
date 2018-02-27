@@ -23,7 +23,7 @@ connection.commit()    # Чтобы изменения были применен
 """  
 $ sqlite3 /python/conspect/SQL/dhcp_snooping.db
 qlite> select * from switch;
-mac hostname model location
+mac            hostname   model      location
 -------------- ---------- ---------- -----------------
 0000.AAAA.CCCC sw1 Cisco 3750 London, Green Str
 0000.BBBB.CCCC sw2 Cisco 3780 London, Green Str
