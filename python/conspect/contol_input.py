@@ -1,6 +1,13 @@
 import re
 import ipaddress
 
+# проверка на наличие аргументов в коммандной строке
+import sys
+if len (sys.argv) > 1:  # если список содержит не только имя файла программы, то en (sys.argv) > 1
+	pass
+else:
+	pass
+
 
 # 00:A9:BB:3D:D6:58   10.1.10.20   10    FastEthernet0/7      sw2
 

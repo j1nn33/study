@@ -179,7 +179,7 @@ sqlite> INSERT OR REPLACE INTO switch
 sqlite> REPLACE INTO switch
 ...> VALUES ('0030.A3AA.C1CC', 'sw3', 'Cisco 3850', 'London, Green Str', '10.255.1.3', 255);
 
-# При добавлении записи, для которой не возникает нарушения уникальности поля, replace работает как обычный insert:
+# При добавлении записи, для которой не возникает нарушения уникальности поля, replace работает как обычный inser
 REPLACE INTO switch
 ...> VALUES ('0080.A8AA.C8CC', 'sw8', 'Cisco 3850', 'London, Green Str', '10.255.1.8', 255);
 

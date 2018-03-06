@@ -21,81 +21,32 @@ import ipaddress
 db_filename = 'dhcp_snooping.db'
 
 ##################################
-def Control_Value(value):
- 
-    # щаблоны регулярных выражений 
-    regex_mac = re.compile('\w\w\:\w\w\:\w\w\:\w\w\:\w\w\:\w\w')
-    regex_swich = re.compile('\w+')
-    regex_eth = re.compile('\d+\/\d+')
-    a=False                                                     # флаг по умолчанию value не корректно
-    try:
-        print ('1 -control ')
-        ip = ipaddress.ip_address(value)                        # проверка на корректность ip adress
-        a=True
-        #print (ip)
-    except ValueError:
-        try:                                                    # проверка на корректность FastEthernet0/5
-           print ('2 -control ')
-           value.startswith('FastEthernet')                     # начало строки равно FastEthernet
-           match_eth = regex_eth.search(value).group()          
-           value.endswith(match_eth)                            # конец строки на соответвие шаблону
-           if ('FastEthernet'+(regex_eth.search(value).group())) == value:    # проверка на соответсвие исходной строк, тк шаблон может быть жадным
-               a=True
-               print ('eth')
-        except AttributeError:
-            try:                                                # проверка на корректность mac
-                print ('3 -control ')
-                match_mac = regex_mac.fullmatch(value)          
-                if match_mac:
-                    a=True
-                    print('mac')
-                else:
-                    try:                                        # проверка на корректность vlan
-                        print ('4 -control ')
-                        value = int(value)                      # преобразуем занчение к числу и если нет исключения то сравниваем значение
-                        if value>=1 and value<=4096:
-                            a=True
-                        else:
-                            print('vlan')
-                    except ValueError:  
-                        pass
-                
-                if a == False:
-                    try:                                        # проверка на корректность vlan
-                        print ('5 -control ')
-                        match_sw = regex_swich.fullmatch(value)
-                        if match_sw:
-                            a=True
-                        print('name')
-                    except ValueError:
-                        pass
-            except AttributeError:
-                pass
-    
-    
-    return a
-##################################
-
 def Print_Full_Table():
     conn = sqlite3.connect(db_filename)       
-    query = 'SELECT * from dhcp'  
-    result = conn.execute(query)
+    query = 'SELECT * from dhcp where active = 1'
+    result_active = conn.execute(query)
+    query = 'SELECT * from dhcp where active = 0'
+    result_in_active = conn.execute(query)
     print('-' * 80)
-    for row in result:
-       print ('%-20s'%row[0],'%-15s'%row[1],'%-5s'%row[2],'%-25s'%row[3],'%-5s'%row[4])  
+    print ('Active values:')
+    print('-' * 80)
+    for row in result_active:
+        print ('%-20s'%row[0],'%-15s'%row[1],'%-5s'%row[2],'%-25s'%row[3],'%-5s'%row[4],'%-5s'%row[5])
+        
+    print('-' * 80)
+    print ('Inactive values:')
+    print('-' * 80)   
+    for row in result_in_active:
+        print ('%-20s'%row[0],'%-15s'%row[1],'%-5s'%row[2],'%-25s'%row[3],'%-5s'%row[4],'%-5s'%row[5])
+    
     return
 #######################################
-def Control_argument (key, value):
-    
-    #print (Control_Value (value))
+def Control_argument (key):
     """ Проверка аргументов и вывод информации по значению"""
     if not key  in keys:
         print('ERROR --  Enter key from {}'.format(', '.join(keys)))
-    elif not Control_Value(value):
-        print('ERROR --  Value is not correct')
     else:
         Print_Table (key,value)
-    
     return
 ########################################
 def Print_Table (key,value):
@@ -105,13 +56,28 @@ def Print_Table (key,value):
     
     keys.remove(key)                                              # удаления ключа из списка (он не будет в выдаче)
     print('\nDetailed information for host(s) with', key, value)
-    print('-' * 40)
     """
     из БД выбираются те строки, в которых ключ равен указанному значению
     в SQL значения можно подставлять через знак вопроса, но нельзя
     подставлять имя столбца. Поэтому имя столбца подставляется через
     форматирование строк, а значение - штатным средством SQL.
     Обратите внимание на (value,) - таким образом передается кортеж с одним элементом
+    """
+    query = 'SELECT * from dhcp where active = 1 and {} = ?'.format( key ) 
+    result_active = conn.execute(query, (value,))
+    query = 'SELECT * from dhcp where active = 0 and {} = ?'.format( key ) 
+    result_in_active = conn.execute(query, (value,))
+    print('-' * 40)
+    for row in result_active:
+        for k in keys:
+            print('{:12}: {}'.format(k, row[k]))
+    print('-' * 40)    
+    print('-' * 40)
+    print ('Inactive values:')
+    print('-' * 40)   
+    for row in result_in_active:
+        for k in keys:
+            print('{:12}: {}'.format(k, row[k]))
     """
     query = 'select * from dhcp where {} = ?'.format( key )       
     result = conn.execute(query, (value,))
@@ -120,9 +86,9 @@ def Print_Table (key,value):
         for k in keys:
             print('{:12}: {}'.format(k, row[k]))
     print('-' * 40)
+    """
     
-    
-
+    return
 ###############MAIN###############
 if __name__ == "__main__":
     # ВХОДНЫЕ ДАННЫЕ
@@ -135,24 +101,20 @@ if __name__ == "__main__":
     #key, value = 'vlan', '10','x'
     # Проверка на корректность входных параметров (key)
     #key, value = 'vlant', '10'
-    # Проверка на корректность входных параметров (value)
-    #key, value = 'vlan', '00:09:-:3D:D6:58'
-    #key, value = 'vlan', '10.1.10.2a'
-    #key, value = 'vlan', '10.1.10.2234'
-    #key, value = 'vlan', 'Fastedrvs23rnet0/1'
-    #key, value = 'vlan', '#sw1'
+    
    
     print ('key   ', type(key), key)
     print ('value ', type(value), value)
     
     keys = ['mac', 'ip', 'vlan', 'interface', 'switch']     # список ключей       
-    
-    if not key and not value: #and argv[2]:   # кусок используется для передачи параметров ручками
+   
+    if not key and not value: #len (sys.argv) > 2:   # кусок используется для передачи параметров ручками
         print ('вывод полной таблицы')
         Print_Full_Table()
     elif key and value:# and not other:
         print ('Аргументов два')
-        Control_argument (key, value)
+        Control_argument (key)
     else:
         print ('Cкрипт поддерживает только два или ноль аргументов')
+            
             
