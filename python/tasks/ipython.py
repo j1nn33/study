@@ -1,12 +1,12 @@
+import datetime 
+from datetime import timedelta, datetime
+#now = str(datetime.datetime.today().replace(microsecond=0))
+#print('now ', type (now), now)
 
-
-1 выбрать все заиси из таблицы
-
- sqlite>select * from dhcp; 
- 
- 
- 2 изменить флаг active
- 
- 3 замена полей в таблице  sqlite> REPLACE INTO switch  
- 
- 4 
+now = datetime.today().replace(microsecond=0)
+week_ago = now - timedelta(days = 7)
+day_ago = now - timedelta(days = 1)
+print(now)
+print(week_ago)
+print(now > week_ago)
+print(str(now) > str(week_ago))
