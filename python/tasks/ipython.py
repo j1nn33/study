@@ -1,33 +1,16 @@
-print ('whith parameters')
+import pytest
 
-def decorator(func):
-	def wraper(*args, **kwargs):		# оберка 
-		print('code before say2')     
-		return func(*args, **kwargs)   # возвращает значение 
-	return wraper       # возвращает саму функцию (ссылку на wraper)
+def tetsfun(x,y):
+    z=x+y
+    d=x*y
+    assert z == 5
+    assert d == 4
 
-@decorator
-def say2(name):
-	print (name)
+    return
+def up():
+    a = 'foo'
+    assert a.upper() == 'FOOd'
+    return
 
-
-print (say2('anna'))  # say2 in funtion say2  None
-
-  # (порядок следования декоратора)
-def makebold(fn):
-    def wrapped():
-        return "<b>" + fn() + "</b>"
-    return wrapped
- 
-def makeitalic(fn):
-    def wrapped():
-        return "<i>" + fn() + "</i>"
-    return wrapped
- 
-@makebold
-@makeitalic
-
-def hello():
-    return "hello habr"
- 
-print (hello()) ## выведет <b><i>hello habr</i></b>
+tetsfun(2,3)
+up()
