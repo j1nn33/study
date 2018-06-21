@@ -1,0 +1,187 @@
+
+#_ указывается маска имен хостов и групп, для которых будут выполняться нижеописанные таски (задания)
+- hosts: all
+  tasks:
+  # Список тасков
+  # =======================REPOSITORY
+    - name: Удаляем все репозитории из системы
+      shell: rm /etc/zypp/repos.d/* || exit 0
+ 
+    - name: Добавляем банковские SLES-репы на хост REPOs...
+      zypper_repository: repo="{{ item.repo }}" name="{{ item.name }}" disable_gpg_check="{{ item.disable_gpg_check|default('no') }}"
+      with_items:
+        - { repo: "http://...", name: "SLE-DISTRO-X" }
+ 
+    - name: Обновляем все пакеты в системе автоматически
+      zypper: 
+        name: '*'
+        state: latest
+ 
+    - name: Помещаем сертификат банковского CA на сервер
+      copy:
+        # Берем сертификат из переменных Inventory
+        content: '{{ corp_ca_crt }}'
+        dest: /etc/pki/trust/anchors/сorpCA.crt
+        owner: root
+        group: root
+        mode: 0644
+ 
+    - name: ... и перечитываем системное хранилище
+      shell: update-ca-certificates
+
+    - name: Update system
+      yum: name='*' state=latest
+ 
+    - name: Reboot
+      command: shutdown -r 1
+    
+# ======================= USER
+
+    - name: Создаем юзеров и группы
+      group: name="{{ item.name  }}" gid={{ item.gid }} state="present"
+      with_items:
+        - { name: "docker", gid: 1000 }
+    - user: 
+        name: "{{ item.name }}"
+        uid: "{{ item.uid }}" 
+        group: "{{ item.gid  }}"
+        state: "present"
+      with_items:
+        - { name: "dockeradm", uid: 1000, gid: "docker" }
+
+
+ 
+    - name: Меняем пароли пользователям
+      user: 
+        name: "{{ item }}" 
+        password: "$6$..."
+        generate_ssh_key: yes
+      with_items:
+        - root
+        - dockeradm
+ 
+    - name: Добавляем публичный ssh-ключ текущего пользователя ЛОКАЛЬНОЙ машины указанным юзерам на УДАЛЕННОМ сервере
+      authorized_key: 
+        user: "{{ item }}" 
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        state: "present" 
+      with_items:
+        - root
+        - dockeradm
+# ======================= DISK
+    - name: Создаем нужные VG в системе
+      lvg:
+        vg: 'vgAPP'
+        pvs: '/dev/sdb'
+ 
+    - name: ... и LV
+      lvol: 
+        vg: "{{ item.vg }}" 
+        lv: "{{ item.lv }}"
+        size: "{{ item.size }}"
+      with_items:
+        - { vg: 'vgAPP', lv: "lvData", size: "10G" }
+        - { vg: 'vgAPP', lv: "lvDockerData", size: "5G" }
+ 
+    - name: Создаем ФС на созданных LV-ах
+      filesystem: dev="/dev/{{ item }}" fstype="btrfs"
+      with_items:
+        - 'vgAPP/lvData'
+        - 'vgAPP/lvDockerData'
+ 
+    - name: Прописываем информацию об ФС в /etc/fstab и монтируем их
+      mount: path="{{ item.dst }}" src="/dev/{{ item.src }}" state="mounted" fstype="btrfs" opts="noatime"
+      with_items:
+        - { src: "vgAPP/lvData", dst: "/APP" }
+        - { src: "vgAPP/lvDockerData", dst: "/var/lib/docker" }
+# ======================= FILE & DIRS
+    - name: Создаем всякие важные каталоги
+      file: 
+        path: "{{ item.path }}" 
+        state: "directory" 
+        # внимание не дефолтные значения
+        mode: "0{{ item.perms|default('755') }}" 
+        owner: "{{ item.user|default('dockeradm') }}" 
+        group: "{{ item.group|default('docker') }}"
+      with_items:
+        - { path: '/etc/docker', user: 'root', group: 'root' }
+        - { path: '/APP' }
+        - { path: '/APP/configs' }
+        - { path: '/APP/configs/filebeat' }
+        - { path: '/APP/logs' }
+        - { path: '/APP/logs/nginx' }
+        - { path: '/APP/jenkins' }
+        - { path: '/APP/jenkins/master' }
+        - { path: '/APP/jenkins/node' }
+        - { path: '/APP/portainer_data' }
+
+# ======================= setup pack
+ 
+    - name: Ставим нужные пакеты в систему
+      zypper: 
+        name: '{{ item }}'
+      with_items:
+        - docker
+        - mc
+        # Java необходима для запуска Jenkins-слейва
+        - java-1_8_0-openjdk-headless
+        
+# ======================= DOKER
+    # Помним о необходимости настроить подсети для Докера
+    - name: Копируем конфиг-файл с "правильными сетями"
+      template:
+        src: daemon.json
+        dest: /etc/docker/daemon.json
+        owner: root
+        group: root
+        mode: 0644
+ 
+    - name: Активируем и запускаем сервисы...
+      systemd: 
+        name: "{{ item }}"
+        state: 'restarted'
+        enabled: 'yes'
+      with_items:
+        - docker
+        - sshd
+ 
+    - name: Помещаем на целевой сервер docker-compose через скачивание на локальную
+      get_url: 
+        url: "https://github.com/docker/compose/releases/download/1.18.0/docker-compose-Linux-x86_64"
+        dest: "/tmp/docker-compose"
+      delegate_to: 127.0.0.1
+  
+    - copy: 
+        src: "/tmp/docker-compose"
+        dest: "/usr/local/bin/docker-compose"
+        mode: "u=rwx,g=rx,o=rx"
+ 
+ 
+    - name: Копируем конфиг-файл NGINX, конструируя его из шаблона
+      template: 
+        src: nginx.conf
+        dest: /APP/configs/nginx.conf
+        owner: dockeradm
+        group: docker
+        mode: '0644'
+ 
+    - name: Копируем описание docker-compose - сервиса, конструируя его из шаблона
+      template: 
+        src: docker-compose.yml
+        dest: /APP/docker-compose.yml
+        owner: dockeradm
+        group: docker
+        mode: '0644'
+  
+    - name: Запуск docker-compose - сервис с Jenkins, Portainer и NGINX перед ними
+      shell: docker-compose -f /APP/docker-compose.yml up -d --force-recreate
+ 
+    - name: Ожидаем окончания инициализации Jenkins-а
+      wait_for:
+        path: '/APP/jenkins/master/secrets/initialAdminPassword'
+ 
+    - name: Получаем значение временного пароля Jenkins
+      fetch: 
+        src: '/APP/jenkins/master/secrets/initialAdminPassword'
+        dest: initialJenkinsAdminPassword.txt
+        flat: yes

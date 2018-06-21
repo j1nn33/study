@@ -1,0 +1,27 @@
+---
+- name: Install Apache Webserver
+  hosts: all
+  become: yes
+  tasks:
+ 
+  - name: Debug
+    debug: msg={{ ansible_os_family }}
+ 
+  - set_fact: package_name=httpd
+    when: ansible_os_family == "Redhat"
+ 
+  - set_fact: package_name=apache2
+    when: ansible_os_family == "Debian"
+ 
+  - name: Install httpd package
+    yum: name={{ package_name }} state=latest
+    when: ansible_os_family == "Redhat"
+  - name: Debug1
+    debug: msg={{ package_name }} 
+ 
+  - name: Install apache2 package
+    apt: name={{ package_name }} state=latest
+    when: ansible_os_family == "Debian"
+
+  - name: Debug2
+    debug: msg={{ package_name }}

@@ -1,0 +1,8 @@
+[instance]
+
+#ansiblecentos	ansible_host=192.168.10.201	ansible_user=root	ansible_pass=Aa123456
+#ansibleubuntu	ansible_host=192.168.10.202	ansible_user=root	ansible_pass=Aa123456
+
+192.168.10.201
+192.168.10.202 ansible_user=tooks ansible_sudo_pass=Aa123456
+

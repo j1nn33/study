@@ -1,0 +1,125 @@
+- hosts: webservers
+  user: korp
+  sudo: yes
+ 
+  tasks:
+    - name: Update system
+      yum: name='*' state=latest
+ 
+    - name: Reboot
+      command: shutdown -r 1
+
+  
+    - name: Add user
+      action: user name=korp password=XXX groups=wheel
+ 
+    - name: Add EPEL repo
+      yum: name=http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-2.noarch.rpm
+ 
+    - name: Add RPMForge repo
+      yum: name=http://apt.sw.be/redhat/el7/en/x86_64/rpmforge/RPMS/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm
+ 
+    - name: Add Remi repo
+      yum: name=http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+       
+    - name: Software install
+      yum: name={{item}} state=latest
+      with_items:
+        - yum-priorities 
+        - htop 
+        - mc 
+        - nano 
+        - ntsysv 
+        - wget 
+        - vim 
+        - ntpdate 
+        - openssh-clients 
+        - yum-utils 
+        - yum-remove-with-leaves
+         
+    - name: NTP daemon enable
+      service: name=ntpdate enabled=yes
+       
+    - name: Setup NTP daemon
+      template: src=ntpdate.j2 dest=/etc/ntp.conf owner=root group=root mode=0644
+       
+    - name: NTP daemon restart
+      service: name=ntpdate state=restarted
+       
+    - name: Disable SELinux 
+      selinux: state=disabled
+       
+    - name: PermitRootLoginSSH
+      lineinfile: dest=/etc/ssh/sshd_config regexp="^MaxSessions 10" insertafter="^#MaxSessions 10" line="PermitRootLogin no"
+==============================================
+- name: Install ntsysv package (CentOS)
+  yum: name=ntsysv state=latest
+  when: 'ansible_distribution' == 'CentOS'
+ 
+- name: Install gentoolkit package (Gentoo)
+  emerge: name=gentoolkit state=latest
+  when: 'ansible_distribution' == 'Gentoo'
+==============================================
+---  
+- hosts: all
+  user: root
+ 
+  tasks:
+    - name: Add user
+      action: user name=korp password=XXX groups=wheel
+ 
+    - name: Add EPEL repo
+      yum: name=http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-2.noarch.rpm
+      when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7'
+ 
+    - name: Add RPMForge repo
+      yum: name=http://apt.sw.be/redhat/el7/en/x86_64/rpmforge/RPMS/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm
+      when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7'
+ 
+    - name: Add Remi repo
+      yum: name=http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+      when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7'
+       
+    - name: Add EPEL repo
+      yum: name=http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+      when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
+ 
+    - name: Add Remi repo
+      yum: name=http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+      when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6'
+       
+    - name: Software install
+      action: "{{ansible_pkg_mgr}} name={{item}} state=present"
+      with_items:
+        - htop 
+        - mc 
+        - nano 
+        - wget 
+        - vim 
+        - openssh-clients 
+ 
+    - name: Install ntsysv package (CentOS)
+      yum: name=ntsysv state=latest
+      when: ansible_distribution == 'CentOS'
+     
+    - name: Install gentoolkit package (Gentoo)
+      portage: name=gentoolkit state=latest
+      when: ansible_distribution == 'Gentoo'
+         
+    - name: NTP daemon enable
+      service: name=ntpdate enabled=yes
+       
+    - name: Setup NTP daemon
+      template: src=ntpdate.j2 dest=/etc/ntp.conf owner=root group=root mode=0644
+       
+    - name: NTP daemon restart
+      service: name=ntpdate state=restarted
+       
+    - name: Disable SELinux 
+      selinux: state=disabled
+       
+    - name: PermitRootLoginSSH
+      lineinfile: dest=/etc/ssh/sshd_config regexp="^MaxSessions 10" insertafter="^#MaxSessions 10" line="PermitRootLogin no"
+
+===================================
+

@@ -1,0 +1,41 @@
+hosts
+192.168.10.50 ansible_ssh_pass=1 ansible_ssh_user=root
+ansible.cfg
+
+
+---------------------
+
+ansible astra -m ping
+
+
+
+----------------
+
+---
+- name: Test Connection to my host and ald -soft setup
+  hosts: astra
+  become: yes
+
+  vars:
+    source_file: /vrem/
+    destin_file: /vrem
+
+  tasks:
+  - name: Ping my host
+    ping:
+
+  - name: Install ALD soft from repositiry
+    apt: name=ald-client-common state=latest
+
+  - name: Create Directory
+    file: path=/vrem state=directory
+
+  - name: Copy distributive
+    copy: src={{ source_file }} dest={{ destin_file }}
+
+#  - name: Install pakcage ROO
+#    command: dpkg -i /vrem/ROO/libRooPlugin_1.0-19_amd64.deb
+
+  - name: Install pakcage USZI
+    command: dpkg -i /vrem/uszi/uszi-agent_1.71_amd64.deb
+    #command: dpkg -i /vrem/uszi/uszi-client_1.71_amd64.deb
