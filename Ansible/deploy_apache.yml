@@ -1,0 +1,7 @@
+---
+- name: Install Apache and Upload simple Web MyWebSite
+  hosts: test 
+  become: yes
+  
+  roles:
+   - deploy_apache_web

@@ -1,5 +1,56 @@
 
 #"-------------СЛОВАРИ"
+++++++++++++++++++++++++++++
+
+bob = {'name': 'Bob Smith', 'age': 42, 'pay': 30000, 'job': 'dev'}
+sue = {'name': 'Sue Jones', 'age': 45, 'pay': 40000, 'job': 'hdw'}
+people = [bob, sue]
+
+
+print ( bob['name'], sue['pay'] )
+print ( bob['name'].split()[-1] )
+
+# способы создания словарей
+names = ['name', 'age', 'pay', 'job']
+values = ['Sue Jones', 45, 40000, 'hdw']
+
+list(zip(names, values))   # создание списка
+sue1 = dict(zip(names, values)) # создание словаря
+
+# инициализации пустых словарей
+fields = ('name', 'age', 'job', 'pay')
+record = dict.fromkeys(fields, '?')
+
+# {‘job’: ‘?’, ‘pay’: ‘?’, ‘age’: ‘?’, ‘name’: ‘?’}
+
+names = [person['name'] for person in people] # выбирает имена
+
+print ([rec['name'] for rec in people if rec['age'] >= 45])  # SQL-подобный
+# [‘Sue Jones’]                                      # запрос
+print ([(rec['age'] ** 2 if rec['age'] >= 45 else rec['age']) for rec in people])
+# [42, 2025]
+
+#############Словари словарей##################
+
+db = {}
+db['bob'] = bob # ссылки на словари в словаре
+db['sue'] = sue
+
+print (db['bob']['name'])
+# Bob Smith
+print (db)
+# {'sue': {'pay': 40000, 'name': 'Sue Jones', 'age': 45, 'job': 'hdw'}, 'bob': {'pay': 30000, 'name': 'Bob Smith', 'age': 42, 'job': 'dev'}}
+
+for key in db:
+    print(key, '= >', db[key]['name'])
+
+# sue = > Sue Jones
+# bob = > Bob Smith
+
+db['tom'] = dict(name='Tom', age=50, job=None, pay=0)
+print (db['tom'])
+++++++++++++++++++++++++++++
+
 #"Данные в словаре хранятся в формате ключ – значение"
 d1 = dict ( Ivan = "manager" , Mark = "worker" )
 print (d1)
