@@ -1,0 +1,28 @@
+[
+    {
+        "name": "main",
+        "content": []
+    },
+    {
+        "name": "3d",
+        "content": [
+            {
+                "name": "widget",
+                "content": []
+            }
+        ]
+    },
+    {
+        "name": "code",
+        "content": [
+            {
+                "name": "script",
+                "content": []
+            },
+            {
+                "name": "module",
+                "content": []
+            }
+        ]
+    }
+]
