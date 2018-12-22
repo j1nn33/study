@@ -1,0 +1,27 @@
+- name: Test Connection to my host and ald -soft setup
+  hosts: test
+  become: yes
+
+  vars:
+    source_file: /root/move/
+    destin_file: /root/vrem/
+
+  tasks:
+  - name: Setup Firewall Rules
+    command: "{{item}}"
+    with_items:
+      - firewall-cmd --permanent --add-port=80/tcp
+      - firewall-cmd --permanent --add-port=90/tcp
+      - firewall-cmd --permanent --add-port=8080/tcp
+      - firewall-cmd --reload
+     
+  - name: Install NGINX
+    yum: name='nginx' state=latest
+    notify: web configure
+     
+  handlers:
+  - name: web configure 
+    command: "{{item}}"
+    with_items:
+      - systemctl start nginx.service
+      - chkconfig nginx on

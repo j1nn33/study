@@ -1,0 +1,33 @@
+- name: Test Connection to my host and ald -soft setup
+  hosts: test
+  become: yes
+
+  vars:
+    local_source_path: /root/move/ 
+    remote_dir: /root/move/
+    source_file_conf: /root/move/httpd.conf
+    destin_dir: /etc/httpd/conf/
+
+  tasks:
+  - name: Install APACHE
+    yum: name='httpd' state=latest
+  
+  - name: create dir 
+    file: path={{remote_dir}} state=directory
+  
+  - name: COPY file to target host    
+    copy: src={{local_source_path}} dest={{remote_dir}}
+  
+  - name: APACHE configure
+    command: "{{item}}"
+    with_items:    
+      - cp {{source_file_conf}} {{destin_dir}}/httpd.conf
+      - cp /root/move/index.html /var/www/html/index.html
+    notify: web configure
+  
+  handlers:
+  - name: web configure 
+    command: "{{item}}"
+    with_items:
+      - systemctl start httpd.service
+      - systemctl enable httpd.service

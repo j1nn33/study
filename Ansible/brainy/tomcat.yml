@@ -1,0 +1,28 @@
+- name: Test Connection to my host and ald -soft setup
+  hosts: test
+  become: yes
+
+  vars:
+    local_source: /root/move/ 
+    source_file_conf: /root/move/httpd.conf
+    destin_dir: /etc/httpd/conf/
+
+  tasks:
+  - name: install java
+    command: yum install /root/move/jdk-8u191-linux-x64.rpm
+    
+  - name: install tomcat
+    command: "{{item}}"
+    with_items:
+     - mkdir /root/tomcat/
+     - tar xfvz /root/move/apache-tomcat-8.5.35.tar.gz -C /root/tomcat
+
+  - name: install JDK8
+    yum: name=/root/move/jdk-8u191-linux-x64.rpm state=present
+ 
+  - name: create directory v.2
+    file: path=/root/tomcat2 state=directory
+     
+  - name: unzip tomcat from remote host
+    unarchive: src=/root/move/apache-tomcat-8.5.35.tar.gz dest=/root/tomcat2/
+            

@@ -1,0 +1,25 @@
+- name: Test Connection to my host and ald -soft setup
+  hosts: test
+  become: yes
+
+  vars:
+    local_source_path: /root/move/ 
+    remote_dir: /root/move/
+    source_file: /root/move/httpd.conf
+    destin_dir: /etc/httpd/conf/
+    
+  
+  tasks:
+  - name: APACHE configure
+    command: "{{item}}"
+    with_items:    
+      - cp {{source_file}} {{destin_dir}}/nttpd.conf.back
+       
+    notify: web configure
+  
+  handlers:
+  - name: web configure 
+    command: "{{item}}"
+    with_items:
+      - systemctl start httpd.service
+      - systemctl enable httpd.service

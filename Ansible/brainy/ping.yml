@@ -1,0 +1,11 @@
+- name: Test Connection to my host and ald -soft setup
+  hosts: all
+  become: yes
+
+  vars:
+    source_file: /vrem/
+    destin_file: /vrem
+
+  tasks:
+  - name: Ping my host
+    ping:

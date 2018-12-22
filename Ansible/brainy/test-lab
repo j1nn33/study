@@ -1,0 +1,4 @@
+[localhost]
+127.0.0.1 #ansible_user=root ansible_sudo_pass=Aa123456 
+[test]
+192.168.237.25 #ansible_user=root ansible_sudo_pass=Aa123456
