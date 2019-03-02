@@ -1,6 +1,9 @@
 import unittest
 import calc
-
+# CalcTest - имя выбрали мы
+# Для того, чтобы метод класса выполнялся как тест, необходимо, чтобы он начинался со слова test. 
+# имена тестов будем начинать с префикса test_
+# 
 
 class CalcTest ( unittest.TestCase ):
 	"""Calc tests"""
