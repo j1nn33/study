@@ -1,0 +1,81 @@
+{% extends "object/wrapper.html"%}
+
+{% block content %}
+{% if user.is_authenticated %}
+<p align="center"> <strong>ИНФОРМАЦИЯ ПО ИЗДЕЛИЮ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-info" href="{% url 'edit' pk=izdelye.pk %}">Редактировать</a></strong></p>
+{% endif %}
+<hr>
+<form action="" method="post">
+{% csrf_token %}
+<!--
+	<button type="submit"  href="{% url 'edit' pk=izdelye.pk %}" class="btn btn-info">Редактировать</button>
+	<a class="btn btn-info" href="{% url 'edit' pk=izdelye.pk %}">Редактировать</a>
+-->
+
+<p style="margin-left: 80px;"><strong>Менеджер - </strong> {{ izdelye.manager }}</p>
+<hr>
+<p style="margin-left: 80px;"><strong>Номер войсковой части - </strong>{{ izdelye.number_vch }}</p>
+<p style="margin-left: 80px;"><strong>Округ - </strong>{{ izdelye.okrug }}</p>
+<p style="margin-left: 80px;"><strong>Область</strong>&nbsp; &nbsp;{{ izdelye.oblast }} &nbsp; &nbsp;<strong>Город</strong>&nbsp; &nbsp;{{ izdelye.town }}</p>
+<hr>
+<p style="margin-left: 80px;"><strong>Контакты:</strong></p>
+<p></p>
+<p style="margin-left: 80px;max-width: 30%;">{{ izdelye.vch_info }}</p>
+
+<hr>
+<p style="margin-left: 80px;"><strong>Номер изделия</strong>&nbsp;&nbsp;{{ izdelye.name }}&nbsp; &nbsp; <strong>Состав</strong>&nbsp; &nbsp;{{ izdelye.serial }} &nbsp; &nbsp;  <strong>Заводской номер</strong>&nbsp; &nbsp; {{ izdelye.serial_number }}&nbsp; &nbsp; <strong>Гарантия </strong>  &nbsp;&nbsp; {{ izdelye.warranty }}</p>
+
+<p style="margin-left: 80px;"><strong>Информация по изделию:</strong></p>
+<p></p>
+<p style="margin-left: 80px;max-width: 30%;">{{ izdelye.izdel_info }} </p>
+
+
+	<table   class="table "  border="0" cellpadding="0" cellspacing="1" style="margin: auto;">
+	<thead>
+		<tr>
+			<th scope="col">&nbsp;</th>
+			<th scope="col">&nbsp;Стандартный&nbsp;</th>
+			<th scope="col">&nbsp;Расширеный&nbsp;</th>
+			<th scope="col">&nbsp;Итого&nbsp;</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>&nbsp;<strong>Сервер</strong></td>
+			<td>{{ izdelye.server_standart }}</td>
+			<td>{{ izdelye.server_add }}</td>
+			<td>{{ izdelye.server_total }}</td>
+		</tr>
+		<tr>
+			<td>&nbsp;<strong>АРМ</strong></td>
+			<td>{{ izdelye.arm_standart }}</td>
+			<td>{{ izdelye.arm_add }}</td>
+			<td>{{ izdelye.arm_total }}</td>
+		</tr>
+		<tr>
+			<td>&nbsp;<strong>Ноутбу</strong></td>
+			<td>{{ izdelye.laptop_standart }}</td>
+			<td>{{ izdelye.laptop_add }}</td>
+			<td>{{ izdelye.laptop_total }}</td>
+		</tr>
+		<td>&nbsp;<strong>Коммутатор</strong></td>
+			<td>{{ izdelye.switch_standart }}</td>
+			<td>{{ izdelye.switch_add }}</td>
+			<td>{{ izdelye.switch_total }}</td>
+		</tr>
+	</tbody>
+</table>
+
+
+
+<hr>
+<p style="margin-left: 80px;"><strong>Переферийное оборудование:</strong></p>
+<p></p>
+<p style="margin-left: 80px;max-width: 30%;"><strong>Стандартное:</strong>&nbsp;&nbsp;&nbsp;{{ izdelye.supp_standart }}</p>
+<p style="margin-left: 80px;max-width: 30%;"><strong>Дополнительное:</strong>&nbsp;&nbsp;&nbsp;{{ izdelye.supp_add }}</p>
+
+
+
+</form>
+{% endblock %}
+

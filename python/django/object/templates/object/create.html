@@ -1,0 +1,84 @@
+{% extends "object/wrapper.html"%}
+
+{% block content %}
+<p align="center">ФОРМА СОЗДАНИЯ и Редактирования ОБЪЕКТА</p>
+
+
+<form action="" method="post">
+{% csrf_token %}
+    <hr>
+<p style="margin-left: 80px;">Менеджер&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;{{ form.manager }}</p>
+<hr>
+<p style="margin-left: 80px;">Номер войсковой части&nbsp;&nbsp;{{ form.number_vch }}</p>
+<p style="margin-left: 80px;">Округ&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;{{ form.okrug }}</p>
+<p style="margin-left: 80px;">Область&nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;{{ form.oblast }}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Город&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;{{ form.town }}</p>
+<hr>
+    <p style="margin-left: 80px;">Контакты</p>
+    <p style="margin-left: 80px;">{{ form.vch_info }}</p>
+<hr>
+<p style="margin-left: 80px;">Номер изделия&nbsp; &nbsp; &nbsp; &nbsp;{{ form.name }}&nbsp; &nbsp; &nbsp; &nbsp; Состав&nbsp; &nbsp; &nbsp; &nbsp;{{ form.serial }}&nbsp; &nbsp; &nbsp; &nbsp; Заводской номер&nbsp; &nbsp; &nbsp; &nbsp;{{ form.serial_number }}&nbsp; &nbsp; &nbsp; &nbsp; Гарантия &nbsp;  &nbsp; &nbsp;&nbsp; {{ form.warranty }}</p>
+
+<p style="margin-left: 80px;">Информация по изделию</p>
+<p style="margin-left: 80px;">{{ form.izdel_info }} </p>
+<hr>
+
+    <table   class="table table-borderless"  border="0" cellpadding="0" cellspacing="1" style="width: 500px">
+	<thead>
+		<tr>
+			<th scope="col">&nbsp;</th>
+			<th scope="col">&nbsp;Стандартны&nbsp;</th>
+			<th scope="col">&nbsp;Расширеный&nbsp;</th>
+			<th scope="col">&nbsp;Итого&nbsp;</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>&nbsp;Сервер</td>
+			<td>{{ form.server_standart }}</td>
+			<td>{{ form.server_add }}</td>
+			<td>{{ form.server_total }}</td>
+		</tr>
+		<tr>
+			<td>&nbsp;АРМ</td>
+			<td>{{ form.arm_standart }}</td>
+			<td>{{ form.arm_add }}</td>
+			<td>{{ form.arm_total }}</td>
+		</tr>
+		<tr>
+			<td>&nbsp;Ноутбу</td>
+			<td>{{ form.laptop_standart }}</td>
+			<td>{{ form.laptop_add }}</td>
+			<td>{{ form.laptop_total }}</td>
+		</tr>
+         	<td>&nbsp;Коммутатор</td>
+			<td>{{ form.switch_standart }}</td>
+			<td>{{ form.switch_add }}</td>
+			<td>{{ form.switch_total }}</td>
+		</tr>
+	</tbody>
+</table>
+
+
+<hr>
+<p style="margin-left: 80px;">Переферийное оборудование</p>
+<p style="margin-left: 80px;">{{ form.supp_standart }}&nbsp;&nbsp;&nbsp;&nbsp;{{ form.supp_add }}</p>
+
+
+
+<!------------------->
+    <p align="center"</p>
+    <a href="/object/list" class="btn btn-danger"  >Отмена</a>
+    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;
+    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;
+    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;
+    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;
+    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;
+    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;    &nbsp;
+
+
+    <button type="submit" class="btn btn-success">Создать</button>
+
+</form>
+
+{% endblock %}
+

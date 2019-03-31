@@ -1,0 +1,43 @@
+{% extends "object/wrapper.html"%}
+
+{% block content %}
+<p align="center">Список объектов</p>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">&nbsp;</th>
+      <th scope="col">Воинская часть</th>
+      <th scope="col">Округ</th>
+      <th scope="col">Изделие</th>
+      <th scope="col">Состав</th>
+      <th scope="col">Зав. номер</th>
+      <th scope="col">Менеджер</th>
+    </tr>
+  </thead>
+
+    {% if object_list %}
+
+      {% for object in object_list %}
+        <tbody>
+          <tr>
+          <!--<th scope="row">{{ object.id }}</th>-->
+          <th scope="row">&nbsp;</th>
+          <td><a href="{% url 'izdelye' pk=object.pk %}">{{ object.number_vch }}</a></td>
+          <td>{{ object.okrug }}</td>
+          <td>{{ object.name }}</td>
+          <td>{{ object.serial }}</td>
+          <td>{{ object.serial_number }}</td>
+          <td>{{ object.manager }}</td>
+          </tr>
+        </tbody>
+
+
+
+        {% endfor %}
+    </table>
+
+    {% else %}
+      <p>Объектов не обнаружено</p>
+    {% endif %}
+{% endblock %}
+

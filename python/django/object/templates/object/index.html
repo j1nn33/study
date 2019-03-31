@@ -1,0 +1,46 @@
+{% extends "object/wrapper.html"%}
+
+{% block content %}
+<p>LOGIN & LOGOUT</p>
+
+<p>------------------------------------------------------</p>
+
+
+{% if form.errors %}
+<p>ПРОВЕРЬТЕ ЛОГИН и ПАРОЛЬ</p>
+{% endif %}
+
+{% if next %}
+    {% if user.is_authenticated %}
+    <p>Ваш аккаунт не имеет доступа к этой странице. </p>
+    {% else %}
+    <p>Пожалуйста, войдите, чтобы увидеть эту страницу.</p>
+    {% endif %}
+{% endif %}
+
+<form method="post" action="{% url 'index' %}">
+{% csrf_token %}
+
+<div>
+  <td>{{ form.Author.label_tag }}</td>
+  <td>{{ form.userAuthorname }}</td>
+</div>
+<div>
+  <td>{{ form.password.label_tag }}</td>
+  <td>{{ form.password }}</td>
+</div>
+
+<div>
+  <input type="submit" value="login" />
+  <input type="hidden" name="next" value="{{ next }}" />
+</div>
+</form>
+
+
+<p></p>
+
+<p>Для получения доступа или смены паролья обратитесь к администрации сайта</p>
+
+
+{% endblock %}
+
