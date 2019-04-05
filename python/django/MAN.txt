@@ -1,0 +1,94 @@
+
+https://github.com/mdn/django-locallibrary-tutorial
+https://developer.mozilla.org/ru/docs/Learn/Getting_started_with_the_web
+------------------------------------------------------------------------------
+
+
+Инструкция по DJANGO
+
+
+структура приложения
+
+siteNAME/         # Папка сайта
+    manage.py     # Скрипт для управления проектов (создан manage.py)
+    siteNAME/     # Папка сайта/проекта (создана manage.py)
+    appNAME/      # Папка приложения (также создана manage.py)
+        appNAME/   
+            templates/
+    admin.py
+    forms.py
+    models.py
+----------------АДМИНИСТРИРОВАНИЕ-------------------------------------------
+cd ./<siteNAME>
+
+manage.py runserver 3000 
+manage.py makemigrations <appNAME>
+manage.py migrate <appNAME>
+
+
+
+----------------------------------------------------------------------------
+1  Алгорим добавления приложения
+
+  - python manage.py startapp <appNAME>
+  - settings.py   B INSTALLED_APPS и добавить к списку '< appNAME >',
+  - urls.py       Добавить ссылку на приложеньку <appNAME>
+
+=============================================================
+
+----------------ПРИНЦИП РАБОТЫ URL'S------------
+
+--> urls.py ---> <appNAME>/urls.py ---> <appNAME>/views.py ---> post_list.html
+	  1              2                      3
+ 
+ 1	path('<appNAME>/', include('<appNAME>.urls')),
+ 
+ 2	path('', views.post_list, name='post_list'),
+
+ 3	def post_list(request):
+    	return render(request, '<appNAME>/post_list.html', {})
+
+(ВАЖНО если в  post_list.html будут ссылки на другие страницы и они не будут работать то 
+при открытии  post_list.html будет ошибка)
+
+---------------ПРИНЦИП РАБОТЫ html---------------
+
+- в основе базовая страничка wrapper.html 
+  имеет {% block content %}
+        {% endblock %}
+  в эти блоки вставляется то что находися между  {% block content %}    {% endblock %}  друкгих страниц 
+  {% extends "<appNAME>/wrapper.html"%} - подключение на этих страницах базового шаблона  wrapper.html 
+  
+    
+---------------ПРИНЦИП переменных ---------------
+
+1 <name>.html страница имеет {{ vh_form.name }}  
+  vh_form - переменная которй присваивается в views
+  name - имя поля в calss VchForm прописаннаном в forms.py 
+
+2 views 
+def <name> 
+   vh_form.name =  VchForm
+   
+
+
+=============================================================
+
+
+2 - СОЗДАНИЕ МОДЕЛИ
+  - <appNAME>/models.py
+  - <appNAME>/urls.py
+  - <appNAME>/views.py (типа index.html в mainApp)
+
+3 - создание шаблона
+    <appNAME>/templates/<appNAME>/post.html
+  - python manage.py makemigrations <appNAME>
+  - python manage.py migrate <appNAME>
+
+
+4 - Созадние формы
+  - <appNAME>/forms.py
+  - <appNAME>/templates/<appNAME>/
+  
+  
+ 
