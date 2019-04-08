@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<p align="center"><strong><p>Добрый день      {{ user.username }}</strong></p>
+<p><a class="btn btn-info" href="{% url 'logout' %}">Выход</a></p>
+<p><a class="btn btn-info" href="/object/list">Работать с базой</a></p>
+<p align="center"><strong><p>Для получения доступа или смены пароля обратитесь к администрации сайта</strong></p>
+
+{% else %}
+
+  <p><strong><font color="#FF0000">Вам необходимо войти на сайт</strong></p>
+  <a href="{% url 'login' %}">login</a>
+{% endif %}
+{% endblock %}

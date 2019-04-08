@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} Authentication {% endblock %}</title>
+
+    {% load staticfiles %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+
+</ul>
+  <p>
+      <ul class="nav justify-content-center" style="background-color:#D3D3D3">
+   <li class="nav-item">
+   <a class="nav-link">База данных отдела 3-го объектового направления    ver. 1.1 </a>
+</ul>
+
+<table  align="center" class="table table-borderless"  border="0" cellpadding="0" cellspacing="1" style="width: 900px">
+	<tbody>
+        <tr>
+			<td></td>
+			<td>{% block content %}
+                {% endblock %}
+            </td>
+
+
+		</tr>
+
+	</tbody>
+</table>
+
+
+
+
+
+<p></p>
+<ul class="nav justify-content-center" style="background-color:#D3D3D3">
+   <li class="nav-item">
+   <a class="nav-link"> © 2019 Разработка отдела 3-го объектового направления    ver. 1.1 </a>
+</ul>
+
+<p></p>
+</body>
+</html>

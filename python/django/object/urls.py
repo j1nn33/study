@@ -1,36 +1,40 @@
-from django.urls import include, path
-from . import views
+"""conceptdebbase URL Configuration
 
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/2.1/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-STUCTURE OF SITE
+from django.contrib import admin
+from django.urls import path, include
+from django.views.generic import RedirectView
+from django.views.generic.base import TemplateView
+from django.conf import settings
 
-'object' - index.html # home.page + login.page 
-'object/list/'        # список объектов всех (в зависимости от того кто вошел)
-'object/create/'      # созадть новый объект
-'object/izdelye/<id>' # детальная информация по изделию
-'object/edit/<id>'    # отредактировать информацию по изделию
-'object/contact'      # информация по контактам
-'object/report'       # отчеты технический
-'object/logout'       # отчеты (в зависимости от того кто вошел)
-"""
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('list/', views.list, name='list'),
-    path('contact/', views.contact, name='contact'),
-    path('report/', views.report, name='report'),
-    path('create/', views.create, name='create'),
+    path('admin/', admin.site.urls),
+    path('object/', include('object.urls')),
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+
+    #path('', RedirectView.as_view(url='/object/', permanent=True)), # редирек  с '' на /object/
+    #path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    #path('', RedirectView.as_view(url='/accounts/', permanent=True)), # редирек  с '' на /object/
+    #path('', RedirectView.as_view(url='/accounts/login.html', permanent=True)), # редирек  с '' на /object/
+  ]
 
 
-]
-
+#Add Django site authentication urls (for login, logout, password management)
 
 urlpatterns += [
-    path('izdelye/<int:pk>/', views.izdelye, name='izdelye'),
-    path('edit/<int:pk>/', views.edit, name='edit'),
-    #path('izdelye/<int:pk>/', views.create, name='izdelye')
-    #path('izdelye/<int:pk>/edit/', views.IzdelyeDetailView.as_view(), name='izdelye'),
-]
+    path('accounts/', include('django.contrib.auth.urls')),
 
-# path('list/', views.ObjectListView.as_view(), name='list'),
-#path('izdelye/<int:pk>', views.IzdelyeDetailView.as_view(), name='izdelye'),
+]
