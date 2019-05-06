@@ -23,23 +23,8 @@ $ git config --list
 $ git init
 Initialized empty Git repository in /home/tooks/git/first_repo/.git/
 
-    #ТЮНИНГ
-Отображение статуса репозитория
- - переходим в домашний каталог
-cd ~
-git clone https://github.com/magicmonty/bash-git-prompt.git .bash-git-prompt --depth=1
 
-добавить в конец файла ~/.bashrc
-
-GIT_PROMPT_ONLY_IN_REPO=1
-source ~/.bash-git-prompt/gitprompt.sh
-
-exec bash
-
-
-    # ПРОВЕРКА СТАТУСА
-
-git status
+git status  # ПРОВЕРКА СТАТУСА
 
 .gitignore в текущем каталоге:  показывает что игнорировать
 
@@ -52,3 +37,43 @@ git log                      когда были выполнены послед
 
 git pull                     синхронизация из github в локальный репозиторий
 git push                     синхронизация из локального репозитория в github
+
+=======================================================
+Работа с git основные команды
+
+git branch   				- посмотреть какие ветки есть
+git branch test   			- создать ветку test
+
+git checkout test			- перейти на ветку test
+git checkout -b test		- создать и перейти на ветку test
+
+git checkout master			-  возвратиться на главную ветку master
+git merge test     			- слить test с master
+
+git branch -d test     		- удалить ветку когда все изменения закомичены
+git branch -D test			- удалить в любом случае
+
+git log
+git checkout <hash commit>	- возвратиться в коммит
+git checkout master			- возвратиться обратно
+
+git reset --hard HEAD~		- убить последний коммит
+git reset --hard HEAD~3     - убить последние 3 коммита
+
+git commit --amend          - внесениие изменений в последний коммит
+
+Цикл работы с git
+
+git clone <ssh-link>        - клонирование удаленного репозитория
+git checkout -b test        - создание ветки этого репозитория
+
+работа с репозиторием test
+
+создание удаленного репозитория test для проверки и слияния
+git push origin              
+git push --set-upstream origin test
+
+если все ОК
+git checkout master			- возвратиться обратно
+git branch -d test     		- удалить  локальную ветку когда изменеия приняты
+git push origin --delete test - удалить ветку удаленно

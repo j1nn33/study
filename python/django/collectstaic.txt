@@ -1,0 +1,66 @@
+как собирать статику  (см также magazine/README.txt)
+
+settings.py
+------------------------------
+# for css script
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # new
+
+# for media
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# отсюда забираем все статические файлы, которые мы помещаем при разработке
+# после collectstatic файлы забрасываются куда надо
+
+STATICFILES_DIRS =(
+    os.path.join(BASE_DIR, 'static_in_dev'),
+)
+-------------------------------
+
+# в папке проекта делаем 
+mkdir static
+mkdir media
+mkdir static_in_dev
+
+# скачиваем bootstrap  (Compiled CSS and JS) распаковываем и кидаем его в  static_in_dev
+
+manage.py collectstatic
+
+url.py
+-----------------------------------
+
+from django.conf.urls.static import static
+from django.conf import settings
+ 
+<..>
+ 
+# В конце файла:
+ 
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
+    
+----------------------------------    
+manage.py collectstatic
+
+
+Проверка работы bootstrap
+
+base.html
+-----------------------------
+{% load staticfiles %}
+<!DOCTYPE html>
+<HTML>
+   <HEAD>
+      <TITLE>Calculate</TITLE>
+      
+      <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
+      <script src="{% static "js/bootstrap.js" %}"></script> 
+   </HEAD>
+<BODY>
+<h1> hello world</h1>
+</BODY>
+</HTML>
+-----------------------------
