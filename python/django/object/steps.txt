@@ -1,0 +1,61 @@
+
+"""
+В данном документе представлен ход создания корпоративной базы
+"""
+
+структура приложения
+
+conseptdepbase/         # Папка сайта
+    manage.py           # Скрипт для управления проектов (создан manage.py)
+    conseptdepbase/     # Папка сайта/проекта (создана manage.py)
+    object/               # Папка приложения (также создана manage.py)
+
+
+
+Алгорим добавления приложения
+
+1 - python manage.py startapp <appNAME>
+  - settings.py   B INSTALLED_APPS и добавить к списку '< appNAME >',
+  - urls.py       Добавить ссылку на приложеньку <appNAME>
+
+=============================================================
+ПРИНЦИП РАБОТЫ URL'S
+
+--> urls.py ---> <appNAME>/urls.py ---> <appNAME>/views.py ---> post_list.html
+	  1              2                      3
+ 
+ 1	path('<appNAME>/', include('<appNAME>.urls')),
+ 
+ 2	path('', views.post_list, name='post_list'),
+
+ 3	def post_list(request):
+    	return render(request, '<appNAME>/post_list.html', {})
+
+
+=============================================================
+
+
+2 - СОЗДАНИЕ МОДЕЛИ
+  - <appNAME>/models.py
+
+
+  - <appNAME>/urls.py
+  - <appNAME>/views.py (типа index.html в mainApp)
+
+3 - создание шаблона
+    <appNAME>/templates/<appNAME>/post.html
+
+
+
+  - python manage.py makemigrations <appNAME>
+  - python manage.py migrate <appNAME>
+
+
+ 4 - Созадние формы
+   - <appNAME>/forms.py
+   - <appNAME>/templates/<appNAME>/
+
+============================================================
+============================================================
+============================================================
+
