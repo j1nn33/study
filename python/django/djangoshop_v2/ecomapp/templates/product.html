@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+ 
+
+{% block content %}
+<br>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-4">
+     <img  src="{{ product.image.url }}" style = 'width:200px'; height:150px;>
+    </div>
+    <div class="col-sm-8">
+    <h3 class="text-center">{{ product.title}}</h3>
+    <h5>{{ product.price }} руб. </h5>
+    <p>{{ product.description }} </p>
+    <hr>
+    <p> Цена : <strong>{{ product.price }} </strong> руб. </p>
+		<p id='subscribed_for_notification'> </p>
+    <!-- алгоритм скрытия надписей уведомления если подписались или нет -->
+			
+		{% if not product.available and product in check_for_subscribe %}
+		    <p> Вы подписались на уведомление </p>
+		{% endif %}
+	
+		{% if not product.available and product not in check_for_subscribe %}
+		    <div class='user_subscribed'>
+		      <p class='lead' id> Товар отсутвует. если вы хотите получать уведомлении о поступлнении нажмите кнопку </p>
+		      <p class='text-right'><a href='#' class='subscribed' data-slug='{{ product.slug }}' ><button class='btn btn-info'>Уведомить о поступлении </button></a> </p>
+		    </div>
+			{% endif %}		
+			{% if  product.available %}
+		    <!--{% if request.user.is_authenticated %}<p class='text-right'><a href='#' class='add_to_cart' data-slug='{{ product.slug }}'><button class='btn btn-danger'>Добавить в корзину</button></a></p>{% endif %}-->
+		    
+				
+				{% if request.user.is_authenticated %}
+		         <p class='text-right'><a href='#' class='add_to_cart' data-slug='{{ product.slug }}'><button class='btn btn-danger'>Добавить в корзину</button></a></p>
+		    {% endif %}
+    {% endif %}
+    
+    {% if not request.user.is_authenticated %}
+                   <p class='text-right'><button class='btn  btn-warning'> Для заказа товара необходимо <a href='{% url "registration" %}'> Зарегестрироваться</a> или <a href='{% url "login" %}'>Войти</a> на сайт</button></a></p>
+    {% endif %}
+		
+    <br>
+    </div>
+</div>
+
+<!-- скрипт добавления товара в корзину-->
+<!-- class='add_to_cart-->
+<script>
+$(document).ready(function(){
+	$('.add_to_cart').on('click', function(e){
+		e.preventDefault()
+		product_slug = $(this).attr('data-slug')
+		data = {
+			product_slug: product_slug
+		}
+		$.ajax({
+			type: "GET",
+			url: '{% url "add_to_cart" %}',
+			data: data,
+			success: function(data){
+				$("#cart_count").html(data.cart_total)
+			}
+		})
+	})
+})
+</script>
+
+<script>
+// скрип оповещения 
+    $(document).ready(function(){
+			$('.subscribed').on('click', function(){
+        product_slug = $(this).attr('data-slug')
+				data = {
+					product_slug: product_slug
+				}
+				$.ajax({
+					type: "GET",
+			    url: '{% url "notify_create" %}',
+		     	data: data,
+		     	success: function(data){
+			      $('#subscribed_for_notification').html(data.created)	
+						// прячет сообщение подписаться  если уже подписались
+						$('.user_subscribed').css('display', 'none')
+					}	
+				})
+			})
+		})
+</script>
+{% endblock content %} 
+

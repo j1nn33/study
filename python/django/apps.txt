@@ -14,7 +14,11 @@ djangoshop_v1
       - магазин без нотификаций
       - ман - djangoshop_v1/magazine.txt
       
-
+djangoshop_v2
+      - магазин c нотификаций
+        - не работает удаление нотификации 
+          (см base.html самый нижний <script>)
+      - ман - djangoshop_v2/magazine.txt
 
 
 

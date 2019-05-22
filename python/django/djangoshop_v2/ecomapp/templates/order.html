@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<h3 class='text-center'>Оформление заказа</h3>
+<hr>
+<form action='{% url "make_order" %}' method="POST">
+{% csrf_token %}
+<div class="row"> 
+<div class='col-sm-4'>
+	{{ form.name|as_crispy_field }}
+</div>
+<div class='col-sm-4'>
+	{{ form.last_name|as_crispy_field }}
+</div>
+<div class='col-sm-4'>
+	{{ form.phone|as_crispy_field }}
+</div>
+</div>
+
+<div class="row"> 
+<div class='col-sm-4'>
+{{ form.buying_type|as_crispy_field }}
+</div> 
+<div class='col-sm-4'>
+{{ form.date|as_crispy_field }}
+</div>
+</div>
+{{ form.address|as_crispy_field }}
+
+{{ form.comments|as_crispy_field }}
+<p class='text-center'><input type='submit' class='btn btn-success' value='Оформить заказ'></p>
+</form>
+<!--логика скрипта скрыть адрес доставки если выбран самовывоз -->
+<script src="{% static 'js/jquery.js' %}"></script>
+<script>
+	$(document).ready(function(){
+		$('#div_id_address').css('display', 'none')   // строка с адресом по умолчанию скрыта
+		$('#id_buying_type').on('click', function(){
+             //id_buying_type , значения value delivery - можно посмотреть если открыть инспетор элементов в инструментах разработчика браузера
+			buying_type = $(this).val()
+            //console.log(buying_type)
+			if(buying_type == 'delivery'){
+				$('#div_id_address').css('display', 'block')  // строка с адресом становиться видимой
+			}else{
+				$('#div_id_address').css('display', 'none')
+			}
+		})
+        // тюнинг полей дары 
+		$('#id_date_month').css('width', '130px')
+		$('#id_date_month').css('display', 'inline')
+		$('#id_date_year').css('width', '100px')
+		$('#id_date_year').css('display', 'inline')
+		$('#id_date_day').css('width', '70px')
+		$('#id_date_day').css('display', 'inline')
+	})
+
+</script>
+{% endblock content %}
