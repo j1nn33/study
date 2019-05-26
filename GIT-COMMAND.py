@@ -17,6 +17,27 @@ $ git config --global user.email "username.user@example.com"
 
 $ git config --list
 
+Настройка git
+- создаем папку и переходим в нее 
+- git init
+- git clone <LINK>
+
+#gitignore
+в папке делаем 
+vi .gitignore
+
+
+авторизация по ключам на github
+
+ll ~/.ssh/
+ssh-keygen
+
+ll ~/.ssh/
+
+копируем публичный ключ на гитхаб
+
+cat ~/.ssh/id_rsa.pub
+
     # ИНИЦИАЛИЗАЦИЯ РЕПОЗИТОРИЯ
 
 [~/git/first_repo]
