@@ -7,21 +7,24 @@
 - заполнение результатом выходного файла
 
 ИСХОДНЫЕ ДАННЫЕ 
+Свой объект = МТС=БСПС:ЮПИТЕР  
+ УG01:YG01  
 
-Свой объект = {'МТС=БСПС':'ЮПИТЕР'}  
-Свой объект = {'УG01':'YG01'}  
+ Удаленные объекты= МТС=БСПС:ЮПИТЕР
+ МZ00:MZ$$, УG02:YG02
 
-Удаленные объекты= {'МТС=БСПС':'ЮПИТЕР'}
-Удаленные объекты= {'МZ00':'MZ$$','УG02':'YG02'}
+ роли в БСПС 
+ ГМ, ОБИ 1
 
-роли в БСПС =  ['ГМ']
-
-upmts:MZ$$:МZ00::0:3<>bsps:pГМ@МZ$$:::0:3 #Почта получателя в Юпитере
-upmts:YG02:УG02::0:3<>bsps:pГМ@УG02:::0:3 #Почта получателя в Юпитере
-bsps:pГМ@УG01:::0:3<>upmts:YG01:::0:3   #Почта отправителя якобы от Юпитера
-
-1:p*@УG02::0:3>2:УG02::
-1:p*@МZ::0:3>2:МZ::
+------------------------------------------------------------------------------
+ upmts:MZ$$:МZ00::0:3<>bsps:pГМ@МZ00:::0:3 #Почта получателя в Юпитере
+ upmts:MZ$$:МZ00::0:3<>bsps:pОБИ 1@МZ00:::0:3 #Почта получателя в Юпитере
+ upmts:YG02:УG02::0:3<>bsps:pГМ@УG02:::0:3 #Почта получателя в Юпитере
+ upmts:YG02:УG02::0:3<>bsps:pОБИ 1@УG02:::0:3 #Почта получателя в Юпитере
+ bsps:pГМ@УG01:::0:3<>upmts:YG01:::0:3   #Почта отправителя якобы от Юпитера
+ bsps:pОБИ 1@УG01:::0:3<>upmts:YG01:::0:3   #Почта отправителя якобы от Юпитера
+ 1:p*@МZ00::0:3>2:МZ00::
+ 1:p*@УG02::0:3>2:УG02::
 
 ------------------------------------------------------------------------------
 ЕСЛИ ИМЯ ОБЪЕКТА НЕ СОВПДАЕТ С ИМЕНЕМ БСПС, 
@@ -59,20 +62,17 @@ def generate_config(local_object, remote_object, role):
     for item_remote in remote_object:
         for item_role in role: 
             st = 'upmts:{1}:{0}::0:3<>bsps:p{2}@{0}:::0:3 #Почта получателя в Юпитере'.format(item_remote, remote_object[item_remote], item_role)
-            #print ('============st===========', st)
             print (st)
             generate_list.append (st)
     
     for item_local in local_object:
         for item_role in role:
             st = 'bsps:p{2}@{0}:::0:3<>upmts:{1}:::0:3   #Почта отправителя якобы от Юпитера'.format(item_local, local_object[item_local], item_role)
-            #print ('============st===========', st)
             print (st)
             generate_list.append (st)
             
     for item_remote in remote_object:
         st = '1:p*@{0}::0:3>2:{0}::'.format(item_remote)
-        #print ('============st===========', st)
         print (st)
         generate_list.append (st) 
         
@@ -88,7 +88,7 @@ def test_1 (generate_config):
     """
     функция тестирования test_1
     """ 
-    print (test1.__doc__)
+    print (test_1.__doc__)
     
     # исходные данные 
    
@@ -211,18 +211,58 @@ def processing_data():
     #print ('local_object ',type(local_object), local_object)
     #print ('remote_object',type(remote_object), remote_object)
     #print ('role         ',type(role), role)
-    #a = s.split(' ')
     #generate_config (local_object, remote_object, role)
     return local_object, remote_object, role
-    
-    
+
+#======================================     
+
+def create_result_file(final_list):
+     # имя выходного файла out.txt
+     file_name="./out.txt" 
+
+     # определяем для открытого файла переменую f
+     # и выполняет набор инструкций. После их выполнения файл автоматически закрывается. 
+     # Даже если при выполнении инструкций в блоке with возникнут какие-либо исключения,
+     # то файл все равно закрывается.
+     temp_list = final_list
+     with open(file_name, 'a') as f:        # определяем для открытого файла переменую f
+         line = '---------------------------------------------'
+         f.write(line+'\n') 
+         for line in temp_list:
+             #print (line)
+             #f.write(str(line)) 
+             f.write(str(line)+'\n') 
+             #f.write(line+'\n')             # +'\n' для переноса строк
+     f.close()
+
+
+   
 #======================================   
 
 if __name__ == "__main__":
     
+   # Модуль контрольного тестирования
+   #
    #test_1 (generate_config)         # test1 тестирование generate_config
-   # read_from_file()               # открытие файла с исходными данными
-   processing_data ()               # обработка исходных данных 
-   print (processing_data())
+   #
+   ##################################
+   # 
+   # Загрузка данных из файла и обработка
+   #
+   local_object = {}
+   remote_object = {}
+   role = []
+   local_object, remote_object, role = processing_data()
    
-   #generate_config(processing_data)
+   #print ('DATA after processing_data')
+   #print (local_object)
+   #print (remote_object)
+   #print (role)
+   # 
+   #generate_config(local_object, remote_object, role)
+   final_list = []
+   final_list = generate_config(local_object, remote_object, role)
+   #
+   # запись результатов в выходной файл
+   #
+   create_result_file(final_list)
