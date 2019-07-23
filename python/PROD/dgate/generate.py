@@ -265,4 +265,4 @@ if __name__ == "__main__":
    #
    # запись результатов в выходной файл
    #
-   create_result_file(final_list)
+   create_result_file(final_list) 
