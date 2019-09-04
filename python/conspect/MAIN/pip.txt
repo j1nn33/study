@@ -1,0 +1,28 @@
+PIP
+
+pip --version
+pip3 --version
+
+
+allas python="pyhton3"   # сделать 3 версию 
+
+pip3 freeze       - список всех установленных пакетов
+(список должен быть пустой либо содержать virtualenv)
+
+pip3 install virtualenv
+
+pip uninstall 
+
+
+# работа с виртуальной средой 
+
+virtualenv -p python3 <NAME>
+
+source <NAME>/bin/activate
+
+записать зависимости в проекте
+pip freeze > requirements.txt 
+
+установить зависимости из проекта
+
+pip install -r requirements.txt
