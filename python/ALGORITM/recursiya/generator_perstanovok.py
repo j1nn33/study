@@ -28,3 +28,33 @@ def gen_bin(M, prefix=""):
         
 
 gen_bin(3)
+
+# Генерация всех перестановок (рекурсивная).
+def find (number , A):
+    """ ищет number в А и возвращет True, если такой есть
+        False, если такого нет
+    """
+    for x in A:
+        if number == x:
+            return True
+    return False
+def generate_permutations (N:int, M:int = -1, prefix = None):
+    """ Генерация всех перестановой N чисел в M позициях
+        с перфиксом prefix
+    """
+    if M == -1: 
+        M = N # по умолчанию N чисел в N позициях иначе M будет то, что ввели
+        prefix = prefix or []
+    if M ==0:
+        print(prefix)
+        print(*prefix)
+        #print(*prefix, end =", ")
+        return
+    for number in range (1, N+1):
+        if find (number, prefix):
+            continue
+        prefix.append(number)
+        generate_permutations(N, M-1, prefix)
+        prefix.pop()
+
+generate_permutations (3)
