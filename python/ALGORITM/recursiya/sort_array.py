@@ -120,3 +120,4 @@ print('по возрастанию', chech_sorted(B))
 print('по убыванию   ', chech_sorted(B, False))
 print('по возрастанию', chech_sorted(C))
 print('по убыванию   ', chech_sorted(C, False))
+
