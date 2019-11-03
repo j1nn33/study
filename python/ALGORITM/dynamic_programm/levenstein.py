@@ -46,3 +46,27 @@ A = "кол"
 B = "мо"
 
 print ('наименьшее общее редакуионного расстояние', levenstein(A,B))
+
+# Проверка равенства строк
+"""
+строки равны если расстояние левнштейна = 0
+"""
+A = "колр"
+B = "кол"
+
+if levenstein(A,B) ==0:
+    print ('строки равны')
+else:
+    print ('строки  не равны')
+
+# 2 вариант равенства строк O(N)
+
+def equal (A,B):
+    if len(A) != len(B):
+        return False
+        
+    for i in range (len(A)):
+        if A[i] != B[i]:
+            return False
+
+    return True
