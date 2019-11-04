@@ -30,11 +30,33 @@ _stack = []  # сам стек
 
 
 def push(x):
+    """
+    Добавляет элемент x в конец стека
+    >>> size = len(_stack)
+    >>> push(5)
+    >>> len(_stack) - size  # размер увеличился на 1
+    1
+    >>> _stack[-1]    # top
+    5
+    """
     _stack.append(x)
 
 
 def pop():
-    x = _stack.pop() 
+    """
+ 
+    >>> push (1)
+    >>> push (5)
+    >>> size = len(_stack)
+    >>> pop()
+    5
+    >>> size - len(_stack)
+    1
+    >>> _stack[-1]
+    1
+
+    """
+    x = _stack.pop()
     return x
 
 
@@ -46,9 +68,8 @@ def is_empty():
     return len(_stack) == 0
 
 
-
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+    #doctest.testmod(verbose=True)
     print(doctest.testmod())
-
