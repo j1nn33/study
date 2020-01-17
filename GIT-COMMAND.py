@@ -55,6 +55,7 @@ git status  # ПРОВЕРКА СТАТУСА
 - все что он сгенерит можно кинуть в  git ignore
 joe g python,linux,windows
 
+
 git add                      включает файл в слежку
 git rm                       удалить файл из слежения
 

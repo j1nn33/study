@@ -2,9 +2,61 @@
 https://github.com/mdn/django-locallibrary-tutorial
 https://developer.mozilla.org/ru/docs/Learn/Getting_started_with_the_web
 ------------------------------------------------------------------------------
-
+------------------------------------------------------------------------------
 
 Инструкция по DJANGO
+
+Правила разрешения URL
+
+https://site.com/path/page.html   - основной документ
+
++ http://wikipedia.org = http://wikipedia.org
++ //cdn.org/jquery.js  = https://cdn.org/jquery.js
++ /admin/index.html    = https://site.com/admin/index.html
++ another.html         = https://site.com/path/another.html
++ ?full=1              = https://site.com/path/page.html?full=1
++ #chapter2            = https://site.com/path/page.html#chapter2  
+
+Соглашение о именовании 
+ 
+ MVC          DJANGO
+
+ Model        Model
+ Router       urls.py
+ Controller   views        (логику приложения не писать)
+ View         templates
+
+
+ SQL          DJANGO
+
+ Таблица      класс Модели
+ строка       объект модели
+ запрос       QuerySet
+
+----------------ПРИНЦИП маршрутизации -----------
+
+- слеш (/) в начале роутов не указывается
+- можно указвать как имя так и саму view-функцию
+- роуты описываются с помощью регулярных выражений
+- роуты разносить по приложениям
+- создавать именованные роуты
+- одно действие - один роут - один контроллер 
+
+------------- Возможности шаблонизатора ---------
+{% for item in list %} {% endfor %}             - итерация по списку
+{% if var %}{% endif %}                         - условное отображение
+{% include "tpl.html" %}                        - включение подшаблона
+{{ var }}                                       - ввод переменной
+{{ var|truncatechars:9 }}                       - применение фильров
+{# comment #}, {% comment %}{% endcomment %}    - комментарии
+
+-------------- Полезые утилиты --------
+./manage.py validate    - проверить стурктуру моделей
+./manage.py syncdb      - создать таблицы в базе (1 раз)
+./manage.py dbshell     - запустить клиент базы данных
+
+
+
 
 
 структура приложения
