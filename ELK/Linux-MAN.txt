@@ -1,0 +1,81 @@
+====	DISK
+-----------------------------------------------------
+sda1	sda2	sdb	sdc  |  	PV физические диски
+		VG00	 		 |	VG   группа томов
+root	usr	home	var	 |	LV логические диски (нарезаются поверх группы томов)
+ext3	reiserfs	xfs	 |	файловые системы
+-----------------------------------------------------
+
+lsblk 				– просмотр информации о дисках
+sfdisk /dev/sdb    	- аналог fdisk
+
+du -ha --time /etc/
+du -sh /home/mial/
+df -x tmpfs -h
+df -k /tmp
+iotop
+
+=====================================================
+====	NET
+-----------------------------------------------------
+nmtui
+
+/etc/sysconfig/network-scripts/ifcfg-eth0
+/etc/init.d/network restart
+/etc/resolv.conf
+/etc/hostname 
+/etc/hosts
+
+service network restart
+
+ip addr show
+ip a
+netstat - tulpen | grep sshd
+iftop   nload    -  мониторинг сетевых интерфейсов
+ip route
+ping  10.0.0.1 -s 1500
+locate file_name
+=====================================================
+====	REPOSITORY
+-----------------------------------------------------
+yum update -y 
+yum -y install epel-release
+yum install <name>
+yum remove  <name>
+yum -y install epel-release
+
+=====================================================
+====	OTHER
+-----------------------------------------------------
+ssh username@server.com:port
+chmod -R 755 /home/dir
+chown -R user:group /home/dir/
+head -n 2 <filename>
+tail -n 2 <filename>
+
+=====================================================
+====	SERVICE
+-----------------------------------------------------
+systemctl start ntpd
+systemctl enable ntpd
+systemctl enable ntpdate.service
+ps axf | grep <service_name>
+
+
+=====================================================
+====	TROBLESHOOT
+
+
+Ping  	-> 	iptables  –L	 ->	 telnet 192.168.10.1 53	 -> netstat –tulpen	 -> log 
+
+tail -f path_to_log | grep search_term
+-----------------------------------------------------
+
+=====================================================
+====	LOG
+tail -f path_to_log | grep search_term
+grep -i error /var/log/message
+
+-----------------------------------------------------
+=====================================================
+-----------------------------------------------------

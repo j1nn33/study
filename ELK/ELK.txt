@@ -1,0 +1,107 @@
+===============================================
+    SERVISE
+===============================================
+
+systemctl status elasticsearch.service
+/etc/elasticsearch/elasticsearch.yml
+
+netstat -tulnp | grep 9200
+tcp6       0      0 127.0.0.1:9200      :::*          LISTEN      14130/java
+http://localhost:9200
+
+-----------------------------------------------
+
+systemctl status kibana.service
+/etc/kibana/kibana.yml
+
+http://hostname:5601
+netstat -tulnp | grep 5601
+tcp        0      0 127.0.0.1:5601       0.0.0.0:*        LISTEN      27401/node
+
+-----------------------------------------------
+
+systemctl status logstash.service
+/etc/logstash/logstash.yml
+/var/log/logstash/logstash-plain.log
+
+-----------------------------------------------
+systemctl start filebeat
+/etc/filebeat/filebeat.yml    
+
+/var/log/filebeat/filebeat
+тестирование конфига filebeat 
+filebeat test config -c /etc/filebeat/filebeat.yml
+
+===============================================
+    Краткий справочник по командам elasticsearch.
+===============================================
+
+SQL         |   Elasticsearch
+База данных |   Индекс
+Таблица     |   Тип
+Ряд         |   Документа
+Колонка     |   Поле
+
+path.data:  /var/elasticsearch/data
+
+
+=================================================
+
+curl 'localhost:9200/_команда/имя?параметр1&параметр2'
+- команда - обычно начинается с подчеркивания и указывает основное действие, которое надо сделать;
+- имя - параметр команды, указывает, над чем нужно выполнить действие, или уточняет, что надо делать;
+- параметр1 - дополнительные параметры, которые влияют на отображение, форматирование, точность вывода и так далее;
+
+
+Просмотр версии 
+curl -XGET http://localhost:9200
+
+все текущие настройки для ноды, кластера, путей приложений, модулей и т.д.
+curl -XGET 'http://localhost:9200/_nodes?pretty'
+
+- список всех индексов в elasticsearch
+curl 'http://localhost:9200/_cat/indices?v'
+curl 'http://localhost:9200/_cat/indices?v' | grep nginx
+curl 'localhost:9200/_cat/indices?v&pretty'
+
+
+Просмотр только для индекса app:
+curl 'localhost:9200/app/_mapping?pretty'
+
+-  удалить индекс из elasticsearch
+curl -X DELETE  'http://localhost:9200/nginx-access-geo-2018.01'
+curl -XDELETE 'http://localhost:9200/app?pretty'
+
+-  удалить wildcard индекс из elasticsearch
+curl -X DELETE  'http://localhost:9200/nginx-access-geo-*'
+
+- Получить информацию об индексе elasticsearch
+curl -X GET 'http://localhost:9200/nginx-access-geo-2018.01'
+
+- запрос будет выполнен только на первичных осколках
+POST example_index/example_doc/_search?preference=_primary
+
+- запрос выполняется сначала по первичному, и если первичный файл недоступен, он выполняется на  реплики:
+POST example_index/example_doc/_search?preference=_primary_first
+
+увеличивать и уменьшать количество реплик индекса «на лету»:
+
+PUT example/_settings 
+{
+  "index" : {
+    "number_of_replicas" : 0
+  }
+}
+
+ответ, подобный этому:
+
+{"acknowledged":true}
+
+
+=================================================
+    ERROR
+=================================================
+
+"http://localhost:9200 - conection refused",
+- система загружается, надо подождать несколько минут.
+
