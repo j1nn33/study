@@ -1,0 +1,84 @@
+=============================================
+     Logstash
+
+=============================================
+
+test your Logstash installation
+
+cd logstash-7.6.2
+bin/logstash -e 'input { stdin { } } output { stdout {} }'
+
+After starting Logstash, wait until you see 
+"Pipeline main started" and then enter hello world at the command prompt:
+
+hello world
+2013-11-21T01:22:14.405+0000 0.0.0.0 hello world
+
+
+Exit Logstash by issuing a CTRL-D
+
+запустить на проверку с конфигом Logstash.conf
+Logstash –f Logstash.conf
+
+Logstash.conf
+Файл конфигурации Logstash просто копирует данные из файла inlog.log 
+с помощью входного плагина и сбрасывает данные журнала в файл outlog.log 
+с помощью выходного плагина.
+
+------------------------------------
+input {
+   file {
+      path => "C:/tpwork/logstash/bin/log/inlog.log"
+   }
+}
+output {
+   file {
+      path => "C:/tpwork/logstash/bin/log/outlog.log"
+   }
+}
+
+
+------------------------------------
+
+Logstash.conf
+В этой конфигурации Logstash мы добавляем фильтр с именем grok 
+для фильтрации входных данных. Событие входного журнала, 
+которое совпадает с входным журналом последовательности шаблонов, 
+только с ошибкой попадает в место назначения вывода.
+ Logstash добавляет тег «_grokparsefailure» в выходные события, 
+который не соответствует последовательности шаблонов фильтра grok.
+
+------------------------------------
+input {
+   file {
+      path => "C:/tpwork/logstash/bin/log/inlog2.log"
+   }
+}
+filter {
+   grok {
+      match => {"message" => "%{WORD:verb} %{URIPATHPARAM:uri}"}
+   }
+}
+output {
+   file {
+      path => "C:/tpwork/logstash/bin/log/outlog2.log"
+   }
+}
+------------------------------------
+
+АДМИНИСТРИРОВАНИЕ
+
+GET http://localhost:9600/_node?pretty
+
+curl -XGET "http://localhost:9600/_node?pretty"
+
+curl -XGET "http://localhost:9600/_node/os?pretty"
+curl -XGET "http://localhost:9600/_node/pipeline?pretty"
+curl -XGET "http://localhost:9600/_node/jvm?pretty"
+curl -XGET "http://localhost:9600/_node/plugins?pretty"
+
+потоки Java, которые имеют высокую загрузку ЦП и работают дольше,
+чем обычное время выполнения.
+
+
+curl -XGET "http://localhost:9600/_node/hot_threads?pretty"

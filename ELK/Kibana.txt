@@ -1,0 +1,135 @@
+=========================================================
+    KIBANA DEV TOOLS
+=========================================================
+
+SQL         |   Elasticsearch
+База данных |   Индекс
+Таблица     |   Тип
+Ряд         |   Документа
+Колонка     |   Поле
+
+
+PUT /{index}/{type}/{id}
+{
+    "field1": "value1",
+    "field2": "value2"
+
+--------------------------------
+авторизация
+curl -u username:password -XGET 'http://localhost:9200/metricbeat-*/_search?pretty'
+
+--------------------------------
+
+Созадние нового индекса
+PUT
+
+PUT /vehicles/car/1
+{
+    "make"  : "Honda",
+    "Color" : "Black",
+    "HP"    : 250,
+    "price" : 19300.97
+}
+
+curl -XPOST "http://localhost:9200/vehicles/car/1" -H 'Content-Type: application/json' -d'{    "make"  : "Honda",    "Color" : "Black",    "HP"    : 250,    "price" : 19300.97}'
+
+--------------------------------
+
+Обновление существующего ресурса
+POST 
+
+/vehicles/car/1
+{
+    "make"  : "Honda",
+    "Color" : "Black",
+    "HP"    : 250,
+    "price" : 19300.97
+}
+
+curl -XPUT "http://localhost:9200/vehicles/car/1" -H 'Content-Type: application/json' -d'{    "make"  : "Honda",    "Color" : "Black",    "HP"    : 250,    "price" : 19300.97}'
+
+--------------------------------
+
+Получение существующего ресурса
+
+GET /vehicles/car/1
+curl -XGET "http://localhost:9200/vehicles/car/1"
+
+Получение структуры индекса
+
+GET /vehicles
+curl -XGET "http://localhost:9200/vehicles"
+
+--------------------------------
+
+Обновление существующего ресурса
+
+POST /vehicles/car/1/_update
+{
+    "doc": {
+      "price" :1000.20
+    }
+}
+
+curl -XPOST "http://localhost:9200/vehicles/car/1/_update" -H 'Content-Type: application/json' -d'{    "doc": {      "price" :1000.20    }}'
+
+
+--------------------------------
+
+Удаленеие 
+
+DELETE /vehicles/car/2
+curl -XDELETE "http://localhost:9200/vehicles/car/2"
+
+--------------------------------
+
+АДМИНИСТРИРОВАНИЕ
+
+GET /_cluster/health?pretty
+curl -XGET "http://localhost:9200/_cluster/health?pretty"
+
+информация о ноде
+GET /_nodes/127.0.0.1
+curl -XGet "http://localhost:9200/_nodes/127.0.0.1"
+
+Статистика кластера
+GET /_cluster/stats
+curl -XGET "http://localhost:9200/_cluster/stats"
+
+Статистика узла
+GET /_nodes/stats
+curl -XGET "http://localhost:9200/_nodes/stats"
+
+Ожидающие кластерные задачи
+
+GET /_cluster/pending_tasks
+curl -XGET "http://localhost:9200/_cluster/pending_tasks"
+
+Кластер Reroute
+Э используется для перемещения шарда от одного узла к другому или для отмены любого выделения или выделения любого неназначенного шарда. Например,
+
+POST/_cluster/reroute
+
+Информация о состоянии содержит версию, главный узел, другие узлы, таблицу маршрутизации, метаданные и блоки.
+GET /_cluster/state 10. Elasticsearch — Cluster APIs
+curl -XGET "http://localhost:9200/_cluster/state" -H 'Content-Type: application/json' -d'GET /_cluster/state 10. Elasticsearch — Cluster APIs'
+
+Обновление
+https://coderlessons.com/tutorials/noveishie-tekhnologii/izuchite-uprugii-poisk/migratsiia-mezhdu-versiiami
+
+
+------------------------------
+    TROUBLE
+------------------------------
+
+
+Firstly, try to delete the versioned indices:
+curl -XDELETE http://localhost:9200/.kibana_1
+systemctl restart cabana
+
+
+
+sudo systemctl stop kibana
+curl -XDELETE http://localhost:9200/.kibana_1
+curl -XDELETE http://localhost:9200/.kibana_2
+sudo systemctl start kibana
