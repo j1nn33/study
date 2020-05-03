@@ -1,0 +1,22 @@
+---
+# tasks file for basic-soft
+- name: Add EPEL-release
+  yum:
+    name: epel-release
+    state: latest
+
+- name: Upadate Soft
+  yum: 
+    name: '*'
+    state: latest
+   
+- name: Basic soft
+  yum: 
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - mc
+    - wget
+    - curl
+    - htop
+    

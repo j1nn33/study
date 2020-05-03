@@ -1,0 +1,35 @@
+---
+# tasks file for web
+- name: Install Web-server
+  yum: 
+    name: nginx
+    state: latest
+        
+- name: Web-server is enabled
+  systemd: 
+    name: nginx.service 
+    enabled: yes
+
+- name: Create Web-server dir 
+  file:
+    path: /var/www/html/default
+    state: directory
+    owner: nginx
+    group: nginx
+    mode: '755'
+
+- name: copy web site
+  template:
+    src: "index.j2"
+    dest: "/var/www/html/default/index.html"        
+  
+- name: copy nginx config
+  copy:
+    src: "nginx.conf"
+    dest: "/etc/nginx/nginx.conf"
+  notify: restart nginx
+
+
+
+   
+   

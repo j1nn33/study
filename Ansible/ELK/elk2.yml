@@ -1,0 +1,114 @@
+---
+- name: Install ELK on server
+  hosts: elk
+  become: yes
+  
+  vars:
+    source_dir: ./source 
+    source_dir_1: ./file
+    destin_dir: /root/tmp
+    destin_dir_repo: /etc/yum.repos.d
+
+  tasks:
+ 
+#    - name: Create TEMP dir 
+#      file:
+#        path: /root/tmp
+#        state: directory
+#    
+#    - name: Copy jre to Node
+#    - name: Copy logstash to Node
+#      copy: src="{{ source_dir }}/logstash-7.6.2.rpm"             dest="{{ destin_dir }}/logstash-7.6.2.rpm"
+#    
+#    - name: Copy kibana to Node
+#      copy: src="{{ source_dir }}/kibana-7.6.2-x86_64.rpm"        dest="{{ destin_dir }}/kibana-7.6.2-x86_64.rpm"
+#      
+#    - name: Copy elasticsearch to Node
+#      copy: src="{{ source_dir }}/elasticsearch-7.6.2-x86_64.rpm" dest="{{ destin_dir }}/elasticsearch-7.6.2-x86_64.rpm"
+#     
+#    - name: Install JRE package
+#      yum: 
+#        name: "{{ destin_dir }}/jre-8u241-linux-x64.rpm" 
+#        state: present
+#    
+#    - name: Import repository keys
+#      rpm_key: 
+#         state: present
+#         key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+#        
+#    
+#    - name: Copy repo  
+#      copy: src="{{ source_dir }}/elasticsearch.repo" dest="{{ destin_dir_repo }}/elasticsearch.repo"elasticsearch-7.6.2-x86_64.rpm
+#      copy: src="{{ source_dir }}/kibana.repo" dest="{{ destin_dir_repo }}/kibana.repo"
+#        
+#    - name: Upadate Soft
+#      yum: name='*' state=latest
+#    
+#    
+#    - name: mc install
+#      yum: 
+#        name: mc
+#        state: latest
+#    
+#    - name: wget install
+#      yum: 
+#        name: wget
+#        state: latest
+#
+#    - name: curl install
+#      yum: 
+#        name: curl
+#        state: latest        
+#    
+#     
+#    - name: Install elasticsearch package
+#      yum: 
+#        name: "{{ destin_dir }}/elasticsearch-7.6.2-x86_64.rpm" 
+#        state: present
+#
+#    - name: Install kibana-7.6.2-x86_64.rpm package
+#      yum: 
+#        name: "{{ destin_dir }}/kibana-7.6.2-x86_64.rpm" 
+#        state: present
+#
+#    - name: Install logstash-7.6.2.rpm package
+#      yum: 
+#        name: "{{ destin_dir }}/logstash-7.6.2.rpm" 
+#        state: present
+#    
+#    - name: disable default elasticsearch config
+#      file:
+#        state: absent
+#        path: /etc/elasticsearch/elasticsearch.yml
+#
+#    - name: disable default kibana config
+#      file:
+#        state: absent
+#        path: /etc/kibana/kibana.yml
+#
+    - name: Config elasticsearch
+      template: src={{ source_dir_1 }}/elasticsearch.j2 dest={{ destin_dir }}/elasticsearch.yml
+      
+    
+    - name: Config kibana
+      template: src={{ source_dir_1 }}/kibana.j2 dest={{ destin_dir }}/kibana.yml
+#    
+#    - name: elasticsearch service is running & enabled
+#      systemd: 
+#        name: elasticsearch.service 
+#        enabled: yes
+#
+#    - name:  kibana service is running & enabled
+#      systemd: 
+#        name: kibana.service 
+#        enabled: yes
+#
+#    - name: service logstash enabled
+#      systemd: 
+#        name: logstash.service
+#        state: started 
+#     
+      
+    
+    
+    

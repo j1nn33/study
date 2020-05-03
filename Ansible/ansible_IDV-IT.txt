@@ -1,0 +1,342 @@
+ansible 2.9.6
+
+
+раскладка ключей по серверам
+
+ssh-keygen && for host in $(cat hosts.txt); do ssh-copy-id $host; done
+
+ssh-keygen && for host in $(cat hosts.txt); do ssh-copy-id $host && chmod 700  ~/.ssh && chmod 600 ~/.ssh/*; done
+
+
+
+/project/
+
+hosts.txt
+-----------------------
+10.0.0.1
+10.0.0.2
+
+[dev_APP]     
+app_dev  ansible_host=10.0.0.3
+
+[dev_APP:vars]
+ansible_user=app
+
+
+[dev_DB]
+sql_dev  ansible_host=10.0.0.4
+
+[dev_ALL:children]
+dev_APP
+dev_DB
+
+[prod]
+app_prod  ansible_host=10.10.0.3
+sql_prod  ansible_host=10.10.0.4
+
+
+------------------------------------
+ansible-inventory --list
+ansible -i hosts.txt all -m ping
+ 
+ansible.cfg
+------------------------------
+[defaults]
+host_key_checking = false
+inventory = ./hosts.txt
+pipelining = True
+
+------------------------------
+./group_vars/dev_APP
+---
+ansible_user : app
+
+ 
+
+------------------------------ 
+
+Ad-Hoc
+
+ansible -i hosts.txt all -m ping
+
+Посмотреть инфу
+ansible -i hosts.txt all -m setup
+
+запустить shell
+ansible all -m shell -a "ls -a /etc | grep group"
+
+копирования и удаление файла с локального на удаленный хост
+ansible all -m copy -a "src=./file.text dest=/home/dir mode=777" - b
+ansible all -m copy -a "path=/home/dir state=absetnt" -b     
+
+установка  remove пакета
+ansible all -m yum -a "name=mc state=installed" -b
+ansible all -m yum -a "name=mc state=remove" -b
+
+-----------------------------------
+playbook-1.yml
+---
+- name: Test task
+  hosts: all
+  become : yes
+
+  vars:
+    source_file: ./dir/file.txt
+    destin_file: /var/tmp
+    message: "hello world"
+
+  tasks:
+  - name: ping my server
+    ping:
+   
+  - name: insatll apache
+    yum: name=httpd state=latest
+  
+  - name: Copy file
+    copy: src={{ source_file }} dest = {{ destin_file }} mode=0555
+    notify: restart apache
+  
+  - name: start webservice
+    service: name=httpd state=started enabled=yes
+
+  - debug:
+      msg: "debug message: {{ message }} "
+
+  - shell: uptime
+    register: results
+
+  - debug:
+      var: results.stdout
+
+
+
+  handlers:
+  - name: restart apache
+    service: name=httpd state=restart
+
+-------------------------------------------
+УСЛОВИЯ
+
+---
+- name: Test task
+  hosts : all
+  become : yes
+
+  vars:
+      message: hello world
+      message1: "hello1 world"
+  tasks:
+  - name: ping my server
+    ping:
+
+  #- name: insatll mc
+  #  yum: name=mc state=latest
+
+
+  - debug:
+      msg: debug message {{ message }}
+
+  - shell: uptime
+    register: results
+
+  - debug:
+      var: results.stdout
+
+  - debug: msg={{ ansible_os_family }}
+
+  - name: CASE BLOCK
+    block:
+      - debug:
+         msg: 'I execute normally'
+    when: ansible_facts['distribution'] == 'CentOS'  #ansible_os_family == "RedHat"
+
+  - name: Check OS family
+    debug: msg="This is my OS"
+    when: ansible_os_family == "RedHat"
+
+  - set_fact: package_name=httpd
+
+
+# ====== BLOCK ======
+- name: Install, configure, and start Apache
+     block:
+       - name: install httpd and memcached
+         yum:
+           name:
+           - httpd
+           - memcached
+           state: present
+
+       - name: apply the foo config template
+         template:
+           src: templates/src.j2
+           dest: /etc/foo.conf
+       - name: start service bar and enable it
+         service:
+           name: bar
+           state: started
+           enabled: True
+     when: ansible_facts['distribution'] == 'CentOS'
+=================================
+LOOPS
+
+---
+- name: LOOPS TEST
+  hosts: all
+  become: yes
+
+  tasks:
+  - name: Example
+    debug: msg="Helle {{ item }}"
+    loop:
+       - "one"
+       - "two"
+       - "3"
+
+  - name: install pack
+    yum:
+       name: "{{ item }}"
+       state: latest
+    loop:
+       - wget
+       - mc
+       - curl
+--------------------------------
+==================================
+    ШАБЛОНы
+==================================
+Jinja
+смотрим перемнные  
+ansible all -m setup
+
+ пример заменяем файл index.html на index.j2
+
+ index.j2
+ ------------------------------
+<HTML>
+<body>
+
+server name is {{ ansible_hostname }}
+
+</boody>
+</HTML>
+-------------------------------
+
+идем в playbook
+-------------------
+
+- name: Generate Index.html 
+  template: src= {{ destin_file }}/index.j2 dest = {{ destin_file }}/index.html mode=0555
+  notify:
+    - restart Apache 
+
+==================================
+    ROLES
+==================================
+ansible-galaxy init name-role
+-----------------------
+---
+- name: Test task
+  hosts : all
+  become : yes
+
+  roles:
+    - name-role
+-----------------------
+==================================
+    Extra vars имеют высший приоритет
+==================================
+
+ansible-playbook name-playbook.yml --extra-var "MYHOSTS=ALL"
+-----------------------
+---
+- name: Test task
+  hosts : "{{ MYHOSTS }}"
+  become : yes
+
+  roles:
+    - name-role
+-----------------------
+==================================
+   INCLUDE
+==================================
+1 создаем файля <name_include>.yml
+2 помещаем в них таски 
+3 в основном файе
+
+-----------------------
+---
+- name: Test task
+  hosts : "{{ MYHOSTS }}"
+  become : yes
+
+tasks:
+- name: task from INCLUDE
+  include: <name_include>.yml
+-----------------------
+
+====================================
+делегирование и перенаправлеине
+====================================
+-----------------------
+---
+- name: Test task
+  hosts : "{{ MYHOSTS }}"
+  become : yes
+
+tasks:
+- name: Записать вывод команды в файл к себе на сервер
+  shell: echo server {{ inventory_hostname }} >> /home/log.txt
+  delegate_to: 127.0.0.1
+
+- name: сделать только на host3
+  pass
+  delegate_to: host3
+# reboot server и продолить после (поклюяиться и начать что либо делать)
+- name: Reboot my servers
+  shell: sleep 3 && reboot now
+  async: 1
+  poll: 0
+
+- name: wait till my server will comme up online
+  wait_for:
+      host : "{{ inventory_hostname }}"
+      state: started
+      delay: 5
+      timeout: 120
+
+delegate_to: 127.0.0.1 
+
+====================================
+ERRORS
+====================================
+---
+- name: Test task
+  hosts : "{{ MYHOSTS }}"
+  any_errors_fatal : true   # любая ошибка завершает playbook 
+  become : yes
+  
+  tasks:
+  - name: ингноритровать ошибку в задании
+    yum: name = treeeeee state=latest
+    ignore_errors: yes
+
+- name: Контролировать выполнение  сохрание результа в results
+  shell: ls -la /etc/
+  register: results
+  # выкинуть faild когда слово World встречается  results.stdou
+  failed_when: "'World' in results.stdout"
+# rc = 0 все успешно rc = 1 ошибка
+  
+   failed_when: results.rc != 0
+
+- debug:
+    var: results
+
+
+
+
+
+
+
+-----------------------

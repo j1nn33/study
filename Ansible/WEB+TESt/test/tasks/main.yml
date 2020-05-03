@@ -1,0 +1,30 @@
+---
+# tasks file for test
+- name: Control index.html is exixist
+  shell: ls -l /var/www/html/default
+  register: results
+  # выкинуть faild когда слово index.html не встречается  results.stdou
+  failed_when: "'index.html' not in results.stdout"
+  # rc = 0 все успешно rc = 1 ошибка
+  
+  #failed_when: results.rc != 0
+#- debug:
+#    var: results
+
+- name: Control nginx is up
+  shell: systemctl status nginx
+  register: results
+  # выкинуть faild когда слово Active: active (running) не встречается  results.stdou
+  failed_when: "'Active: active (running)' not in results.stdout"
+  # rc = 0 все успешно rc = 1 ошибка
+  
+  #failed_when: results.rc != 0
+#- debug:
+#    var: results
+    
+- name: Control site is work
+  shell: curl -XGET -i http://localhost
+  register: results
+  # выкинуть faild когда слово HTTP/1.1 200 OK не встречается  results.stdou
+  failed_when: "'HTTP/1.1 200 OK' not in results.stdout"
+  
