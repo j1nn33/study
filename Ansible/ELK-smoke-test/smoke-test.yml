@@ -1,0 +1,9 @@
+---
+- name: POST-INSTALL TEST ELK 
+  hosts: all
+  become: yes
+  
+  roles:
+#    - basic-soft
+#    - web
+    - test

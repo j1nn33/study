@@ -1,0 +1,96 @@
+---
+########     CONTROL CONFIG FILE    ####
+
+- debug:
+    msg: 'CONTROL CONFIG FILE'
+
+- name: Control NGINX config is exixist
+  shell: ls -l /etc/nginx
+  register: results
+  failed_when: "'nginx.conf' not in results.stdout"
+
+- name: Control ELASTICSEARCH config is exist
+  shell: ls -l /etc/elasticsearch
+  register: results
+  failed_when: "'elasticsearch.yml' not in results.stdout"
+
+- name: Control KIBANA config is exist
+  shell: ls -l /etc/kibana
+  register: results
+  failed_when: "'kibana.yml' not in results.stdout"
+
+- name: Control LOGATASH config is exist
+  shell: ls -l /etc/logstash
+  register: results
+  failed_when: "'logstash.yml' not in results.stdout"
+
+##########################################
+
+# CONTROL APPLICATION 
+- debug:
+    msg: 'CONTROL APPLICATION'
+
+########    JAVA       ##################
+
+- name: Control JAVA verion 
+  shell: java -version
+  register: results
+  failed_when: "'java version' not in results.stderr"
+ 
+#####    ELASTICSEARCH    #############
+
+- name: Control service ELASTICSEARCH is running
+  shell: systemctl status elasticsearch.service
+  register: results
+  failed_when: "'Active: active (running)' not in results.stdout"
+
+- name: Control ELASTICSEARCH PORT is open
+  shell: netstat -tulnp | grep 9200
+  register: results
+  failed_when: "'127.0.0.1:9200' not in results.stdout"
+
+- name: Control ELASTICSEARCH is work from localhost
+  shell: curl -XGET -i http://localhost:9200
+  register: results
+  failed_when: "'HTTP/1.1 200 OK' not in results.stdout"
+
+  #####   KIBANA    ##################
+
+- name: Control service KIBANA is running
+  shell: systemctl status kibana.service
+  register: results
+  failed_when: "'Active: active (running)' not in results.stdout"
+
+- name: Control KIBANA PORT is open
+  shell: netstat -tulnp | grep 5601
+  register: results
+  failed_when: "':5601' not in results.stdout"
+
+  ######    NGINX      ###################
+
+- name: Control service NGINX is running
+  shell: systemctl status nginx.service
+  register: results
+  failed_when: "'Active: active (running)' not in results.stdout"
+
+- name: Control site is work from localhost
+  shell: curl -XGET -i http://localhost/
+  register: results
+  failed_when: "'HTTP/1.1 401 Unauthorized' not in results.stdout"
+  
+  ######    LOGSTASH      ###################
+  
+- name: Control service LOGSTASH is running
+  shell: systemctl status logstash.service
+  register: results
+  failed_when: "'Active: active (running)' not in results.stdout"
+
+   ######    CLUSTER HEALTH    ##############
+   
+- name: Control CLUSTER HEALTH RED
+  shell: curl -XGET 'http://localhost:9200/_cluster/health?pretty' | grep status
+  register: results
+  failed_when: "'red' in results.stdout"
+  
+#- debug:
+#    var: results
