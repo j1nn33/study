@@ -94,3 +94,53 @@
   
 #- debug:
 #    var: results
+
+
+
+#   ######     CONTROL WORK ELASTICSEARCH  ###
+
+- name: Copy scrip 'test_elastic_index.sh'
+  copy:
+    src: test_elastic_index.sh
+    dest: /root/test_elastic_index.sh
+    mode: u+rwx,g+rwx,o+rwx
+    
+
+- name: Create test index 'app-test'
+  shell: sh test_elastic_index.sh | grep successful
+  register: results
+  failed_when: "'1' not in results.stdout"
+  
+- name: Sleep for 5 seconds and continue with play
+  wait_for:
+    timeout: 5
+  delegate_to: localhost
+  
+- name: Contol index 'app-test' is exist
+  shell: curl 'http://localhost:9200/_cat/indices?v' | grep app-test
+  register: results
+  failed_when: "'app-test' not in results.stdout"
+  
+- name: Contol search 'field is exist'
+  shell: curl -XGET "http://localhost:9200/app-test/_search?q=name:test" | grep  name | tail -c20
+  register: results
+  failed_when: "'test-user' not in results.stdout" 
+    
+- name: Contol search 'field is not exist'
+  shell: curl -XGET "http://localhost:9200/app-test/_search?q=name:test1" | grep name | tail -c20
+  register: results
+  failed_when: "'test-user' in results.stdout" 
+ 
+- name: Delete tets index 'app-test'
+  shell: curl -XDELETE 'http://localhost:9200/app-test?pretty'
+  register: results
+  failed_when: "'true' not in results.stdout"
+  
+- name: Contol index 'app-test' is not exist
+  shell: curl 'http://localhost:9200/_cat/indices?v' | grep app-test
+  register: results
+  failed_when: "'app-test' in results.stdout"
+
+  
+#- debug:
+#    var: results
