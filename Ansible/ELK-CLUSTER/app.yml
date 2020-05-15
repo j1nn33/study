@@ -1,0 +1,77 @@
+---
+- name: basic command
+  hosts: all
+  become: yes
+  any_errors_fatal : false
+  ignore_errors: yes
+  
+  tasks:  
+  
+# ELASTICSEARCH
+  - name: Control ELASTICSEARCH is active on node
+    shell: systemctl status elasticsearch | grep Active
+    register: results
+  - debug:
+      var: results.stdout
+    
+  - name: Control ELASTICSEARCH proces is open
+    shell: ps -fU elasticsearch
+    register: results
+  
+# KIBANA
+  - name: Control KIBANA is active on node
+    shell: systemctl status kibana | grep Active
+    register: results
+  - debug:
+      var: results.stdout
+#    
+  - name: Control KIBANA proces is open
+    shell: ps -fU kibana
+    register: results        
+ 
+# LOGSTAHSH
+  - name: Control LOGSTAHSH is active on node
+    shell: systemctl status logstash | grep Active
+    register: results
+  - debug:
+      var: results.stdout
+    
+  - name: Control LOGSTAHSH proces is open
+    shell: ps -fU logstash 
+    register: results
+
+# ELASTICSEARCH START
+  - name: started ELASTICSEARCH on node
+    systemd: 
+      state: started
+      name: elasticsearch
+    
+  - name: Control ELASTICSEARCH proces is open
+    shell: ps -fU elasticsearch
+    register: results
+  
+# KIBANA
+  - name: started KIBANA on node
+    systemd: 
+      state: started
+      name: kibana
+#    
+  - name: Control KIBANA proces is open
+    shell: ps -fU kibana
+    register: results        
+ 
+# LOGSTAHSH
+  - name: stop LOGSTAHSH on node
+    systemd: 
+      state: stopped
+      name: logstash
+    
+  - name: Control LOGSTAHSH proces is open
+    shell: ps -fU logstash 
+    register: results
+  
+  
+#- name: Sleep for 1 seconds and continue with play
+#  wait_for:
+#    timeout: 1
+#  delegate_to: localhost

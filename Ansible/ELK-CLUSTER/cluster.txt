@@ -1,0 +1,18 @@
+# мониторинг
+
+curl -XGET "http://localhost:9200/_cluster/health?pretty"
+curl -XGET "http://elk-2:9200/_cluster/health?pretty"
+
+
+
+# ELASTIKSEARCH
+ps -af | grep elasticsearch
+netstat -tulnp | grep 9200
+
+# KIBANA
+etstat -tulnp | grep 5601
+
+# command
+
+
+# ansible
