@@ -1,0 +1,161 @@
+============================================================
+	Cluster Health:
+
+curl -XGET http://elasticsearch:9200/_cluster/health?pretty
+
+
+	Cluster Health: Index Level:
+
+curl -XGET 'http://elasticsearch:9200/_cluster/health?level=indices&pretty'
+
+	
+	Cluster Health: Shard Level:
+
+curl -XGET 'http://elasticsearch:9200/_cluster/health?level=shards&pretty'
+
+
+	Nodes Overview:
+
+curl -XGET http://elasticsearch:9200/_cat/nodes?v
+
+
+	Who is Master:
+
+curl -XGET http://elasticsearch:9200/_cat/master?v
+
+
+	Indices Overview (View all your indices in your cluster):
+
+curl -XGET http://elasticsearch:9200/_cat/indices?v
+
+	View one index:
+curl -XGET 'http://127.0.0.1:9200/_cat/indices/<index-name>?v
+	View a range of indices:
+curl -XGET 'https://http://127.0.0.1:9200/_cat/indices/<index-name>*?v'
+
+	
+	How Many Documents in the ES Cluster (Across all Indices):
+
+curl -XGET http://elasticsearch:9200/_cat/count?v
+
+
+	Shards Info per Index:
+
+curl -XGET http://elasticsearch:9200/_cat/shards/<index-name>?v
+
+
+	Shard Allocation per Node
+
+curl -XGET http://elasticsearch:9200/_cat/allocation?v
+
+
+	Cluster Maintenance:
+	Decomission Node from Shard Allocation
+
+	This will move shards from the mentioned node
+
+$ curl -XPUT 'localhost:9200/_cluster/settings?pretty' -d'
+{
+  "transient" : {
+    "cluster.routing.allocation.exclude._ip" : "10.0.0.1"
+  }
+}
+'
+
+	See Recovering from Node Failure:
+
+curl -XGET http://127.0.0.1:9200/_cat/recovery?v
+
+
+	Pending Tasks:
+
+curl -XGET http://127.0.0.1:9200/_cat/pending_tasks?v
+
+
+	Clear Cache:
+
+curl -XGET http://127.0.0.1:9200/_cache/clear
+
+	
+	Settings
+	Cluster Settings
+
+
+	Search Timeout:
+	Global Search Timeout, that applies to all search queries across the entire cluster -> 
+	search.default_search_timeout:
+
+PUT /_cluster/settings
+{
+    "persistent" : {
+        "search.default_search_timeout" : "50"
+    }
+}
+
+------------------------------------------
+
+	Index Info (Shards, Replicas, Allocation):
+Create Index:
+
+$ curl -XPUT http://elasticsearch:9200/my2ndindex
+
+To verify the behavior:
+
+curl -XGET -u http://elasticsearch:9200/_cat/indices?v
+
+$ curl -XGET http://elasticsearch:9200/_cat/shards/my2ndindex?v
+
+Increase the Replica Shard Number:
+Let's change the replica shard number to 2, meaning each primary shard will have 2 replica shards:
+
+$ curl -XPUT http://elasticsearch:9200/my2ndindex/_settings -d '{"settings": {"index": {"number_of_replicas": 2}}}'
+
+$ curl -XGET http://elasticsearch:9200/_cat/shards/my2ndindex?v
+
+----------------------------------------------------
+Snapshots
+
+https://sysadmins.co.za/snapshot-and-restore-indices-on-elasticsearch/
+
+
+List the Snapshot Repositories:
+
+$ curl -XGET 'http://127.0.0.1:9200/_cat/repositories?v'
+
+$ curl -XGET 'http://elasticsearch:9200/_snapshot/bar-backups?pretty'
+
+Elasticsearch Snapshots
+Create a Snapshot named mysnapshot_ruan-test-2018-05-24_1 of the index: ruan-test-2018-05-24 and return the exit when the snapshot is done:
+
+$ curl -XPUT -H 'Content-Type: application/json' \
+  'http://elasticsearch:9200/_snapshot/bar-backups/mysnapshot_ruan-test-2018-05-24_1?wait_for_completion=true&pretty=true' -d '
+{
+	"indices": "ruan-test-2018-05-24", 
+	"ignore_unavailable": true, 
+	"include_global_state": false
+}
+'
+
+
+Verify the Snapshot:
+
+$ curl -XGET 'http://elasticsearch:9200/_cat/snapshots/bar-backups?v&s=id'
+
+Get the Metadata of the Snapshot:
+
+$ curl -XGET 'http://elasticsearch:9200/_snapshot/bar-backups/mysnapshot_ruan-test-2018-05-24_1?pretty'
+
+Execute the Restore:
+
+$ curl -XPOST -H 'Content-Type: application/json' 'http://elasticsearch:9200/_snapshot/bar-backups/mysnapshot_ruan-test-2018-05-24_1/_restore -d '
+{
+  "indices": "ruan-test-2018-05-24",
+  "ignore_unavailable": true,
+  "include_global_state": false,
+  "rename_pattern": "index_(.+)",
+  "rename_replacement": "restored_index_$1"
+}
+'
+or leave out the body for normal restore
+
+
