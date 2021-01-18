@@ -1,0 +1,4 @@
+dot		name	alias	cio		ip		satge	data
+*	 server1	server1		ci01342424		10.120.120.120	PROD	1 января 2020 16:47
+*	 unknow1	server2		ci01342424		10.120.120.120	PROD	1 января 2020 16:47
+*	 unknow2	server5		ci01342424		10.120.120.120	PROD	1 января 2020 16:47
