@@ -1,0 +1,10 @@
+---
+- name: PREINSTALL
+  hosts: '{{ target }}'
+  become: yes
+ 
+  roles:
+    - role: elastic
+      tags: ELASTIC
+   # - role: kibana
+   #   tags: KIBANA

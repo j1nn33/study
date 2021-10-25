@@ -1,0 +1,1 @@
+ansible-playbook  --tags ELASTIC preinstall.yml --extra-vars "target=ELASTIC"

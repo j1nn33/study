@@ -1,0 +1,32 @@
+---
+# ADD_GROUP 
+  - name: ADD_GROUP
+    group:
+      name: '{{ item }}'
+      state: present
+    with_items: 
+      - 'elastic' 
+  
+# USER & GROUP
+  - name: USER_&_GROUP
+    user:
+      name: '{{ item.name }}'
+      state: present
+      groups: '{{ item.groups }}'
+    with_items: 
+      - { name: 'elastic', groups: 'elastic' }
+      
+                 
+    
+# DIRECTORY ACL
+  - name: DIRECTORY_ACL 
+    file:
+      path: '{{ item.path }}'
+      state: directory
+      group: '{{ item.groups }}'
+      owner: '{{ item.owner }}'
+      mode: '0750'
+    with_items: 
+      - { path: '/opt/elastic', groups: 'elastic', owner: 'elastic' }
+      - { path: '/var/log/elastic', groups: 'elastic', owner: 'elastic' }
+        
