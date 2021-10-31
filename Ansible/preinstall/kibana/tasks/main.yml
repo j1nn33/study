@@ -1,22 +1,33 @@
 ---
+# tasks file for kibana
+
 # ADD_GROUP 
   - name: ADD_GROUP
     group:
       name: '{{ item }}'
       state: present
     with_items: 
-      - 'elastic' 
+      - '{{ group }}' 
   
+  #- debug: 
+  #    var: group
+
+  #- debug: 
+  #    var: user_group   
+      
+  #- debug: 
+  #    var: directory_acl     
+      
 # USER & GROUP
   - name: USER_&_GROUP
     user:
-      name: '{{ item.name }}'
+      name: '{{ item.user }}'
       state: present
-      groups: '{{ item.groups }}'
+      groups: '{{ item.group }}'
     with_items: 
-      - { name: 'elastic', groups: 'elastic' }
-      
-                 
+      - '{{ user_group }}'
+
+   
     
 # DIRECTORY ACL
   - name: DIRECTORY_ACL 
@@ -27,6 +38,5 @@
       owner: '{{ item.owner }}'
       mode: '0755'
     with_items: 
-      - { path: '/opt/elastic', groups: 'elastic', owner: 'elastic' }
-      - { path: '/var/log/elastic', groups: 'elastic', owner: 'elastic' }
-        
+      - '{{ directory_acl }}'
+          

@@ -6,5 +6,5 @@
   roles:
     - role: elastic
       tags: ELASTIC
-   # - role: kibana
-   #   tags: KIBANA
+    - role: kibana
+      tags: KIBANA
