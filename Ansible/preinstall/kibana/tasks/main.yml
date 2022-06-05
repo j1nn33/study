@@ -1,0 +1,42 @@
+---
+# tasks file for kibana
+
+# ADD_GROUP 
+  - name: ADD_GROUP
+    group:
+      name: '{{ item }}'
+      state: present
+    with_items: 
+      - '{{ group }}' 
+  
+  #- debug: 
+  #    var: group
+
+  #- debug: 
+  #    var: user_group   
+      
+  #- debug: 
+  #    var: directory_acl     
+      
+# USER & GROUP
+  - name: USER_&_GROUP
+    user:
+      name: '{{ item.user }}'
+      state: present
+      groups: '{{ item.group }}'
+    with_items: 
+      - '{{ user_group }}'
+
+   
+    
+# DIRECTORY ACL
+  - name: DIRECTORY_ACL 
+    file:
+      path: '{{ item.path }}'
+      state: directory
+      group: '{{ item.groups }}'
+      owner: '{{ item.owner }}'
+      mode: '0755'
+    with_items: 
+      - '{{ directory_acl }}'
+          

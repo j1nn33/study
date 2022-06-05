@@ -1,0 +1,20 @@
+---
+# vars file for kibana
+
+# GROUP 
+group: kibana
+
+# USER & GROUP
+user_group:
+  #user_group_item1:
+  - user: kibana
+    group: kibana
+
+# Directory_ACL
+directory_acl:
+  - path: '/opt/kibana'
+    groups: 'kibana'
+    owner: 'kibana' 
+  - path: '/var/log/kibana'
+    groups: 'kibana'
+    owner: 'kibana'

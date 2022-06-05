@@ -1,0 +1,14 @@
+# CREATE NEW ROLE 
+# 1
+ansible-galaxy init <name_role>
+# 2
+# add preinstall.yml 
+
+  role: <name_role>
+  tags: <name_role>
+# 3
+# add hosts /inventory/hosts.txt
+# 
+ansible-playbook  --tags ELASTIC preinstall.yml --extra-vars "target=ELASTIC"
+#
+ansible-playbook  --tags KIBANA preinstall.yml --extra-vars "target=KIBANA"s
