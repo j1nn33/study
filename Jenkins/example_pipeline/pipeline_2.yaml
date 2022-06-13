@@ -1,0 +1,36 @@
+pipeline {
+    agent {
+        label 'docker'
+        
+    }
+    environment {
+      PROJECT_NAME = "ENV_Project_name"
+      OWNER_NAME   = "ENV_OWNER_NAME"
+    }
+
+    stages {
+        stage('stage-1') {
+            steps {
+                echo 'Hello stage-1'
+            }
+        }
+        stage('stage-2') {
+            steps {
+                echo 'Hello stage-2'
+                sh 'ls -ln /home'
+                echo "${PROJECT_NAME}"
+                echo "Owner is ${OWNER_NAME}"
+            }
+        }
+        stage('stage-3') {
+            steps {
+                echo 'Hello stage-3'
+                sh '''
+                uname -a
+                cat /etc/passwd
+                '''
+                sh "python --version"
+            }
+        }
+    }
+}

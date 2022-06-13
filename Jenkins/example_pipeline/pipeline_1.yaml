@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('stage-1') {
+            steps {
+                echo 'Hello stage-1'
+            }
+        }
+        stage('stage-2') {
+            steps {
+                echo 'Hello stage-2'
+                sh 'ls -ln /home'
+            }
+        }
+        stage('stage-3') {
+            steps {
+                echo 'Hello stage-3'
+                sh '''
+                uname -a
+                cat /etc/passwd
+                '''
+            }
+        }
+    }
+}

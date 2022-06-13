@@ -1,6 +1,6 @@
 # simple test message 
 - name: "Test playbook run"
-  hosts: localhost
+  hosts: all
   tasks:
   - name: "OUT INFORMATION"
     ansible.builtin.debug:
