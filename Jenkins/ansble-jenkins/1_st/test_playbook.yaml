@@ -6,7 +6,8 @@
     ansible.builtin.debug:
       msg: "Test debug message"
   - name: Run a shell 'ip -br a show' command and register its output as a variable
-    shell: /sbin/ip -br a show | grep UP
+    #shell: /sbin/ip -br a show | grep UP
+    shell: ip -br a show | grep UP
     #shell : whoamin
     register: result
   - name: "out 'ip -br a show | grep UP"
