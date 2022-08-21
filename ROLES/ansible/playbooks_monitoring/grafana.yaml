@@ -1,0 +1,5 @@
+- hosts: grafana
+  vars:
+    - grafana_version_role: "1"
+  roles:
+    - grafana/{{ grafana_version_role }}   

@@ -1,0 +1,17 @@
+---
+# tasks file for v1
+# запуск тестовой задачи которая выводит название ОС целевой машины
+- name: Debug
+  debug: msg={{ ansible_os_family }}
+
+# установка состоит из 3 этапов (подготовка, установка Prometheus, установка Alertmanager)
+# будет разложена по 3 файлам (prepare.yml install_prometheus.yml install_alertmanager.yml) не считая main.yml
+
+- name: Prepare For Install Prometheus
+  include_tasks: tasks/prepare.yml
+
+- name: Install Prometheus
+  include_tasks: tasks/install_prometheus.yml
+
+- name: Install Alertmanager
+  include_tasks: tasks/install_alertmanager.yml
