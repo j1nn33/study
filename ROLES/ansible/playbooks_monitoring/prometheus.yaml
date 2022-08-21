@@ -5,4 +5,5 @@
     - prometheus_version_role: "v1"
   roles:
     # относитьльный от ./study путь до роли 
-    - ./ROLE/ansible/roles/prometheus/{{ prometheus_version_role }}
+    #- ./ROLE/ansible/roles/prometheus/{{ prometheus_version_role }}
+    - ./ROLE/ansible/roles/prometheus/v1
