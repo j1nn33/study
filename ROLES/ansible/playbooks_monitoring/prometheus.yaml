@@ -6,4 +6,4 @@
   roles:
     # относитьльный от ./study путь до роли 
     #- ./ROLE/ansible/roles/prometheus/{{ prometheus_version_role }}
-    - ./ROLE/ansible/roles/prometheus/v1
+    - /ROLE/ansible/roles/prometheus/v1
