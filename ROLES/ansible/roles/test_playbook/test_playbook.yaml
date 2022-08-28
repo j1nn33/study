@@ -1,0 +1,21 @@
+# simple test message 
+
+- name: "Test playbook run"
+  hosts: localhost
+
+  tasks:
+  - name: "OUT INFORMATION"
+    ansible.builtin.debug:
+      msg: "Test debug message"
+  - name: Run a shell 'ip -br a show' command and register its output as a variable
+    shell: ip -br a show | grep UP
+    register: result
+  - name: "out 'ip -br a show | grep UP"
+    ansible.builtin.debug:
+      msg : "{{ result.stdout }}"
+  - name: Run a shell 'hostname' command and register its output as a variable
+    shell: hostname
+    register: result
+  - name: "out 'hostname'"
+    ansible.builtin.debug:
+      msg : "{{ result.stdout }}"

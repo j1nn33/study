@@ -28,7 +28,7 @@
   vars — файлы с переменными. Имеют высокий приоритет.
   ...
   # запуск команд
-  c
+  
   ansible-playbook playbooks_<role_name>/back.yml -i inventory_<role_name>/dev
   
   ansible-playbook playbooks_monitoring/prometheus.yaml -i inventory_monitoring/dev/hosts.txt   
