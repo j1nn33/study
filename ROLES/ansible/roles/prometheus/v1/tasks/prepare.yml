@@ -11,6 +11,7 @@
 # 9094/tcp - Alertmanager
 # 9100/tcp - http://IP-Address:9100/metrics
 # 9094/udp - Alertmanager
+# 22/tcp   - ssh
 
 - name: Security Settings For RedHat
   block:
