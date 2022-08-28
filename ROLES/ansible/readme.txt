@@ -10,6 +10,10 @@
             |                     |_front.yml
             |                     |_ # например разворачиваем мониторинг (prometeus, grafana, node_exporter)
             |
+            |_roles_______________
+            |                     |_<role_name>
+            |                     |_test_playbook   
+            |
             |__ansible.cfg
             |_readme.md
 
