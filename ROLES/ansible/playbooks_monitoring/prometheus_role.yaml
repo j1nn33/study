@@ -1,0 +1,11 @@
+---
+- name: INSTALL PROMETHEUS SERVER
+  hosts: prometheus
+  vars:
+    # указываем версию раскатки 
+    prometheus_version_role: v1
+  roles:
+    # относитьльный от ../roles/<путь до роли> 
+    # выпрыгиваем из каталога playbooks monitoring 
+    - ../roles/prometheus/{{ prometheus_version_role }}
+    #- ../roles/prometheus/v1

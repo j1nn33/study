@@ -1,9 +1,0 @@
----
-- hosts: prometheus
-  vars:
-    # указываем версию раскатки 
-    prometheus_version_role: v1
-  roles:
-    # относитьльный от ./study путь до роли 
-    #- ./ROLE/ansible/roles/prometheus/{{ prometheus_version_role }}
-    - ./ROLES/ansible/roles/prometheus/v1
