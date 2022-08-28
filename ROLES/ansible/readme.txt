@@ -7,11 +7,12 @@
             |                       |__prod
             |
             |_playbooks_<role_name>_back.yml  # папка с описанием playbooks
-            |                     |_front.yml
-            |                     |_ # например разворачиваем мониторинг (prometeus, grafana, node_exporter)
+            |                     |_front_role.yml
+            |                     |_ # например разворачиваем мониторинг (prometeus_role, grafana_role, node_exporter_role)
+            |                     |_ # окончание _role обязательно  
             |
             |_roles_______________
-            |                     |_<role_name>
+            |                     |_<role_name>  # собраны таски запуска роли
             |                     |_test_playbook   
             |
             |__ansible.cfg

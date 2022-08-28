@@ -14,12 +14,18 @@
 
 - name: Security Settings For RedHat
   block:
+    - name: firewall enabled
+      ansible.builtin.systemd:
+        name: firewalld
+        state: present
+        enabled: yes
+      
     - name: Allow Ports
       firewalld:
         port: "{{ item }}"
         permanent: true
         state: enabled
-      loop: [ '9090/tcp', '9093/tcp', '9094/tcp', '9100/tcp', '9094/udp' ]
+      loop: [ '9090/tcp', '9093/tcp', '9094/tcp', '9100/tcp', '9094/udp', '22/tcp' ]
       notify:
         - firewalld systemd restart
 
@@ -29,7 +35,7 @@
 
     - name: Stop SELinux
       shell: setenforce 0
-      ignore_errors: yes
+      ignore_errors: true
   when:
     ansible_os_family == "RedHat"
 
@@ -44,7 +50,7 @@
         protocol: tcp
         jump: ACCEPT
         destination_port: "{{ item }}"
-      loop: [ '9090', '9093', '9094', '9100' ]
+      loop: [ '9090', '9093', '9094', '9100', '22' ]
 
     - name: Allow UDP Ports
       iptables:
