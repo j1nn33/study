@@ -18,7 +18,7 @@
     - name: firewall enabled
       ansible.builtin.systemd:
         name: firewalld
-        state: present
+        state: started
         enabled: yes
       
     - name: Allow Ports
