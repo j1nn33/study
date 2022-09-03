@@ -39,11 +39,16 @@
   ansible-playbook playbooks_monitoring/prometheus.yaml -i inventory_monitoring/dev/hosts.txt   
   ansible-playbook playbooks_monitoring/prometheus.yaml -i inventory_monitoring/dev/hosts.txt --ask-become-pass 
   # Failed to connect to the host via ssh: Permission denied (publickey,password)
-  ansible-playbook playbooks_monitoring/prometheus.yaml -i inventory_monitoring/dev/hosts.txt -u root --ask-pass
-  ansible-playbook /root/ansible/playbooks_monitoring/prometheus.yaml -i /root/ansible/inventory_monitoring/dev/hosts.txt  --extra-vars "ansible_user=<USERNAME> ansible_password=<PASSWORD>" 
+  #ansible-playbook playbooks_monitoring/prometheus.yaml -i inventory_monitoring/dev/hosts.txt -u root --ask-pass
+  
+  # запуск для конкретного репозитория 
+  cd ./root/repo/study
+  ansible-playbook ./ROLES/ansible/playbooks_monitoring/prometheus_role.yaml -i ./ROLES/ansible/inventory_monitoring/dev/hosts.ini 
+  
+  #ansible-playbook /root/ansible/playbooks_monitoring/prometheus.yaml -i /root/ansible/inventory_monitoring/dev/hosts.txt  --extra-vars "ansible_user=<USERNAME> ansible_password=<PASSWORD>" 
   dry run
-  ansible-playbook playbooks_monitoring/prometheus.yaml -i inventory_monitoring/dev/hosts.txt --check
-
+  #nsible-playbook playbooks_monitoring/prometheus.yaml -i inventory_monitoring/dev/hosts.txt --check
+   
   --list-tasks
   --list-hosts
   --list-tags
