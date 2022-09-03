@@ -28,7 +28,7 @@
         state: enabled
       loop: [ '9090/tcp', '9093/tcp', '9094/tcp', '9100/tcp', '9094/udp', '22/tcp' ]
       notify:
-        - firewalld systemd restart
+        - firewalld restart
 
     - name: Disable SELinux
       selinux:
