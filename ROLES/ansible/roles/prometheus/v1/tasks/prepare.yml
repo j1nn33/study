@@ -65,7 +65,7 @@
     ansible_os_family == "Debian"
 
   handlers:
-  - name: restart firewalld
-    ansible.builtin.service:
-      name: firewalld
-      state: restarted
+    - name: restart firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: restarted
