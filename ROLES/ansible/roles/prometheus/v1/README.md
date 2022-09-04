@@ -7,7 +7,7 @@
   - alertmanager
 
 systemdunit находится 
-./ROLES/ansible/roles/prometheus/templates/prometheus.service
+./ROLES/ansible/roles/prometheus/v1/templates/prometheus.service
 
 Конфигурирование 
 Не задано
