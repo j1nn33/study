@@ -57,7 +57,7 @@
 # ./ROLES/ansible/roles/prometheus/templates/prometheus.service 
 - name: Create File for Prometheus Systemd
   template:
-    src=/v1/templates/prometheus.service
+    src=templates/prometheus.service
     dest=/etc/systemd/system/
   notify:
     - systemd reload
