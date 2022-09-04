@@ -1,0 +1,5 @@
+---
+# tasks file for v1
+# запуск тестовой задачи которая выводит название ОС целевой машины
+- name: Debug
+  debug: msg={{ ansible_os_family }}

@@ -1,0 +1,11 @@
+- hosts: grafana
+  vars:
+    # указываем версию раскатки 
+    - grafana_version_role: "v1"
+  roles:
+    # относитьльный от ../roles/<путь до роли> 
+    # выпрыгиваем из каталога playbooks monitoring 
+    - grafana/{{ grafana_version_role }}   
+
+     
+   

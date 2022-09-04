@@ -20,7 +20,11 @@
 
   # описание установки версии ansible
   # создание новой роли
-  cd ./ansible/role/<role_name>
+  относительно каталога study 
+  cd ./ROLES/ansible/role/
+  mkdir <role_name>
+  cd ./ROLES/ansible/role/<role_name>
+
   ansible-galaxy init <v1>
   ...
   defaults — переменные по умолчанию. У них самый низкий приоритет и их могут легко переопределить переменные в каталоге vars (ниже по списку).
@@ -77,8 +81,10 @@ pipeline {
         }
     }    
 }
+
+
 ---------------------
-#  описание pipeline jenkins для запуска тестового (пароли зашиты в кредах jenkins)
+#  описание pipeline jenkins для запуска prometeus (пароли зашиты в кредах jenkins)
 pipeline {
     agent {
         label 'master'
@@ -97,3 +103,26 @@ pipeline {
         }
     }    
 }
+
+---------------------
+#  описание pipeline jenkins для запуска grafana (пароли зашиты в кредах jenkins)
+pipeline {
+    agent {
+        label 'master'
+    }
+    stages {
+        stage('git') { // download from git
+            steps {
+                git branch: 'master', url: "https://github.com/j1nn33/study.git" // используем встроенный в Jenkins плагин Git для скачивания проекта из бранча main
+            }
+        }
+        
+        stage('execute Ansible') {
+            steps {
+                ansiblePlaybook become: true, colorized: true, credentialsId: 'ssh_cred_for_host', disableHostKeyChecking: true, installation: 'ansible-master', inventory: './ROLES/ansible/inventory_monitoring/dev/hosts.ini', playbook: './ROLES/ansible/playbooks_monitoring/grafana_role.yaml'
+            }    
+        }
+    }    
+}
+
+
