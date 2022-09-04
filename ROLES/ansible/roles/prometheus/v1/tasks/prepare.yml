@@ -29,7 +29,7 @@
       loop: [ '9090/tcp', '9093/tcp', '9094/tcp', '9100/tcp', '9094/udp', '22/tcp' ]
       notify:
         - resatrt firewalld
-
+# handlers see ./ROLES/ansible/roles/prometheus/v1/handlers/main.yml
     - name: Disable SELinux
       selinux:
         state: disabled
@@ -63,9 +63,3 @@
         destination_port: '9094'
   when:
     ansible_os_family == "Debian"
-
-  handlers:
-    - name: restart firewalld
-      ansible.builtin.service:
-        name: firewalld
-        state: restarted
