@@ -1,38 +1,33 @@
-Role Name
-=========
+Роль для развертыванивя prometeus
 
-A brief description of the role goes here.
+./ROLES/ansible/roles/prometheus/v1/vars/main.yml
+описание переменных 
+версии 
+  - prometeus
+  - alertmanager
 
-Requirements
-------------
+systemdunit находится 
+./ROLES/ansible/roles/prometheus/templates/prometheus.service
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Конфигурирование 
+Не задано
+опции —storage.tsdb.retention.time и —storage.tsdb.retention.size. 
+Первая опция говорит, что нужно удалять старые данные старше Х дней, а вторая задает удаление по размеру хранимых данных
 
-Role Variables
---------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+#####################
+Проверка на целевом хосте 
 
-Dependencies
-------------
+Проверка пререквизитов 
+systemctl status firewalld
+firewall-cmd --list-all
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+cat /etc/selinux/config
 
-Example Playbook
-----------------
+Проверим факт запуска:
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+systemctl status prometheus
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
 
-License
--------
+Проверка через веб
 
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).

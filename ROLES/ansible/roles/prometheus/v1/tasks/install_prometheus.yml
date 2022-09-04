@@ -2,3 +2,70 @@
 - name: Print test message 
   ansible.builtin.debug:
     msg: test message in task install_prometheus.yml
+
+# Созадние пользователя prometheus в системе
+- name: Create User prometheus
+  user:
+    name: prometheus
+    create_home: no
+    shell: /bin/false
+# Созадние директорий 
+- name: Create directories for prometheus
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: prometheus
+    group: prometheus
+  loop:
+    - '/tmp/prometheus'
+    - '/etc/prometheus'
+    - '/var/lib/prometheus'
+
+# копирование архива с git и распаковка
+#https://github.com/prometheus/prometheus/releases/download/v2.38.0/prometheus-2.38.0.linux-386.tar.gz
+- name: Download And Unzipped Prometheus
+  unarchive:
+    src: https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz
+    dest: /tmp/prometheus
+    creates: /tmp/prometheus/prometheus-{{ prometheus_version }}.linux-amd64
+    remote_src: yes
+
+#  копирование бинарных файлов (prometheus, promtool) в целевые каталоги 
+#  mode: preserve  означает, что файлу будут предоставлены те же разрешения, что и исходному файлу.
+- name: Copy Bin Files From Unzipped to Prometheus
+  copy: 
+    src: /tmp/prometheus/prometheus-{{ prometheus_version }}.linux-amd64/{{ item }}
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: preserve
+    owner: prometheus
+    group: prometheus
+  loop: [ 'prometheus', 'promtool' ]
+
+#  копирование конфигруационных файлов и каталогов  (prometheus.yml, console_libraries, consoles) в целевые каталоги 
+- name: Copy Conf Files From Unzipped to Prometheus
+  copy: 
+    src: /tmp/prometheus/prometheus-{{ prometheus_version }}.linux-amd64/{{ item }}
+    dest: /etc/prometheus/
+    remote_src: yes
+    mode: preserve
+    owner: prometheus
+    group: prometheus
+  loop: [ 'console_libraries', 'consoles', 'prometheus.yml' ]
+
+# создание systemdunit для сервиса Prometheus
+# ./ROLES/ansible/roles/prometheus/templates/prometheus.service 
+- name: Create File for Prometheus Systemd
+  template:
+    src=templates/prometheus.service
+    dest=/etc/systemd/system/
+  notify:
+    - systemd reload
+
+# запуск сервиса 
+- name: Systemctl Prometheus Start
+  systemd:
+    name: prometheus
+    state: started
+    enabled: yes
+

@@ -1,2 +1,6 @@
 ---
 # vars file for v1
+# переменным  присваиваем версии prometheus и alertmanager
+# https://github.com/prometheus/prometheus/releases
+prometheus_version : 2.38.0
+alertmanager_version : 0.24.0
