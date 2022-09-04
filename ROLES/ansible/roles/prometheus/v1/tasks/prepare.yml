@@ -63,3 +63,9 @@
         destination_port: '9094'
   when:
     ansible_os_family == "Debian"
+
+  handlers:
+    - name: firewalld restart
+      ansible.builtin.service:
+        name: firewalld
+        state: restarted
