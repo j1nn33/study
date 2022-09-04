@@ -1,0 +1,47 @@
+# запуск тестовой задачи которая выводит название task целевой машины
+- name: Print test message 
+  ansible.builtin.debug:
+    msg: test message in task prepare.yml
+
+# Описание основной роли 
+# 3000/tcp - http://Server-IP:3000/
+# 22/tcp   - ssh
+
+- name: Security Settings For RedHat
+  block:
+    - name: firewall enabled
+      ansible.builtin.systemd:
+        name: firewalld
+        state: started
+        enabled: yes
+      
+    - name: Allow Ports
+      firewalld:
+        port: "{{ item }}"
+        permanent: true
+        state: enabled
+      loop: [ '3000/tcp', '22/tcp' ]
+      notify:
+        - restart firewalld
+# handlers see ./ROLES/ansible/roles/grafan/v1/handlers/main.yml
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
+    - name: Stop SELinux
+      shell: setenforce 0
+      ignore_errors: true
+  when:
+    ansible_os_family == "RedHat"
+
+# Настройки безопасностиь для debian не тестировались 
+- name: Security Settings And Install Grafana For Debian
+  block:
+  - name: Allow TCP Ports
+    iptables:
+      chain: INPUT
+      rule_num: '1'
+      action: insert
+      protocol: tcp
+      jump: ACCEPT
+      destination_port: '3000'

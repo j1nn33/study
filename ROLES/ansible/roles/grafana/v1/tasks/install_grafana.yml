@@ -1,0 +1,4 @@
+# запуск тестовой задачи которая выводит название task целевой машины
+- name: Print test message 
+  ansible.builtin.debug:
+    msg: test message in task install_grafana.yml
