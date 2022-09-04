@@ -40,7 +40,7 @@
   when:
     ansible_os_family == "RedHat"
 
-# не тестировалас
+# не тестировалась
 - name: Security Settings For Debian
   block:
     - name: Allow TCP Ports
