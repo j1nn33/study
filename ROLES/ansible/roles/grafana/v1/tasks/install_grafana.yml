@@ -2,3 +2,50 @@
 - name: Print test message 
   ansible.builtin.debug:
     msg: test message in task install_grafana.yml
+
+# wget https://dl.grafana.com/enterprise/release/grafana-enterprise-9.1.2-1.x86_64.rpm
+# sudo yum install grafana-enterprise-9.1.2-1.x86_64.rpm
+# установка будет произведена с файла котрый подкладывается  ./
+  
+- name: Install Grafana on RedHat Family
+  block:
+  
+#  - name: Copy rpm for install
+#    ansible.builtin.copy:
+#      src: files/grafana-enterprise-{{ grafana_version }}.x86_64.rpm
+#      dest: /tmp/
+            
+  - name: Install Grafana rpm from a local file
+    ansible.builtin.yum:
+      name: /tmp/grafana-{{ grafana_version }}.x86_64.rpm
+      state: present
+      disable_gpg_check: on
+    
+    notify:
+      - grafana systemd  
+  when:
+    ansible_os_family == "RedHat"
+
+
+# блок для Debian не тестировался 
+# sudo apt-get install -y adduser libfontconfig1
+# wget https://dl.grafana.com/enterprise/release/grafana-enterprise_9.1.2_amd64.deb
+# sudo dpkg -i grafana-enterprise_9.1.2_amd64.deb
+
+- name: Install Grafana For Debian
+  block:
+    - name: install -y adduser libfontconfig1
+      ansible.builtin.apt:
+        name: libfontconfig1
+        state: present
+    - name: Download grafana
+      ansible.builtin.get_url:
+        url: https://dl.grafana.com/enterprise/release/grafana-enterprise_9.1.2_amd64.deb
+        dest: /tmp/grafana-enterprise_9.1.2_amd64.deb
+    - name: Install grafana package
+      ansible.builtin.apt:
+         deb: /tmp/grafana-enterprise_9.1.2_amd64.deb 
+  when:
+    ansible_os_family == "Debian"
+
+

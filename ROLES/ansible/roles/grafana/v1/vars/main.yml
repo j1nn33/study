@@ -1,2 +1,5 @@
 ---
 # vars file for v1
+# переменным  присваиваем версии grafana 
+# https://grafana.com/grafana/download?pg=graf&plcmt=deploy-box-1
+grafana_version : 9.1.2-1

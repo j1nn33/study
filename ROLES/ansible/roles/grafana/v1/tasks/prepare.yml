@@ -45,3 +45,5 @@
       protocol: tcp
       jump: ACCEPT
       destination_port: '3000'
+  when:
+    ansible_os_family == "Debian"
