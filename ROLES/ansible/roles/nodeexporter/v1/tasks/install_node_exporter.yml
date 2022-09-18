@@ -35,7 +35,7 @@
 #  mode: preserve  означает, что файлу будут предоставлены те же разрешения, что и исходному файлу.
 - name: Copy Bin Files From Unzipped to nodeexporter
   copy: 
-    src: /tmp/nodeexporter/nodeexporter-{{ node_exporter_version }}.linux-amd64/{{ item }}
+    src: /tmp/nodeexporter/nodeexporter-{{ node_exporter_version }}-rc.0.linux-amd64/{{ item }}
     dest: /usr/local/bin/
     remote_src: yes
     mode: preserve
