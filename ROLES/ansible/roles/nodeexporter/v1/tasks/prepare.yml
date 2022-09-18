@@ -1,0 +1,60 @@
+
+---
+# запуск тестовой задачи которая выводит название task целевой машины
+- name: Print test message 
+  ansible.builtin.debug:
+    msg: test message in task prepare.yml
+
+# Описание основной роли 
+## 9100/tcp - http://IP-Address:9100/metrics
+
+- name: Security Settings For RedHat
+  block:
+    - name: firewall enabled
+      ansible.builtin.systemd:
+        name: firewalld
+        state: started
+        enabled: yes
+      
+    - name: Allow Ports
+      firewalld:
+        port: "{{ item }}"
+        permanent: true
+        state: enabled
+      loop: [ '9100/tcp' ]
+      notify:
+        - restart firewalld
+# handlers see ./ROLES/ansible/roles/prometheus/v1/handlers/main.yml
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
+    - name: Stop SELinux
+      shell: setenforce 0
+      ignore_errors: true
+  when:
+    ansible_os_family == "RedHat"
+
+# не тестировалась
+- name: Security Settings For Debian
+  block:
+    - name: Allow TCP Ports
+      iptables:
+        chain: INPUT
+        rule_num: '1'
+        action: insert
+        protocol: tcp
+        jump: ACCEPT
+        destination_port: "{{ item }}"
+      loop: [ '9100' ]
+
+    - name: Allow UDP Ports
+      iptables:
+        chain: INPUT
+        rule_num: '1'
+        action: insert
+        protocol: udp
+        jump: ACCEPT
+        destination_port: '9094'
+  when:
+    ansible_os_family == "Debian"

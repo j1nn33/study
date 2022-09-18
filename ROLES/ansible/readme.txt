@@ -19,7 +19,7 @@
             |_readme.md
 
   # описание установки версии ansible
-  # создание новой роли
+  # создание новой роли c именем v1
   относительно каталога study 
   cd ./ROLES/ansible/role/
   mkdir <role_name>
@@ -124,5 +124,22 @@ pipeline {
         }
     }    
 }
+---------
+#  описание pipeline jenkins для запуска nodeexporter (пароли зашиты в кредах jenkins)
 
-
+  agent {
+        label 'master'
+    }
+    stages {
+        stage('git') { // download from git
+            steps {
+                git branch: 'master', url: "https://github.com/j1nn33/study.git" // используем встроенный в Jenkins плагин Git для скачивания проекта из бранча main
+            }
+        }
+        
+        stage('execute Ansible') {
+            steps {
+                ansiblePlaybook become: true, colorized: true, credentialsId: 'ssh_cred_for_host', disableHostKeyChecking: true, installation: 'ansible-master', inventory: './ROLES/ansible/inventory_monitoring/dev/hosts.ini', playbook: './ROLES/ansible/playbooks_monitoring/node_exporter_role.yaml'
+            }    
+        }
+   
