@@ -1,0 +1,15 @@
+[Unit]
+Description=Node Exporter Service
+After=network.target
+ 
+[Service]
+#EnvironmentFile=-/etc/default/node_exporter
+User=nodeexporter
+Group=nodeexporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter \$NODE_EXPORTER_OPTS
+ExecReload=/bin/kill -HUP \$MAINPID
+Restart=on-failure
+ 
+[Install]
+WantedBy=multi-user.target

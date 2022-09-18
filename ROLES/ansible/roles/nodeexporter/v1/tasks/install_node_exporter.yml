@@ -3,3 +3,61 @@
 - name: Print test message 
   ansible.builtin.debug:
     msg: test message in task install_node_exporter.yml
+
+
+# Созадние пользователя nodeexporter в системе
+- name: Create User nodeexporter
+  ansible.builtin.user:
+    name: nodeexporter
+    create_home: no
+    shell: /bin/false
+# Созадние директорий 
+- name: Create directories for nodeexporter
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: nodeexporter
+    group: nodeexporter
+  loop:
+    - '/tmp/nodeexporter'
+    - '/etc/nodeexporter'
+    - '/var/lib/nodeexporter'
+
+# see node_exporter_version /role/nodeexporter/vars/main.yml
+- name: Download And Unzipped node_exporter is {{node_exporter_version}}
+  ansible.builtin.unarchive:
+    src: https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}-rc.0/node_exporter-{{ node_exporter_version }}-rc.0.linux-amd64.tar.gz
+    dest: /tmp/nodeexporter
+    creates: /tmp/nodeexporter/nodeexporter-{{ node_exporter_version }}.linux-amd64
+    remote_src: yes
+  
+#  копирование бинарных файлов (node_exporter) в целевые каталоги 
+#  mode: preserve  означает, что файлу будут предоставлены те же разрешения, что и исходному файлу.
+- name: Copy Bin Files From Unzipped to nodeexporter
+  copy: 
+    src: /tmp/nodeexporter/nodeexporter-{{ node_exporter_version }}.linux-amd64/{{ item }}
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: preserve
+    owner: nodeexporter
+    group: nodeexporter
+  loop: [ 'node_exporter' ]
+
+
+# создание systemdunit для сервиса Prometheus
+# ./ROLES/ansible/roles/nodeexporter/templates/nodeexporter.service 
+- name: Create File for nodeexporter Systemd
+  template:
+    src=templates/nodeexporter.service
+    dest=/etc/systemd/system/
+  notify:
+    - systemd reload
+
+# запуск сервиса 
+- name: Systemctl nodeexporter Start
+  systemd:
+    name: nodeexporter
+    state: started
+    enabled: yes
+
+    

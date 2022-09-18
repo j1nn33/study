@@ -5,7 +5,7 @@
 
 # Созадние пользователя prometheus в системе
 - name: Create User prometheus
-  user:
+  ansible.builtin.user:
     name: prometheus
     create_home: no
     shell: /bin/false

@@ -127,6 +127,7 @@ pipeline {
 ---------
 #  описание pipeline jenkins для запуска nodeexporter (пароли зашиты в кредах jenkins)
 
+pipeline {  
   agent {
         label 'master'
     }
@@ -142,4 +143,5 @@ pipeline {
                 ansiblePlaybook become: true, colorized: true, credentialsId: 'ssh_cred_for_host', disableHostKeyChecking: true, installation: 'ansible-master', inventory: './ROLES/ansible/inventory_monitoring/dev/hosts.ini', playbook: './ROLES/ansible/playbooks_monitoring/node_exporter_role.yaml'
             }    
         }
-   
+   }
+}

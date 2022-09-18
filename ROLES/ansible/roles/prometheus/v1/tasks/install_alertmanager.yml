@@ -6,7 +6,7 @@
 
 # создание пользователя 
 - name: Create User Alertmanager
-  user:
+  ansible.builtin.user:
     name: alertmanager
     create_home: no
     shell: /bin/false

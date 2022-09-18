@@ -5,3 +5,7 @@
   ansible.builtin.service:
     name: firewalld
     state: restarted
+
+- name: systemd reload
+  systemd:
+    daemon_reload: yes
