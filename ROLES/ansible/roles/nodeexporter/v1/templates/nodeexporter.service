@@ -7,7 +7,8 @@ After=network.target
 User=nodeexporter
 Group=nodeexporter
 Type=simple
-ExecStart=/usr/local/bin/node_exporter \$NODE_EXPORTER_OPTS
+#ExecStart=/usr/local/bin/node_exporter \$NODE_EXPORTER_OPTS
+ExecStart=/usr/local/bin/node_exporter
 ExecReload=/bin/kill -HUP \$MAINPID
 Restart=on-failure
  
