@@ -1,0 +1,10 @@
+---
+- name: TEST_TASK
+  hosts: all
+  remote_user: root
+  gather_facts: no
+  tasks:
+    - name: Print test message 
+      ansible.builtin.debug:
+        msg: test message in task install_node_exporter.yml
+        
