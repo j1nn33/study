@@ -3,8 +3,51 @@
   hosts: all
   remote_user: root
   gather_facts: no
+  # Поправить названия и переменные 
+  vars:
+      task_name_for_prometheus: add_host {{ host_name_for_promethteus }}
+      host_name_for_promethteus: 192.168.1.236
+      port_for_prometheus: 9100
+      #tets_var_complex: add_host {{ host_name_for_promethteus }}
+      future_prometeus_config: /tmp/promethus_tmp/prometheus.yml
+      env_tmp_dir: /tmp/promethus_tmp
+      # если значение не определно то ставиться metrics_path: /metrics
+      metrics_path_exporter: extended/metrics
   tasks:
     - name: Print test message 
       ansible.builtin.debug:
         msg: test message in task install_node_exporter.yml
-        
+
+    - name: delete enviroment
+      ansible.builtin.file:
+        path: /tmp/promethus_tmp
+        state: absent
+
+    - name: prepre enviroment
+      ansible.builtin.file:
+        path: /tmp/promethus_tmp
+        state: directory      
+    - name: Generate config file
+      template:
+        src: src.j2
+        dest: /tmp/promethus_tmp/tmp.txt
+    
+    - name: copy original promethusconfig
+      #ansible.builtin.shell: 'cp /etc/prometheus/prometheus.yml /tmp/promethus_tmp/prometheus.yml'
+      ansible.builtin.copy:
+        src: /etc/prometheus/prometheus.yml
+        dest: /tmp/promethus_tmp/prometheus.yml
+        remote_src: yes
+
+    - name: correct config add host to prometheus.yml
+      shell: cat /tmp/promethus_tmp/tmp.txt >> {{ future_prometeus_config }}
+
+    - name: test new prometheus.yml
+      shell: promtool check config {{ future_prometeus_config }}
+#      notify:
+#        - change testing prometheus config
+#  handlers:
+#    - name: change testing prometheus config
+#      
+#      service: name=httpd state=restart    
+    

@@ -1,0 +1,28 @@
+############################################################
+############################################################
+#     
+#  - job_name: "{{ list_row }}"
+#
+#{% for item in list_row %}
+#    {{ item }}
+#{% endfor %}
+
+############################################################
+############################################################
+# - targets: ['192.168.10.11:9100','192.168.10.12:9100','192.168.10.13:9100']
+# [ metrics_path: <path> | default = /metrics ]
+#
+#
+# ADD HOST FROM Jenkins
+# ################################    
+  - job_name: "{{ list_row }}"
+#    scrape_interval: 5
+    static_configs:
+      - targets: [{% for item in list_row %}'{{ item }}:{{ port_for_prometheus }}', {% endfor %}]
+        labels:
+          group: 'test_hosts'
+{% if metrics_path_exporter %}
+    metrics_path: /{{ metrics_path_exporter }}
+{% else %}
+    metrics_path: /metrics
+{% endif %}

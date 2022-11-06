@@ -1,0 +1,51 @@
+---
+- name: TEST_TASK
+  hosts: all
+  remote_user: root
+  gather_facts: no
+  # Поправить названия и переменные 
+  vars:
+      #task_name_for_prometheus: add_host {{ host_name_for_promethteus }}
+      #host_name_for_promethteus: 192.168.1.236
+      port_for_prometheus: 9100
+      #tets_var_complex: add_host {{ host_name_for_promethteus }}
+      test_config: /tmp/loops_tmp/test.yml
+      env_tmp_dir: loops_tmp
+      # если значение не определно то ставиться metrics_path: /metrics
+      metrics_path_exporter: extended/metrics
+      # var loops
+      #list_row: [1,2,3,4,2,1,5,7]
+      list_row: [192.168.10.192.168.10.2,192.168.10.3,192.168.10.4,192.168.10.2,192.168.10.1,192.168.10.5,192.168.10.7]
+      #list_row: [1, 2, 3, 4, 2, 1, 5, 7]
+      #list_row: ['1', '2', '3', '4', '2']
+      
+  tasks:
+    - name: delete enviroment
+      ansible.builtin.file:
+        path: /tmp/{{ env_tmp_dir }}
+        state: absent
+
+    - name: prepre enviroment
+      ansible.builtin.file:
+        path: /tmp/{{ env_tmp_dir }}
+        state: directory      
+    - name: Generate config file
+      template:
+        src: loops.j2
+        dest: /{{ test_config }}
+########################################
+
+    - name: print list
+      debug:
+        msg: "List is {{ list_row }}"
+  #  - name: print reversed list  
+  #    debug:
+  #      msg: "Reverse list is {{ list_row|reverse }}"  
+    - name: print sorted list
+      debug:     
+        msg: "Sorted list is {{ list_row|sort }}"
+
+    - name: "print element"
+      debug:
+        msg: "{{ item }}"
+      with_items: "{{ list_row }}"

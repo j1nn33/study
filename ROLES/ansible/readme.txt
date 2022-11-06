@@ -18,9 +18,57 @@
             |__ansible.cfg
             |_readme.md
 
+Описание структуры версии 2 
+
+./___ansible ---/roles/
+
+├── ansible.cfg
+├── inventory_<role_name> -
+|            |-PROD├── group_vars  
+│                  ├── all.yml
+│                  ├── group1.yml
+│                  └── group2.yml
+├                  ├── host_vars
+│                  ├── sever1
+│                  ├── sever2
+│                  
+|            |-DEV ├── group_vars  
+│                  ├── all.yml
+│                  ├── group1.yml
+│                  └── group2.yml
+├                   ── host_vars
+│                  ├── sever1
+│                  ├── sever2
+│                 
+|_playbooks_<role_name>_back.yml  # папка с описанием playbooks
+|                     |_front_role.yml
+|                     |_ # например разворачиваем мониторинг (prometeus_role, grafana_role, node_exporter_role)
+|                     |_ # окончание _role обязательно  
+|
+├── group_vars  
+│   ├── all.yml
+│   ├── group1.yml
+│   └── group2.yml
+├── host_vars
+│   ├── sever1
+│   ├── sever2
+│  
+|
+└── roles
+    ├── <role_name>  # собраны таски запуска роли
+    │   ├── files
+    │   ├── templates
+    │   ├── tasks
+    │   ├── handlers
+    │   ├── vars
+    │   ├── defaults
+    │   └── meta
+    └── test_playbook
+readme.md     
+
   # описание установки версии ansible
   # создание новой роли c именем v1
-  относительно каталога study 
+  относительно каталога study  
   cd ./ROLES/ansible/role/
   mkdir <role_name>
   cd ./ROLES/ansible/role/<role_name>
