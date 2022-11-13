@@ -3,6 +3,7 @@
   hosts: all
   remote_user: root
   gather_facts: no
+  
   # Поправить названия и переменные 
   vars:
       #task_name_for_prometheus: add_host {{ host_name_for_promethteus }}
@@ -18,8 +19,21 @@
       list_row: [192.168.10.192.168.10.2,192.168.10.3,192.168.10.4,192.168.10.2,192.168.10.1,192.168.10.5,192.168.10.7]
       #list_row: [1, 2, 3, 4, 2, 1, 5, 7]
       #list_row: ['1', '2', '3', '4', '2']
+      table:
+        - ['a', 'b', 'c']
+        - ['d', 'e', 'f']
+        - ['g', 'h', 'i']
+
+      dict_pass:
+        broker : ['pass_11', 'pass_12']
+        root : ['pass_21', 'pass_22']
+        client : ['pass_31', 'pass_32']
       
   tasks:
+    - name: Show var  
+      debug:
+        var: dict_pass
+
     - name: delete enviroment
       ansible.builtin.file:
         path: /tmp/{{ env_tmp_dir }}
@@ -49,3 +63,35 @@
       debug:
         msg: "{{ item }}"
       with_items: "{{ list_row }}"
+####################################################
+    - name: print rows
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ table|list }}"
+    - name: print column
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ table[0]|zip(*table[1:])|list }}"
+    - name: print elements left2rigth up2down
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ table|list|flatten(levels=1) }}"
+    - name: print elements up2down left2rigth
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ table[0]|zip(*table[1:])|list|flatten(levels=1) }}"
+
+########################################
+
+    - name: print dict items
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ dict_pass|dict2items }}"
+    - name: print sorted dict items
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ dict_pass|dictsort }}"
+    - name: print dict items
+      debug:
+        msg: "{{ item.key }} and {{ item.value.0 }} and {{ item.value.1 }}"
+      loop: "{{ dict_pass|dict2items }}"

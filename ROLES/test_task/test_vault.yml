@@ -1,0 +1,32 @@
+---
+- name: Create users
+  hosts: all
+  become: true
+  gather_facts: no
+
+  vars_files:
+    - "./{{ inventory_dir }}/{{ stage }}/credentials.yml"
+  
+ 
+  tasks:
+    - name: show_invetory_dir
+      debug:
+        var: inventory_dir
+    - name: show_invetory_stage
+      debug:
+        var: stage
+
+# структура credentials.yml
+#credentials:
+#  users:
+#    admin:
+#      password: admin123
+#      groups: sudo
+
+
+    - name: Show user_name "admin"  
+      ansible.builtin.debug:
+        msg: "{{ item }}"
+      loop: "{{ credentials.users|dict2items }}" 
+
+
