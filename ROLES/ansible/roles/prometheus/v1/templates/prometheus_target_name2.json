@@ -1,0 +1,19 @@
+[
+  { 
+    "metrics_path": "/actuator/prometheus",
+    "labels": {
+        "env": "psi",
+        "infra":"vm",
+        "job": "system",
+        "location": "skolkovo",
+        "system": "hadop",
+        "unit": "Logging"
+    },
+    "targets": [
+        "192.168.1.010:9100",
+        "192.168.1.011:9100",
+        "192.168.1.012:9100"
+    ]
+  }
+]
+

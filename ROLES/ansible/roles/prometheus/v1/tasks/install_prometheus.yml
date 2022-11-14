@@ -42,7 +42,7 @@
     group: prometheus
   loop: [ 'prometheus', 'promtool' ]
 
-#  копирование конфигруационных файлов и каталогов  (prometheus.yml, console_libraries, consoles) в целевые каталоги 
+#  копирование конфигруационных файлов и каталогов  (console_libraries, consoles) в целевые каталоги 
 - name: Copy Conf Files From Unzipped to Prometheus
   copy: 
     src: /tmp/prometheus/prometheus-{{ prometheus_version }}.linux-amd64/{{ item }}
@@ -51,8 +51,19 @@
     mode: preserve
     owner: prometheus
     group: prometheus
-  loop: [ 'console_libraries', 'consoles', 'prometheus.yml' ]
+  loop: [ 'console_libraries', 'consoles' ]
 
+# Копирование конфигурационных стартовых конфигурационных файлов для сервиса Prometheus
+# (prometheus.yml, prometheus_target_name1.json, prometheus_target_name2.json)
+# ./ROLES/ansible/roles/prometheus/templates/prometheus.service 
+- name: Create config file for Prometheus
+  ansible.builtin.template:
+    src: templates/{{ item }}
+    dest: /etc/prometheus/
+    mode: preserve
+    owner: prometheus
+    group: prometheus
+  loop: [ 'prometheus.yml', 'prometheus_target_name1.json', 'prometheus_target_name2.json' ]
 # создание systemdunit для сервиса Prometheus
 # ./ROLES/ansible/roles/prometheus/templates/prometheus.service 
 - name: Create File for Prometheus Systemd

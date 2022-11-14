@@ -1,0 +1,18 @@
+[
+  {
+    "labels": {
+        "env": "psi",
+        "infra":"vm",
+        "job": "system",
+        "location": "skolkovo",
+        "system": "hadop",
+        "unit": "Logging"
+    },
+    "targets": [
+        "192.168.1.100:9100",
+        "192.168.1.101:9100",
+        "192.168.1.102:9100",
+        "192.168.1.103:9100"
+    ] 
+  }
+]

@@ -1,0 +1,204 @@
+# my global config
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+  # - rules/system_disk_load.yml
+  # - rules/system_node_load.yml 
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  - job_name: dynamic_from_file 
+    file_sd_configs:
+    - files: [prometheus_target_name1.json,
+              prometheus_target_name2.json]
+    relabel_configs:
+    - regex: ([^:]+)(:[0-9]+)?
+      replacement: ${1}
+      source_labels: [__address__]
+      target_label: instance
+    scrape_interval: 15s
+    scrape_timeout: 10s  
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "prometheus"
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ["localhost:9090"]
+  - job_name: dynamic_from_file1
+    metrics_path: "/metrics_custom"
+    file_sd_configs:
+    - files: [prometheus_target_name1.json,
+              prometheus_target_name2.json]
+
+# server-node_exporter
+  - job_name: 'prometheus-server'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['192.168.1.171:9100']
+
+  - job_name: 'elk-server'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['192.168.1.170:9100']
+      
+  - job_name: 'nifi'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['192.168.1.79:9092']
+                
+
+  - job_name: 'k8s-centos'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['192.168.1.210:9100']
+# k8s-ubuntu
+  - job_name: 'k8s-ubuntu-master1'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['192.168.1.231:9100']
+
+  - job_name: 'k8s-ubuntu-master-2'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['192.168.1.232:9100']
+
+  - job_name: 'k8s-ubuntu-master3'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['192.168.1.233:9100']
+
+  - job_name: 'k8s-ubuntu-node1'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['192.168.1.234:9100']
+
+  - job_name: 'k8s-ubuntu-node2'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['192.168.1.235:9100']
+
+  - job_name: 'k8s-ubuntu-node3'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['192.168.1.236:9100']
+
+# cluster
+  
+  - job_name: 'k8s-ubuntu'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['192.168.1.231:9100']
+      - targets: ['192.168.1.232:9100']
+      - targets: ['192.168.1.233:9100']
+      - targets: ['192.168.1.234:9100']
+      - targets: ['192.168.1.235:9100']
+      - targets: ['192.168.1.236:9100']
+      
+
+# application-node_exporter
+#  - job_name: 'elk-cluster'
+#    scrape_interval: 5s
+#    static_configs:
+#      - targets: ['192.168.1.170:9114']
+
+
+  - job_name: elasticsearch
+    scrape_interval: 60s
+    scrape_timeout:  30s
+    metrics_path: "/metrics"
+    static_configs:
+    - targets: ['192.168.1.170:9114']
+      labels:
+        service: elasticsearch
+#    relabel_configs:
+#    - source_labels: [192.168.1.170]
+#      regex: '(.*)\:9108'
+#      target_label:  'instance'
+#      replacement:   '$1'
+#    - source_labels: [192.168.1.170]
+#      regex:         '.*\.(.*)\.lan.*'
+#      target_label:  'environment'
+#      replacement:   '$1'
+
+# Monitor Service Endpoints
+# All the Service endpoints will be scrapped if the service 
+# metadata is annotated with prometheus.io/scrape and 
+# prometheus.io/port annotations. 
+  
+#  - job_name: 'kubernetes-service-endpoints'
+#    kubernetes_sd_configs:
+#    - role: endpoints
+#    relabel_configs:
+#    - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+#      action: keep
+#      regex: true
+#    - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+#      action: replace
+#      target_label: __scheme__
+#      regex: (https?)
+#    - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+#      action: replace
+#      target_label: __metrics_path__
+#      regex: (.+)
+#    - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+#      action: replace
+#      target_label: __address__
+#      regex: ([^:]+)(?::\d+)?;(\d+)
+#      replacement: $1:$2
+#    - action: labelmap
+#      regex: __meta_kubernetes_service_label_(.+)
+#    - source_labels: [__meta_kubernetes_namespace]
+#      action: replace
+#      target_label: kubernetes_namespace
+#    - source_labels: [__meta_kubernetes_service_name]
+#      action: replace
+#      target_label: kubernetes_name
+#    static_configs:
+#      - targets: ['192.168.1.231:9100']
+#      - targets: ['192.168.1.232:9100']
+#      - targets: ['192.168.1.233:9100']
+#      - targets: ['192.168.1.234:9100']
+#      - targets: ['192.168.1.235:9100']
+#      - targets: ['192.168.1.236:9100']
+
+ 
+  
+  # Scrape config for Kubelet cAdvisor.
+  - job_name: 'kubernetes-cadvisor'
+    scheme: http
+    kubernetes_sd_configs:
+    - role: node
+    relabel_configs:
+    - action: labelmap
+      regex: __meta_kubernetes_node_label_(.+)
+#    - target_label: __address__
+#      replacement: 192.168.1.231:9100
+    - source_labels: [__meta_kubernetes_node_name]
+      regex: (.+)
+      target_label: __metrics_path__
+      replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+    static_configs:
+      - targets: ['192.168.1.231:9100']
+      - targets: ['192.168.1.232:9100']
+      - targets: ['192.168.1.233:9100']
+      - targets: ['192.168.1.234:9100']
+      - targets: ['192.168.1.235:9100']
+      - targets: ['192.168.1.236:9100']
+
+
