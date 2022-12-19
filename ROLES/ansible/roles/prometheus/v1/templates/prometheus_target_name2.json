@@ -1,6 +1,5 @@
 [
   { 
-    "metrics_path": "/actuator/prometheus",
     "labels": {
         "env": "psi",
         "infra":"vm",

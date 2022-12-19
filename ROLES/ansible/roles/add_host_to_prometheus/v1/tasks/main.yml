@@ -1,0 +1,42 @@
+---
+# tasks file for v1
+# запуск тестовой задачи которая выводит название ОС целевой машины
+- name: Debug
+  debug: msg={{ ansible_os_family }}
+
+- name: delete enviroment
+  ansible.builtin.file:
+    path: /tmp/promethus_tmp
+    state: absent
+
+- name: prepre enviroment
+  ansible.builtin.file:
+    path: /tmp/promethus_tmp
+    state: directory      
+   
+- name: Generate config file
+  template:
+    src: src.j2
+    dest: /tmp/promethus_tmp/tmp.txt
+    
+- name: copy original promethusconfig
+  #ansible.builtin.shell: 'cp /etc/prometheus/prometheus.yml /tmp/promethus_tmp/prometheus.yml'
+  ansible.builtin.copy:
+    src: /etc/prometheus/prometheus.yml
+    dest: /tmp/promethus_tmp/prometheus.yml
+    remote_src: yes
+
+- name: correct config add host to prometheus.yml
+  shell: cat /tmp/promethus_tmp/tmp.txt >> /tmp/promethus_tmp/prometheus.yml
+
+- name: test new prometheus.yml
+  shell: promtool check config /tmp/promethus_tmp/prometheus.yml
+
+
+#      notify:
+#        - change testing prometheus config
+#  handlers:
+#    - name: change testing prometheus config
+#      
+#      service: name=httpd state=restart    
+    

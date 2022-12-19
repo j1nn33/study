@@ -1,0 +1,36 @@
+---
+- name: install postgresql
+  hosts: all
+  remote_user: root
+  gather_facts: yes
+   
+  vars:
+      repo_postgresql: //download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+                 
+      
+  tasks:
+    - name: addrepo
+      ansible.builtin.dnf:
+        name: https:{{ repo_postgresql }}
+        state: present
+      
+    - name: install_postgresql
+      ansible.builtin.dnf:
+        name: postgresql-server
+        state: latest
+
+    - name: "Init PostgreSQL"
+      shell: "postgresql-setup --initdb"
+
+    - name: start postgresql
+      ansible.builtin.systemd:
+        state: started
+        name: postgresql.service
+    
+    - name: enable postgresql
+      ansible.builtin.systemd:
+        name: postgresql.service
+        enabled: yes
+        
+   
+    

@@ -1,0 +1,8 @@
+- hosts: grafana
+  vars:
+    # указываем версию раскатки 
+    - add_host_to_prometheus_role: "v1"
+  roles:
+    # относитьльный от ../roles/<путь до роли> 
+    # выпрыгиваем из каталога playbooks monitoring 
+    - ../roles/add_host_to_prometheus/{{ add_host_to_prometheus_role }}   

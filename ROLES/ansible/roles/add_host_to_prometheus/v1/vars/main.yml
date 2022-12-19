@@ -1,0 +1,6 @@
+---
+# vars file for v1
+
+host_name_for_promethteus: 10.4.4.4
+port_for_prometheus: 4444
+metrics_path_exporter: custom
