@@ -14,4 +14,4 @@ echo 'INSERT INTO monitoring (date, cpu, ram, swap) VALUES ('\'''$var_date\''', 
 :# занесение строки в базу данных
 psql -U tooks -d testdb -f /tmp/monotoring_out.txt
 
-psql -U tooks -d testdb -c 'SELECT * FROM monitoring ORDER BY date DESC LIMIT 1' -o /tmp/my.html
+psql -U tooks -d testdb -c 'SELECT * FROM monitoring ORDER BY date DESC LIMIT 1' -o /var/www/html/index.html
