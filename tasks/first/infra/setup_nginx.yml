@@ -1,0 +1,67 @@
+---
+- name: install nginx
+  hosts: all
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+
+    - name: firewall enabled
+      ansible.builtin.systemd:
+        name: firewalld
+        state: started
+        enabled: yes
+      
+    - name: Allow Ports
+      firewalld:
+        port: "{{ item }}"
+        permanent: true
+        state: enabled
+      loop: [ '80/tcp', 443/tcp ]
+      notify:
+        - restart firewalld
+
+    - name: install_nginx
+      ansible.builtin.dnf:
+        name: nginx
+        state: latest
+    
+    - name: enable nginx
+      ansible.builtin.systemd:
+        name: nginx.service
+        enabled: yes
+
+    - name: Recursively change ownership of a directory
+      ansible.builtin.file:
+        path: /var/www/html
+        state: directory
+        recurse: yes
+        owner: tooks
+        group: tooks
+
+    - name: Copy main config file 
+      ansible.builtin.copy:
+        src: nginx.conf 
+        dest: /etc/nginx/nginx.conf 
+
+    - name: Copy main custom file 
+      ansible.builtin.copy:
+        src: test.conf
+        dest: /etc/nginx/conf.d/test.conf 
+      notify: restart nginx 
+
+  handlers:
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted  
+  
+    - name: restart firewalld
+      #command: firewall-cmd --reload   
+      ansible.builtin.service:
+        name: firewalld
+        state: restarted
+        
+
+  
+    
