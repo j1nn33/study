@@ -1,0 +1,38 @@
+---
+- name: TEST_TASK
+  hosts: all
+  remote_user: root
+  gather_facts: no
+  # Поправить названия и переменные 
+  vars:
+    var_service: grafana-server.service
+    var_service_action: stopped  
+  tasks:
+    - name: Service status  
+      ansible.builtin.debug:
+        msg: test message in task install_node_exporter.yml
+    
+    - name: collect facts about system services
+      ansible.builtin.systemd:
+        name: '{{var_service}}'
+      register: services_state
+
+    - name: Debug
+      ansible.builtin.debug:
+        var: services_state.status.ActiveState
+        
+    - name: Status service {{ var_service }}
+      ansible.builtin.service:
+        name: '{{ var_service }}'
+        state: '{{ var_service_action }}'
+
+    - name: collect facts about system services
+      ansible.builtin.systemd:
+        name: '{{var_service}}'
+      register: services_state
+
+    - name: Debug
+      ansible.builtin.debug:
+        var: services_state.status.ActiveState
+#
+    

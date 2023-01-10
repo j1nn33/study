@@ -22,6 +22,7 @@ ansible all -i hosts.ini -m command -a 'systemctl status chronyd.service'
 https://github.com/j1nn33/study/blob/master/Ansible/ansible_IDV-IT.txt
 
 ansible-playbook test_task.yml -i hosts.ini 
+ansible-playbook task_reboot.yml -i hosts.ini -e 'var_service_action=started'
 
 ----------------------------
 плейбук для тестов с vault
