@@ -1,0 +1,4 @@
+val file = sc.textFile("hdfs:///tmp/smoke_test_for_hadoop/test_spark_in")
+val counts = file.flatMap(line => line.split(" ")).map(word => (word, 1)).reduceByKey(_ + _)
+counts.saveAsTextFile("hdfs:///tmp/smoke_test_for_hadoop/sparkout")
+exit

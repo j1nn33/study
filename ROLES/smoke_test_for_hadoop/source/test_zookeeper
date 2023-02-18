@@ -1,0 +1,6 @@
+create /zk_test my_data
+ls /
+get /zk_test
+set /zk_test junk
+get /zk_test
+quit

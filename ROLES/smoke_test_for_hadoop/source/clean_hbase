@@ -1,0 +1,3 @@
+disable 'smoke_test'
+drop 'smoke_test'
+exit

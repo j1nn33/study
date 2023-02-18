@@ -1,0 +1,5 @@
+create 'smoke_test', 'cf'
+list 'smoke_test'
+put 'smoke_test', 'row1', 'cf:a', 'value1'
+scan 'smoke_test'
+exit
