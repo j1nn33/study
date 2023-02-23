@@ -1,6 +1,12 @@
 
 
 
+# Задача настройки обновлений IPA
 
-# ip адрес удаленного rsyslog сервера (используется в templates/ipa.j2)
-var_target_ip: 10.10.10.10
+- name: Gatering_facts_about_security_setting_IPA
+  hosts: all
+  #remote_user: root
+  gather_facts: no
+
+  # ip адрес удаленного rsyslog сервера (используется в templates/ipa.j2)
+  var_target_ip: 10.10.10.10
