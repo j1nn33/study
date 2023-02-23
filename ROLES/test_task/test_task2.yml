@@ -1,0 +1,37 @@
+- name: TEST_TASK
+  hosts: all
+  remote_user: root
+  gather_facts: yes
+  # Поправить названия и переменные 
+  vars:
+      var_list:
+        - /etc/hosts
+  tasks:
+    - name: Print test message 
+      ansible.builtin.debug:
+        msg: test message 
+
+    - name: files
+      shell: ls -la {{ item }}
+      loop: "{{var_list}}"
+      #shell: ls -la /etc/hosts
+      register: results
+    
+    - debug:
+        var: results
+         
+        №var: results['results']['stdout'] 
+        #var: results.results[1]
+        #{{ ansible_facts['devices']['xvda']['model'] }}
+        #{{ ansible_facts['nodename'] }}
+    #- name: Print all available facts
+    #  ansible.builtin.debug:
+    #    var: ansible_facts
+
+    #- name: AnsibleUnsafeText
+    #  debug: 
+    #    var: ansible_facts['distribution'] | type_debug 
+
+    #- name: dict
+    #  debug:
+    #    var: ansible_facts['eth0']['ipv4'] | type_debug

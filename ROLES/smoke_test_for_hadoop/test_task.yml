@@ -3,7 +3,8 @@
 
 - name: SMOKE TEST FOR HADOOP 
   hosts: all
-  remote_user: cloudera
+  #remote_user: cloudera
+  remote_user: root
   gather_facts: no
   # Поправить названия и переменные 
   vars:
@@ -21,8 +22,9 @@
       var_spark: /usr/lib/spark/examples/lib/spark-examples*.jar
       # задание переменной размещения SPARK example
       # /usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples-2.6.0-cdh5.13.0.jar 
-      var_mapreduce: /usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples.jar
-
+      # /opt/cloudera/parcels/CDH-7.1.7-1.cdh7.1.7.p0.15945976/lib/hadoop-mapreduce/hadoop-mapreduce-examples-3.1.1.7.1.7.0-551.jar
+      # var_mapreduce: /usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples.jar
+      var_mapreduce: /opt/cloudera/parcels/CDH-7.1.7-1.cdh7.1.7.p0.15945976/lib/hadoop-mapreduce/hadoop-mapreduce-examples-3.1.1.7.1.7.0-551.jar
       # ПЕРЕМЕННЫЕ КОТОРЫЕ МОЖНО ОСТАВИТЬ ПО УМОЛЧАНИЮ
       # задание временной папки в локальной системе и в hdfs
       # ВАЖНО если значение будет изменено произвести корректировку путей в файле ./source/test_spark
@@ -168,11 +170,12 @@
         var: results  
     
     # TESTING SPARK Pi ESTIMATION
-    - name: testing Spark Pi Estimation 
-      shell: spark-submit --class org.apache.spark.examples.SparkPi --master yarn-client --num-executors 1 --driver-memory 512m --executor-memory 512m --executor-cores 1 {{ var_spark }} 10
-      register: results
-    - debug:
-        var: results 
+    # spark-submit --class org.apache.spark.examples.SparkPi --master yarn --num-executors 1 --driver-memory 512m --executor-memory 512m --executor-cores 1 /opt/cloudera/parcels/CDH-7.1.7-1.cdh7.1.7.p0.15945976/lib/spark/examples/jars/spark-examples_2.11-2.4.7.7.1.7.0-551.jar 10
+    #- name: testing Spark Pi Estimation 
+    #  shell: spark-submit --class org.apache.spark.examples.SparkPi --master yarn-client --num-executors 1 --driver-memory 512m --executor-memory 512m --executor-cores 1 {{ var_spark }} 10
+    #  register: results
+    #- debug:
+    #    var: results 
 
     # TESTING SPARK Wordcount
     - name: prepare files on hdfs 
@@ -182,7 +185,8 @@
         var: results
     
     - name: execute spark-shell 
-      shell:  cat /{{ var_env_tmp_dir }}/{{ var_file_test_spark }} | spark-shell --master yarn-client
+      #shell:  cat /{{ var_env_tmp_dir }}/{{ var_file_test_spark }} | spark-shell --master yarn-client
+      shell:  cat /{{ var_env_tmp_dir }}/{{ var_file_test_spark }} | spark-shell --master yarn
       register: results
     - debug:
         var: results

@@ -1,0 +1,6 @@
+
+
+
+
+# ip адрес удаленного rsyslog сервера (используется в templates/ipa.j2)
+var_target_ip: 10.10.10.10

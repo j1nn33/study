@@ -1,0 +1,82 @@
+# Log IPA
+module(load="imfile")
+template(name="RsyslogForwardFormat" type="list") {
+        constant(value="{")
+        constant(value="\"@timestamp\":\"") property(name="timereported" dateFormat="rfc3339") 
+        constant(value="\"hostname\":\"") property(name="hostname") constant(value="\",")
+        constant(value="\"tags\":[\"") property(name="syslogtag") constant(value="\"],")
+        constant(value="\"message\":\"") property(name="msg") constant(value="\",")
+        constant(value="\"source\":\"") property(name="$!metadata!filename") constant(value="\"
+        constant(value="\"type_id\":\"Audit\"")
+        constant(value="}")
+}
+$PreserveFQDN on
+ruleset(name="sendToRsyslog") {
+    action(
+        type="omfwd"
+        Target="{{ var_target_ip }}"
+        Port="7741"
+        Protocol="udp"
+        Template="RsyslogForwardFormat")
+}
+# for debugging only
+ruleset(name="sendToFile") {
+        action(
+                type="omfile"
+                File="/var/log/ipamessages"
+                Template="RsyslogForwardFormat")
+}
+ruleset(name="sendToAll") {
+    call sendToRsyslog
+# call sendToFile
+}
+# Read files
+input(type="imfile"
+    File="/var/log/krb5kdc.log"
+    Tag="krb5kdc"
+    Ruleset="sendToAll"
+    addMetadata="on"
+    reopenOnTruncate="on")
+input(type="imfile"
+    File="/var/log/kadmind.log"
+    Tag="kadmind"
+    Ruleset="sendToAll"
+    addMetadata="on"
+    reopenOnTruncate="on")
+input(type="imfile"
+    File="/var/log/dirsrv/slapd-IDM-LAB/audit"
+    Tag="ds-audit"
+    Ruleset="sendToAll"
+    addMetadata="on"
+    startmsg.regex="^time:"
+    reopenOnTruncate="on")
+input(type="imfile"
+    File="/var/log/dirsrv/slapd-IDM-LAB/access"
+    Tag="ds-access"
+    Ruleset="sendToAll"
+    addMetadata="on"
+    reopenOnTruncate="on")
+input(type="imfile"
+    File="/var/log/dirsrv/slapd-IDM-LAB/errors"
+    Tag="ds-errors"
+    Ruleset="sendToAll"
+    addMetadata="on"
+    reopenOnTruncate="on")
+input(type="imfile"
+    File="/var/log/httpd/access_log"
+    Tag="httpd-access"
+    Ruleset="sendToAll"
+    addMetadata="on"
+    reopenOnTruncate="on")
+input(type="imfile"
+    File="/var/log/httpd/error_log"
+    Tag="httpd-error"
+    Ruleset="sendToAll"
+    addMetadata="on"
+    reopenOnTruncate="on")
+input(type="imfile"
+    File="/var/log/secure"
+    Tag="secure"
+    Ruleset="sendToAll"
+    addMetadata="on"
+    reopenOnTruncate="on")
