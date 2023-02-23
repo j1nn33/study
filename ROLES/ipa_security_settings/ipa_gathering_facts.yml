@@ -91,7 +91,7 @@
 
     # Сбор информации по rsyslog правила находятся в файле /etc/rsyslog.d/ipa.conf
     - name: Gathering information about rsyslog
-      shell: "/etc/rsyslog.d/ipa.conf"
+      shell: "cat /etc/rsyslog.d/ipa.conf"
       register: results
       #
       ignore_errors: yes

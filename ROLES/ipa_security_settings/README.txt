@@ -1,3 +1,11 @@
+---------------------------
+1. Необходимо задать переменные 
+/bash - содержит bash скрипт сбора отчета
+
+
+
+
+---------------------------
 # Для быстрого тестирования 
 # inventory.ini
 # ansible.cfg
@@ -10,9 +18,7 @@ ansible all -i hosts.ini -m ping -k
 
 с ключем
 ansible.cfg   private_key_file = ~/.ssh/id_rsa
-
 ssh-copy-id username@remote_host
-
 ansible all -i hosts.ini -m ping -k
 
 
@@ -21,6 +27,7 @@ ansible all -i hosts.ini -m command -a 'systemctl status chronyd.service'
 
 ansible-playbook ./ipa_check_security.yml -i ./hosts.ini -k 
 
+-------------------------------
 План написания автоматизации
 
 -------------------------------
