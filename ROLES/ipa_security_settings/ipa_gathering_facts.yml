@@ -3,7 +3,7 @@
 
 - name: Gatering_facts_about_security_setting_IPA
   hosts: all
-  remote_user: root
+  #remote_user: root
   gather_facts: no
   
   vars:

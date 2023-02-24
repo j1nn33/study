@@ -1,0 +1,49 @@
+includedir /etc/krb5.conf.d/
+includedir /var/lib/sss/pubconf/krb5.include.d/
+
+[logging]
+ default = FILE:/var/log/krb5libs.log
+ kdc = FILE:/var/log/krb5kdc.log
+ admin_server = FILE:/var/log/kadmind.log
+
+[libdefaults]
+ default_realm = {{ var_realm }}
+ dns_lookup_realm = false
+ dns_lookup_kdc = true
+ rdns = false
+ ticket_lifetime = 24h
+ forwardable = true
+ udp_preference_limit = 0
+ default_ccache_name = KEYRING:persistent:%{uid}
+ permitted_enctypes = aes256-cts-hmac-sha1-96 aes256-cts-hmac-sha384-192
+
+[kdcdefaults]
+restrict_anonymous_to_tgt = true
+
+[realms]
+ {{ var_realm }} = {
+  kdc = {{ var_kdc_server }}:88
+  master_kdc = {{ var_kdc_server }}:88
+  admin_server = {{ var_kdc_server }}:749
+  default_domain = {{ var_domain }}
+  pkinit_anchors = FILE:/var/lib/ipa-client/pki/kdc-ca-bundle.pem
+  pkinit_pool = FILE:/var/lib/ipa-client/pki/ca-bundle.pem
+  master_key_type = aes256-cts
+  requires_pre_auth = true
+}
+
+[domain_realm]
+ .local.lan = {{ var_realm }}
+ local.lan = {{ var_realm }}
+ ipa.local.lan = {{ var_realm }}
+
+[dbmodules]
+  {{ var_realm }} = {
+    db_library = ipadb.so
+  }
+
+[plugins]
+ certauth = {
+  module = ipakdb:kdb/ipadb.so
+  enable_only = ipakdb
+ }

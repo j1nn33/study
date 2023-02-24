@@ -1,12 +1,219 @@
-
-
-
+---
 # Задача настройки обновлений IPA
+# используемые tag
+#
 
-- name: Gatering_facts_about_security_setting_IPA
+- name: UPDATING SECURITY SETTING
   hosts: all
   #remote_user: root
   gather_facts: no
+  
+  vars:
+  # date для добавления к имени файла krb5.conf при бекапе  
+    var_date: "{{ lookup('pipe', 'date +%Y%m%d-%H%M') }}"
+  # Список файлов для одновления политик
+  # Список 1 root:root 755
+    var_file_list_1: 
+      - /usr/sbin/krb5kdc
+      - /usr/sbin/kadmind
+      - /usr/sbin/kadmin.local
+      - /usr/sbin/kdb5_ldap_util
+      - /usr/sbin/kdb5_util
+      - /usr/sbin/kprop
+      - /usr/sbin/kpropd
+      - /usr/sbin/kproplog
+      - /usr/sbin/krb5-send-pr
+      - /usr/bin/k5srvutil
+      - /usr/bin/kadmin
+      - /usr/bin/kdestroy
+      - /usr/bin/kinit
+      - /usr/bin/klist
+      - /usr/bin/kpasswd
+      - /usr/bin/krb5-config
+      - /usr/bin/kswitch
+      - /usr/bin/ktutil
 
+  # Список 2 root:root 600 
+    var_file_list_2:
+      - /var/lib/sss/secrets/secrets.ldb
+      - /var/lib/sss/secrets/.secrets.mkey
+   
+  # Список 3 root:root 4755
+    var_file_list_3:
+      - /usr/bin/ksu
+ 
+  # REALM (используется в templates/ipa.j2, krb5.j2)
+    var_realm: IPA.LAN
+  # имя сервера (используется в templates/krb5.j2)
+    var_kdc_server: freeipa.ipa.lan
+  # имя домена (используется в templates/krb5.j2)
+    var_domain: ipa.lan
   # ip адрес удаленного rsyslog сервера (используется в templates/ipa.j2)
-  var_target_ip: 10.10.10.10
+    var_target_ip: 10.10.10.10
+  
+  ################################################
+  tasks:
+    
+    # Примениен политики на файлы по тегу file-policy
+    # вывод тестового сообщения
+    - name: message
+      ansible.builtin.debug:
+        msg: updating_file_policy
+      tags: file-policy
+          
+    - name: Change file ownership, group and permissions for list_1
+      ansible.builtin.file:
+        path: "{{ item }}"
+        owner: root
+        group: root
+        mode: '0755'
+      loop: "{{ var_file_list_1 }}"
+      ignore_errors: yes
+      tags: file-policy
+
+    - name: Change file ownership, group and permissions for list_2
+      ansible.builtin.file:
+        path: "{{ item }}"
+        owner: root
+        group: root
+        mode: '0600'
+      loop: "{{ var_file_list_2 }}"
+      ignore_errors: yes
+      tags: file-policy
+
+    - name: Change file ownership, group and permissions for list_3
+      ansible.builtin.file:
+        path: "{{ item }}"
+        owner: root
+        group: root
+        mode: '4755'
+      loop: "{{ var_file_list_3 }}"
+      ignore_errors: yes
+      tags: file-policy  
+
+    # Примениен настройки на файл krb5.conf по тегу krb5-policy
+    # вывод тестового сообщения
+    - name: message
+      ansible.builtin.debug:
+        msg: updating_krb5.conf
+      tags: krb5-policy  
+    
+    # Делаем бекап оригинального krb5.conf 
+    - name: Copy original krb5.conf file on the remote machine for backup
+      ansible.builtin.copy:
+        src: /etc/krb5.conf
+        dest: /tmp/krb5.conf_back{{ var_date }}
+        remote_src: yes
+      tags: krb5-policy
+    
+    # Обновляем krb5.conf 
+    - name: Template a file to /etc/krb5.conf
+      ansible.builtin.template:
+        src: ./templates/krb5.j2
+        dest: /etc/krb5.conf
+        owner: root
+        group: root
+        mode: '0644'
+      tags: krb5-policy
+
+    # Примениен настройки audit по тегу audit-policy
+    # вывод тестового сообщения
+    - name: message
+      ansible.builtin.debug:
+        msg: updating_audit-policy
+      tags: audit-policy  
+    
+    # Делаем бекап оригинального krb5kdc.rules если он есть 
+    - name: Copy original krb5kdc.rules file on the remote machine for backup if exist
+      ansible.builtin.copy:
+        src: /etc/audit/rules.d/krb5kdc.rules
+        dest: /tmp/krb5kdc.rules_back{{ var_date }}
+        remote_src: yes
+      ignore_errors: yes  
+      tags: audit-policy
+    
+    # копируем krb5kdc.rules 
+    - name: Copy krb5kdc file with owner and permissions
+      ansible.builtin.copy:
+        src: ./source/krb5kdc.rules
+        dest: /etc/audit/rules.d/krb5kdc.rules
+        owner: root
+        group: root
+        mode: '0640'
+      notify:
+      - reload auditd  
+      tags: audit-policy    
+
+    # Примениен настройки rsyslog по тегу rsyslog-policy
+    # вывод тестового сообщения
+    - name: message
+      ansible.builtin.debug:
+        msg: updating_rsyslog-policy
+      tags: rsyslog-policy  
+    
+    # Делаем бекап оригинального ipa.conf если он есть 
+    - name: Copy original ipa.conf file on the remote machine for backup if exist
+      ansible.builtin.copy:
+        src: /etc/rsyslog.d/ipa.conf
+        dest: /tmp/ipa.conf_back{{ var_date }}
+        remote_src: yes
+      ignore_errors: yes  
+      tags: rsyslog-policy
+    
+    # Обновляем ipa.conf 
+    - name: Template a file to /etc/rsyslog.d/ipa.conf
+      ansible.builtin.template:
+        src: ./templates/ipa.j2
+        dest: /etc/rsyslog.d/ipa.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+      - reload rsyslog  
+      tags: rsyslog-policy
+ 
+    # Примениен настройки bind по тегу bind-policy
+    # вывод тестового сообщения
+    - name: message
+      ansible.builtin.debug:
+        msg: updating_bind-policy
+      tags: bind-policy  
+    
+    # Делаем бекап оригинального /etc/named.conf если он есть 
+    - name: Copy original /etc/named.conf file on the remote machine for backup if exist
+      ansible.builtin.copy:
+        src: /etc/named.conf
+        dest: /tmp/named.conf_back{{ var_date }}
+        remote_src: yes
+      ignore_errors: yes  
+      tags: bind-policy
+    
+    # копируем /etc/named.conf 
+    - name: Copy krb5kdc file with owner and permissions
+      ansible.builtin.copy:
+        src: ./source/named.conf
+        dest: /etc/named.conf
+        owner: root
+        group: named
+        mode: '0640'
+      notify:
+      - reload bind
+      tags: bind-policy
+
+  handlers:
+    # перезагружаем auditd
+    - name: reload auditd
+      shell: /sbin/service auditd restart
+    
+    # перезагружаем rsyslog
+    - name: reload rsyslog
+      service:
+        name: rsyslog
+        state: restarted
+    
+    # перезагружаем bind
+    - name: reload bind
+      service:
+        name: named-pkcs11.service
+        state: restarted    
+      

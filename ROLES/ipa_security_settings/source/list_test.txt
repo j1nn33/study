@@ -1,5 +1,0 @@
-/tmp/file1
-/tmp/file2
-/tmp/file3
-/tmp/file4
-
