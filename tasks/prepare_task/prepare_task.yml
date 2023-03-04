@@ -1,0 +1,67 @@
+---
+# Задача настройки host после установки
+# используемые tag
+#+ отключение selinux     (tag: disable_selinux)
+#+ ip v6                  (tag: disable_ip_v6)
+#- open vmtools           (tag: install_vmware_tools)
+#- отключение firewall    (tag: disable_firewall)
+#- install epel           (tag: install_epel)
+#- install soft           (tag: install_soft)
+- name: PREPARING HOST
+  hosts: all
+  #remote_user: root
+  gather_facts: no
+  
+  vars:
+    var_list_soft:
+      - epel-release
+      - mc
+      - open-vm-tools 
+     
+  ################################################
+  tasks:
+    
+    # Примениен политики на файлы по тегу file-policy
+    # вывод тестового сообщения
+    - name: message
+      ansible.builtin.debug:
+        msg: PREPARING HOST 
+           
+    #- name: disable_selinux
+    #  ansible.posix.selinux:
+    #    state: disabled
+    #  tags: disable_selinux
+    
+    - name: disable_selinux
+      shell: sed -i -E 's/^SELINUX=(.*)/SELINUX=disabled/g' /etc/selinux/config
+      ignore_errors: yes
+      tags: disable_selinux
+
+    - name: disable_ip_v6
+      shell: sysctl net.ipv6.conf.all.disable_ipv6=1 & sysctl net.ipv6.conf.default.disable_ipv6=1
+      tags: disable_ip_v6
+    
+    #- name: Add repository
+    #  ansible.builtin.yum_repository:
+    #    name: epel
+    #    description: EPEL YUM repo
+    #    baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+    #  tags: install_epel
+ 
+    - name: install_soft
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: latest
+      loop: "{{ var_list_soft }}"
+      tags: install_soft
+
+    - name: Make sure a service unit is running
+      ansible.builtin.systemd:
+        name: firewalld
+        state: stopped
+        enabled: false
+      tags: disable_firewall
+
+    - name: reboot OS
+      ansible.builtin.reboot:
+        reboot_timeout: 60

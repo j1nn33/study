@@ -1,0 +1,45 @@
+---
+- name: install hadoop on single node
+  hosts: all
+  #remote_user: root
+  gather_facts: no
+  
+  vars:
+    var_hadoop_ver: hadoop-3.3.4
+    var_tmp_dir: /tmp/hadoop/
+    var_list_soft:
+      - java-1.8.0-openjdk-devel
+      - mc
+      - wget
+  ################################################
+  tasks:
+    # вывод тестового сообщения
+    - name: message
+      ansible.builtin.debug:
+        msg: INSTALL HADOOP ON SINGLE NODE 
+
+    - name: install_soft
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: latest
+      loop: "{{ var_list_soft }}"
+     
+    - name: Creates directory {{ var_tmp_dir }}
+      file:
+        path: "{{ var_tmp_dir }}"
+        state: directory
+
+    - name: Download hadoop
+      ansible.builtin.get_url:
+        url: https://downloads.apache.org/hadoop/common/{{ var_hadoop_ver }}/{{ var_hadoop_ver }}-site.tar.gz
+        dest: "{{ var_tmp_dir }}"
+
+    - name: Extract hadoop.tgz into {{ var_tmp_dir }}
+      ansible.builtin.unarchive:
+        src: "{{ var_tmp_dir }}{{ var_hadoop_ver }}-site.tar.gz"
+        dest: "{{ var_tmp_dir }}"
+        remote_src: yes
+
+ 
+      
+
