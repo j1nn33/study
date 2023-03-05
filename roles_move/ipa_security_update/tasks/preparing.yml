@@ -1,0 +1,17 @@
+---
+# Таска сбора ифнормации о настройках IPA
+# вывод тестового сообщения
+
+- name: preparing
+  ansible.builtin.debug:
+    msg: preparing
+ 
+- name: COPY FILES TO {{ var_dest_tmp_dir }}
+  copy: src={{ var_source_tmp_dir }} dest={{ var_dest_tmp_dir }}  
+ 
+#- name: Gathering information about grant files
+#  shell: /usr/bin/bash {{ var_dest_tmp_dir }}/report/report_script.sh
+#  register: results
+
+#- debug:
+#    var: results.stdout_lines    

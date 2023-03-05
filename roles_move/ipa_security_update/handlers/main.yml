@@ -1,0 +1,18 @@
+---
+# handlers file for ipa_security_update
+ # перезагружаем auditd
+- name: reload auditd
+  shell: /sbin/service auditd restart
+    
+    # перезагружаем rsyslog
+- name: reload rsyslog
+  service:
+    name: rsyslog
+    state: restarted
+    
+# перезагружаем bind
+- name: reload bind
+  service:
+    name: named-pkcs11.service
+    state: restarted    
+      

@@ -1,0 +1,19 @@
+---
+# Примениен настройки rsyslog по тегу rsyslog-policy
+# вывод тестового сообщения
+- name: message
+  ansible.builtin.debug:
+    msg: updating_rsyslog-policy
+ 
+# Обновляем ipa.conf 
+- name: Template a file to /etc/rsyslog.d/ipa.conf
+  ansible.builtin.template:
+    src: ipa.j2
+    dest: /etc/rsyslog.d/ipa.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+  notify:
+  - reload rsyslog  
+ 

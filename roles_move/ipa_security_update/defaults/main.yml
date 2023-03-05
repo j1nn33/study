@@ -1,0 +1,72 @@
+---
+    # var_for_gathering_fatcs
+var_user: admin@IPA.LAN
+    # задание временной папки в локальной системе 
+var_dest_tmp_dir: /tmp/ipa_security_settings
+    # задание папки источника 
+var_source_tmp_dir: upload
+    # список параметров LDAP
+var_ldap: -e nsslapd-securePort
+          -e nsslapd-security
+          -e sslVersionMin
+          -e sslVersionMax
+          -e nsslapd-auditlog-logging-enabled
+          -e nsslapd-errorlog-logging-enabled
+          -e nsslapd-auditfaillog-logging-enabled
+          -e nsslapd-accesslog-level
+          -e nsslapd-errorlog-level
+          -e nsslapd-accesslog
+          -e nsslapd-errorlog
+          -e nsslapd-allow-anonymous-access              
+    # список параметров krb5.conf
+var_krb5: -e default_ccache_name
+          -e permitted_enctypes
+          -e permitted_enctypes
+          -e master_key_type
+          -e restrict_anonymous_to_tgt
+          -e requires_pre_auth
+# список параметров named.conf
+var_bind: -e allow-transfer
+          -e allow-update
+# Используется в task update_security_file.yml
+# date для добавления к имени файла krb5.conf при бекапе  
+var_date: "{{ lookup('pipe', 'date +%Y%m%d-%H%M') }}"
+# Список файлов для одновления политик
+# Список 1 root:root 755
+var_file_list_1: 
+  - /usr/sbin/krb5kdc
+  - /usr/sbin/kadmind
+  - /usr/sbin/kadmin.local
+  - /usr/sbin/kdb5_ldap_util
+  - /usr/sbin/kdb5_util
+  - /usr/sbin/kprop
+  - /usr/sbin/kpropd
+  - /usr/sbin/kproplog
+  - /usr/sbin/krb5-send-pr
+  - /usr/bin/k5srvutil
+  - /usr/bin/kadmin
+  - /usr/bin/kdestroy
+  - /usr/bin/kinit
+  - /usr/bin/klist
+  - /usr/bin/kpasswd
+  - /usr/bin/krb5-config
+  - /usr/bin/kswitch
+  - /usr/bin/ktutil
+
+# Список 2 root:root 600 
+var_file_list_2:
+  - /var/lib/sss/secrets/secrets.ldb
+  - /var/lib/sss/secrets/.secrets.mkey
+ 
+# Список 3 root:root 4755
+var_file_list_3:
+  - /usr/bin/ksu
+
+# REALM (используется в templates/ipa.j2, krb5.j2)
+var_realm: IPA.LAN
+# имя сервера (используется в templates/krb5.j2)
+var_kdc_server: freeipa.ipa.lan
+# имя домена (используется в templates/krb5.j2)
+var_domain: ipa.lan
+# ip адрес удаленного rsyslog сервера (используется в templates/ipa.j2)
+var_target_ip: 10.10.10.10

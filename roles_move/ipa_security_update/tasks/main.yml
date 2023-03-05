@@ -1,0 +1,34 @@
+---
+# tasks file for ipa_security_update
+# запуск тестовой задачи которая выводит название ОС целевой машины
+- name: Debug
+  debug: msg="main_task_begin"
+
+# установка состоит из 2 этапов (подготовка, установка Grafana)
+# будет разложена по 2 файлам (prepare.yml install_grafana.yml) не считая main.yml
+
+- name: preparin
+  include_tasks: tasks/preparing.yml
+  
+
+#- name: gathering_information
+#  include_tasks: tasks/gathering_information.yml
+
+- name: update_security_file
+  include_tasks: tasks/update_security_file.yml
+
+- name: update_security_krb5-policy
+  include_tasks: tasks/update_security_krb5-policy.yml
+
+- name: update_security_audit-policy
+  include_tasks: tasks/update_security_audit-policy.yml
+
+- name: update_security_rsyslog-policy
+  include_tasks: tasks/update_security_rsyslog-policy.yml
+
+- name: update_security_bind-policy
+  include_tasks: tasks/update_security_bind-policy.yml
+
+
+
+

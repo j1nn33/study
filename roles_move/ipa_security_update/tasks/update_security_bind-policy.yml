@@ -1,0 +1,18 @@
+---
+# Примениен настройки bind по тегу bind-policy
+# вывод тестового сообщения
+- name: message
+  ansible.builtin.debug:
+    msg: updating_bind-policy
+
+# копируем /etc/named.conf 
+- name: Copy krb5kdc file with owner and permissions
+  ansible.builtin.copy:
+    src: named.conf
+    dest: /etc/named.conf
+    owner: root
+    group: named
+    mode: '0640'
+    backup: true
+  notify:
+  - reload bind

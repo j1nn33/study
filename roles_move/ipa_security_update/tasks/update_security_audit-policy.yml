@@ -1,0 +1,19 @@
+---
+# Примениен настройки audit по тегу audit-policy
+# вывод тестового сообщения
+- name: message
+  ansible.builtin.debug:
+    msg: updating_audit-policy
+   
+# копируем krb5kdc.rules 
+- name: Copy krb5kdc file with owner and permissions
+  ansible.builtin.template:
+    src: krb5kdc.j2
+    dest: /etc/audit/rules.d/krb5kdc.rules
+    owner: root
+    group: root
+    mode: '0640'
+    backup: true
+  notify:
+    - reload auditd  
+    

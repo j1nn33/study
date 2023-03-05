@@ -1,0 +1,38 @@
+---
+#Примениен политики на файлы по тегу file-policy
+# вывод тестового сообщения
+- name: message
+  ansible.builtin.debug:
+    msg: updating_file_policy
+  
+      
+- name: Change file ownership, group and permissions for list_1
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    mode: '0755'
+  loop: "{{ var_file_list_1 }}"
+# Игнорирование ошибок по причине того что не все файлы могут присутсвоватьв в системе
+  ignore_errors: true
+  
+
+- name: Change file ownership, group and permissions for list_2
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    mode: '0600'
+  loop: "{{ var_file_list_2 }}"
+  ignore_errors: true
+  
+
+- name: Change file ownership, group and permissions for list_3
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    mode: '4755'
+  loop: "{{ var_file_list_3 }}"
+  ignore_errors: true
+  

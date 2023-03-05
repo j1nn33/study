@@ -1,0 +1,9 @@
+---
+- name: UPDATE_SECURITY_IPA
+  hosts: all
+  gather_facts: no
+   
+  roles:
+    - ipa_security_update
+
+    

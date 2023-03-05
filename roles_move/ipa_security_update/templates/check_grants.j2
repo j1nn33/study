@@ -1,0 +1,8 @@
+#!/bin/bash
+list={{ var_dest_tmp_dir }}/list.txt
+
+for files in $(cat $list)
+do 
+#$files
+ls -la $files
+done

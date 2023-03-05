@@ -1,0 +1,85 @@
+---
+# Таска сбора ифнормации о настройках IPA
+# вывод тестового сообщения
+- name: Gatering_facts_about_security_setting_IPA information
+  ansible.builtin.debug:
+    msg: Gatering_facts_about_security_setting_IPA
+
+# копирование небходимых данных из папки {{ var_source_tmp_dir }}
+- name: COPY FILES TO {{ var_dest_tmp_dir }}
+  copy: src={{ var_source_tmp_dir }} dest={{ var_dest_tmp_dir }} 
+
+# Генерация скрипта
+- name: Generate script file
+  template:
+    src: check_grants.j2
+    dest: "{{ var_dest_tmp_dir }}/check_grants.sh"
+
+# Сбор информации о грантах на файлы 
+- name: Gathering information about grant files
+  shell: /usr/bin/bash {{ var_dest_tmp_dir }}/check_grants.sh
+  register: results
+
+- debug:
+    var: results.stdout_lines
+
+# Сбор информации по LDAP
+- name: Gathering information about LDAP
+  shell: "grep {{ var_ldap }} /etc/dirsrv/slapd-*/dse.ldif"
+  register: results
+  ignore_errors: true
+- debug:
+    #var: results
+    var: results.stdout_lines
+
+# Сбор информации по krb5.conf
+- name: Gathering information about krb5.conf
+  shell: "grep {{ var_krb5 }} /etc/krb5.conf"
+  register: results
+  ignore_errors: true
+- debug:
+    #var: results
+    var: results.stdout_lines
+
+# Сбор информации по auditd правила находятся в файле /etc/audit/rules.d/krb5kdc.rules
+- name: Gathering information about auditd
+  shell: "cat /etc/audit/rules.d/krb5kdc.rules"
+  register: results
+  ignore_errors: true
+- debug:
+    #var: results
+    var: results.stdout_lines
+
+# Сбор информации по rsyslog правила находятся в файле /etc/rsyslog.d/ipa.conf
+- name: Gathering information about rsyslog
+  shell: "cat /etc/rsyslog.d/ipa.conf"
+  register: results
+  #
+  ignore_errors: true
+- debug:
+    #var: results
+    var: results.stdout_lines    
+
+# Сбор информации по BIND
+- name: Gathering information about bind
+  shell: "grep {{ var_bind }} /etc/named.conf"
+  register: results
+  ignore_errors: true
+- debug:
+    #var: results
+    var: results.stdout_lines
+
+# Сбор информации по Password_policy
+- name: Gathering information about Password_policy
+  # 
+  #become: true
+  #become_user: '{{var_user}}'
+  #become_flags: '--login'
+  shell: "ipa pwpolicy_find"
+  register: results
+  ignore_errors: true
+  
+- debug:
+    #var: results
+  var: results.stdout_lines
+
