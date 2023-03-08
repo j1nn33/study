@@ -2,7 +2,7 @@
 module(load="imfile")
 template(name="RsyslogForwardFormat" type="list") {
         constant(value="{")
-        constant(value="\"@timestamp\":\"") property(name="timereported" dateFormat="rfc3339") 
+        constant(value="\"@timestamp\":\"") property(name="timereported" dateFormat="rfc3339") constant(value="\",")
         constant(value="\"hostname\":\"") property(name="hostname") constant(value="\",")
         constant(value="\"tags\":[\"") property(name="syslogtag") constant(value="\"],")
         constant(value="\"message\":\"") property(name="msg") constant(value="\",")

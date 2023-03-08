@@ -1,16 +1,19 @@
 ---
 - name: install hadoop on single node
   hosts: all
-  #remote_user: root
+  remote_user: root
   gather_facts: no
   
   vars:
     var_hadoop_ver: hadoop-3.3.4
+    
     var_tmp_dir: /tmp/hadoop/
+    var_hadoop_dir: /opt/hadoop/
     var_list_soft:
       - java-1.8.0-openjdk-devel
       - mc
       - wget
+     
   ################################################
   tasks:
     # вывод тестового сообщения
@@ -29,6 +32,26 @@
         path: "{{ var_tmp_dir }}"
         state: directory
 
+    - name: Ensure group "hadoop" exists
+      ansible.builtin.group:
+        name: hadoop
+        state: present    
+    
+    - name: create hadoop user
+      ansible.builtin.user:
+        name: hadoop
+        shell: /bin/bash
+        groups: admins,hadoop
+        append: yes
+        generate_ssh_key: yes
+        ssh_key_bits: 2048
+        ssh_key_file: .ssh/id_rsa
+
+    - name: Creates directory {{ var_hadoop_dir }}
+      file:
+        path: "{{ var_hadoop_dir }}"
+        state: directory
+    
     - name: Download hadoop
       ansible.builtin.get_url:
         url: https://downloads.apache.org/hadoop/common/{{ var_hadoop_ver }}/{{ var_hadoop_ver }}-site.tar.gz
@@ -37,9 +60,9 @@
     - name: Extract hadoop.tgz into {{ var_tmp_dir }}
       ansible.builtin.unarchive:
         src: "{{ var_tmp_dir }}{{ var_hadoop_ver }}-site.tar.gz"
-        dest: "{{ var_tmp_dir }}"
+        dest: "{{ var_hadoop_dir }}"
         remote_src: yes
 
- 
+   
       
 

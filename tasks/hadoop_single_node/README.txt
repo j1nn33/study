@@ -17,7 +17,7 @@ Hadoop 3.x
 4. yarn-site.xml
 
 --------------------
-
+Установка разделена на задачи (полный манула смотри в МАН \MANUALS\PRICLAD\HADOOP\SETUP)
 
 
 
