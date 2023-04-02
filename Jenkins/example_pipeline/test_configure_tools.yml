@@ -1,0 +1,15 @@
+pipeline {
+    agent { 
+        label 'linux'
+    }
+    tools {
+        maven 'maven-3.8.6'     //- maven-3.8.6 должен совпадать с там что указали в configuration_tool
+    }
+    stages {
+        stage("test agent") {
+            steps {
+                sh 'mvn --version'
+            }
+        }
+    }
+}

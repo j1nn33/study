@@ -1,0 +1,27 @@
+
+pipeline {
+    environment {
+    TEST_VAR = "test_fuck"
+    }
+ 
+    agent { 
+        label 'any'
+    }
+    stages {
+        stage("Example Stage") {
+            steps {
+                sh 'ls -la /'
+            }
+        }
+        stage("Example1 Stage") {
+            steps {
+                sh 'echo ${TEST_VAR}'
+            }
+        }
+        stage ('test') {
+            steps {
+                echo "${TEST_VAR}"
+            }
+        }
+    }
+}

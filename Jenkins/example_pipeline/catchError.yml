@@ -1,0 +1,57 @@
+pipeline {
+  // добавление времени выполнения 
+  // сохраниение последних 5 сборок
+  options { timestamps()
+            buildDiscarder(logRotator(numToKeepStr: '5'))
+            ansiColor('xterm')
+  }
+  agent any
+  stages {
+    // завершается успешно
+    stage ('stage1'){
+      steps {
+        sh 'exit 0'
+      }
+    }
+    // завершается не успешно
+    stage ('stage1_1'){
+      steps {
+        // catchError позволяет продолжить выполнение pipeline в случае ошибки
+        //  вывод сообщения message: 'Skip because unstable'
+        // задать статус build stage buildResult:'UNSTABLE',stageResult:'UNSTABLE')
+        catchError (message: 'Skip because unstable', buildResult:'UNSTABLE',stageResult:'UNSTABLE') {
+          // кол-во повторов
+          retry(3){
+            sh 'exit 1'
+          }  
+        }
+      }
+    }
+    stage ('stage1_2'){
+      steps {
+        catchError (message: 'Skip because unstable', buildResult:'UNSTABLE',stageResult:'UNSTABLE') {
+          script {
+            try {
+              retry(2) {
+                sh 'exit 1'
+              }
+            }
+            catch (e){
+              currentBuild.result = 'UNSTABLE'
+            }
+          }
+            
+        }
+      }
+    }
+
+
+
+    // завершается успешно
+    stage ('stage2'){
+      steps {
+        sh 'echo stage2'
+      }
+    }
+  }
+}

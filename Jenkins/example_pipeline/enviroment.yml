@@ -1,0 +1,90 @@
+//объявление переменной в глобальном виде чтобы
+// когда она была определена в stage2_2 ее было видно stage3
+def myTestVar
+pipeline {
+  // добавление времени выполнения 
+  // сохраниение последних 5 сборок
+  options { timestamps()
+            buildDiscarder(logRotator(numToKeepStr: '5'))
+            ansiColor('xterm')
+  }
+  agent any
+  // объявление глобальлной переменной
+  environment {
+    MY_GLOBAL_VAR = 'myGLOBAL_env'
+    // результат переменной равен выполненю скрипат openssl rand -base64 19 - 19 символов
+    MY_RANDOM_VAR = sh(returnStdout:true,script:'openssl rand -base64 19').trim()
+    // данный секрет должен существовать в jenkins
+    MY_SECRET_TEXT = credentials('secret-username')
+  }
+  stages {
+    stage ('stage1'){
+      // выводим список переменных 
+      steps {
+        sh 'echo $MY_GLOBAL_VAR'
+        sh 'echo $MY_RANDOM_VAR'
+        sh 'echo $MY_SECRET_TEXT'
+        sh 'env | sort | grep MY'
+
+      }
+    }
+    stage ('stage2'){
+      // объявление переменной только для stage2
+      environment {
+        MY_STAGE_VAR = 'stage_var'
+      }
+      steps {
+        sh 'echo $MY_STAGE_VAR'
+        sh 'env | sort | grep MY'
+      }
+    }
+    stage ('stage2_1 override variables '){
+    // перезапись глобальной переменной для одного stage
+      steps {
+        script {
+          // Такой способ не работает 
+          env.MY_GLOBAL_VAR = 'IT DOES NOT WORK'
+          println '=====override===='
+          println "$MY_GLOBAL_VAR"
+        }
+        echo "MY_GLOBAL_VAR = ${env.MY_GLOBAL_VAR}"
+        // переопределение глобальной пременной в рамках одного stage
+        withEnv(['MY_GLOBAL_VAR=localVar']){
+          echo "MY_GLOBAL_VAR = ${env.MY_GLOBAL_VAR}"
+        }
+        // переопределение встроенной  пременной jenkins в рамках одного stage
+        withEnv(['BUILD_NUMBER=1']){
+          echo "BUILD_NUMBER = ${env.BUILD_NUMBER}"
+        }
+      }  
+    }
+    stage ('stage2_2 override variables'){
+      // вывод пременной только для stage2
+      // переопределение переменной в скрипте 
+      steps {
+        // будет видна в stage3 
+        script {
+          myTestVar = "myTestVARfoo"
+          println "$myTestVar"
+        }
+        // не будет видна в stage3
+        script {
+          def myTestVarlocal = "myTestVARlocal"
+          println "$myTestVarlocal"
+        }
+      }
+    }
+
+    stage ('stage3'){
+      // вывод пременной только для stage2
+      steps {
+        //пробуем вывести значение переменной myTestVar из stage2_2
+        script {
+          println "$myTestVar"
+        }
+        sh 'echo $MY_STAGE_VAR'
+        sh 'env | sort | grep MY'
+      }
+    }
+  }
+}

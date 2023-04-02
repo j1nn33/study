@@ -15,10 +15,10 @@ includedir /var/lib/sss/pubconf/krb5.include.d/
  forwardable = true
  udp_preference_limit = 0
  default_ccache_name = KEYRING:persistent:%{uid}
- permitted_enctypes = aes256-cts-hmac-sha1-96 aes256-cts-hmac-sha384-192
+ # permitted_enctypes = aes256-cts-hmac-sha1-96 aes256-cts-hmac-sha384-192 # for klient only
 
 [kdcdefaults]
-restrict_anonymous_to_tgt = true
+restrict_anonymous_to_tgt = true    # for klient only
 
 [realms]
  {{ var_realm }} = {
@@ -28,8 +28,8 @@ restrict_anonymous_to_tgt = true
   default_domain = {{ var_domain }}
   pkinit_anchors = FILE:/var/lib/ipa-client/pki/kdc-ca-bundle.pem
   pkinit_pool = FILE:/var/lib/ipa-client/pki/ca-bundle.pem
-  master_key_type = aes256-cts
-  requires_pre_auth = true
+  # master_key_type = aes256-cts      # see /var/kerberos/krb5kdc/kdc.conf
+  # requires_pre_auth = true          # not in free ipa
 }
 
 [domain_realm]
