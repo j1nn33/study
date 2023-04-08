@@ -8,7 +8,7 @@ pipeline {
             steps {
                 sh 'echo "stage 1"'
                 script {
-                    code = load 'scripts/hello.groovy'
+                    code = load './scripts/hello.groovy'
                     code.example1()
                 }
             }
@@ -23,3 +23,8 @@ pipeline {
         }
     }
 }
+
+// Repository URL
+// https://github.com/j1nn33/study.git
+// Script Path
+// Jenkins/example_pipeline/Jenkinsfile
