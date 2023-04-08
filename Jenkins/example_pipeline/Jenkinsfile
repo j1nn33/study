@@ -8,7 +8,7 @@ pipeline {
             steps {
                 sh 'echo "stage 1"'
                 script {
-                    code = load './scripts/hello.groovy'
+                    code = load 'Jenkins/example_pipeline/hello.groovy'
                     code.example1()
                 }
             }
