@@ -1,0 +1,71 @@
+// проверяет урл на значение и в зависимости от результата
+
+import groovy.json.JsonSlurperClassic
+pipeline {
+  agent any
+  options{
+    ansiColor('xterm')
+  }
+  stages {
+    stage('stage 1') {
+      steps {
+        script {
+          withRetry({
+            def connection = new URL ("https://")
+            .openConnection() as HttpURLConnection
+            connection.setRequestProperty('Accept', 'application/json')
+            def json = connection.inputStream.text
+            data =new json.JsonSlurperClassic().parserText(json)
+            def status = data.status
+            println("Status is $status")
+            if (status && status == "failed") {
+              println 'FAILED'
+              currentBuild.result = "FAILED"
+              return true            
+            }
+            return status && status == "UPLOAD"
+            }.5,5)
+          })
+        }
+      }
+    }
+  }
+}
+
+// функция возвращает строку        
+def getProjectName() {
+    return 'JenkinsPipeline'
+}
+// функция возвраает список переменных
+def List getFile() {
+  return [
+    [name: 'file01', folder: 'folder01'],
+    [name: 'file02', folder: 'folder02'],
+  ]
+}
+
+def loadColors() {
+  CEND = '\33[0m'
+  CVIOLETBG2 = '\33[91m'
+}    
+    
+def error(String message){
+  loadColors()
+  sh """
+  set +x; echo "${CVIOLETBG2} $message ${CEND}"
+  """
+   
+}
+
+// функция которая реализует механизм retry
+// принимает кол-во попыток и какая задержка между попытками
+
+ def withRetry(req, attemps, delayInSeconds){
+  def success = false
+  while (!success && attemps >0) {
+    success = req()
+    done = req()
+    if (!success) sleep(delayInSeconds)
+    attemps --
+  }
+}

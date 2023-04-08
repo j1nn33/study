@@ -1,0 +1,51 @@
+pipeline {
+  // добавление времени выполнения 
+  // сохраниение последних 5 сборок
+  options { timestamps()
+            buildDiscarder(logRotator(numToKeepStr: '5'))
+            ansiColor('xterm')
+  }
+  agent any
+  stages{
+    stage('stage1') {
+      steps {
+        script { 
+          // вызов функции в groovy
+          // итерируемя each  по строкам масссива p
+          getFile().each { p ->
+            sh "mkdir -p $p.folder"
+            sh "touch $p.folder/$p.name"
+          }
+          println getProjectName()
+          error('error message')
+        }
+
+      }
+    }
+  }
+}  
+
+// функция возвращает строку        
+def getProjectName() {
+    return 'JenkinsPipeline'
+}
+// функция возвраает список переменных
+def List getFile() {
+  return [
+    [name: 'file01', folder: 'folder01'],
+    [name: 'file02', folder: 'folder02'],
+  ]
+}
+
+def loadColors() {
+  CEND = '\33[0m'
+  CVIOLETBG2 = '\33[91m'
+}    
+    
+def error(String message){
+  loadColors()
+  sh """
+  set +x; echo "${CVIOLETBG2} $message ${CEND}"
+  """
+   
+}
