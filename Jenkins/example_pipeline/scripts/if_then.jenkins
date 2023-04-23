@@ -1,0 +1,54 @@
+pipeline {
+  // добавление времени выполнения 
+  // сохраниение последних 5 сборок
+  options { timestamps()
+            buildDiscarder(logRotator(numToKeepStr: '5'))
+            ansiColor('xterm')
+    }
+  environment {
+    BUILD = 'DEBUG1'
+   
+  }
+  agent { 
+        label 'any'
+    }
+  parameters {
+        booleanParam(name: "branch_develop", defaultValue: true, description: "branc develop")
+        //booleanParam(name: "BUILD", defaultValue: DEBUG, description: "DEBUG")
+    }
+  stages {
+        stage('develop') {
+            when {
+                expression { params.branch_develop }
+            }
+            steps {
+                echo "develop is OK"
+            }
+        }
+        stage('prod') {
+            //when { allOf {
+            //    environment name: "BUILD", value: "DEBUG"
+            //    branch 'develop' }
+            //}
+            input {
+               message "Ready to deploy?"
+               ok "Yes"
+               submitter "admin"
+               submitterParameter "SUBMITTER_USERNAME"
+            }
+            steps {
+                script {
+                    sh 'echo $BUILD'
+                    if (env.BUILD == 'DEBUG') {
+                        echo '"PROD is RUN'
+                    } else {
+                        echo 'prod is NOT RUN'
+                    }
+                }
+                echo "PROD is RUN"
+                sh 'echo $BUILD'
+            }
+        }   
+    }
+}
+      

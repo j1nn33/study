@@ -1,0 +1,42 @@
+pipeline {
+  // добавление времени выполнения 
+  // сохраниение последних 5 сборок
+  options { timestamps()
+            buildDiscarder(logRotator(numToKeepStr: '3'))
+            ansiColor('xterm')
+  }
+  environment {
+    BUILD = 'DEBUG1'
+    BRANCH_DEV = 'develop'
+   
+  }
+  agent { 
+        label 'any'
+  }
+
+  stages {
+        stage ('выводим список переменных '){
+        // выводим список переменных 
+            steps {
+                echo "выводим список переменных"
+                sh 'env | sort | grep BUILD'
+                sh 'env | sort | grep BRANCH_DEV'
+           }
+        }
+        stage(“Deploy”) {
+            parallel {
+                stage(“dev1”) {
+                    steps {
+                        echo "hello print start deploy on dev1"
+                    }
+                }
+                stage(“dev2”) {
+                    steps {
+                        echo "hello print start deploy on dev2"
+                    }
+                }
+            }
+        }
+    }
+}
+      

@@ -1,0 +1,38 @@
+У pipeline есть шаг build, указывая который вы можете начать сборку другого проекта
+Пример:
+
+build job: "spring-boot-example-deploy", parameters: [string(name: 'version', value: "$env.BUILD_NUMBER"),string(name: 'env', value: 'DEV')]
+
+------------------------------
+
+
+pipeline {
+  // добавление времени выполнения 
+  // сохраниение последних 5 сборок
+  options { timestamps()
+            buildDiscarder(logRotator(numToKeepStr: '3'))
+            ansiColor('xterm')
+  }
+  environment {
+    BUILD = 'DEBUG1'
+    BRANCH_DEV = 'develop'
+   
+  }
+  agent { 
+        label 'any'
+  }
+
+  stages {
+        stage ('выводим список переменных '){
+        // выводим список переменных 
+            steps {
+                echo "выводим список переменных"
+                sh 'env | sort | grep BUILD'
+                sh 'env | sort | grep BRANCH_DEV'
+                //запускает другую джобу Полное название проекта: pipeline/when
+                build job: "pipeline/when"
+                
+           }
+        }
+    }
+}

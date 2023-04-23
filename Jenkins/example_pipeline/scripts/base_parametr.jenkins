@@ -1,0 +1,59 @@
+pipeline {
+    agent { 
+        label 'any'
+    }
+    parameters {
+        booleanParam(name: "dryrun", defaultValue: true, description: "Тестовый запуск")
+        string(name: "version", defaultValue: "r48", trim: true, description: "Введите версию компонента")
+        text(name: "releaseNotes", defaultValue: "Добавлены новые feature", description: "Описание изменений в релизе")
+        password(name: "password", defaultValue: "changeme", description: "Введите пароль")
+        choice(name: "env", choices: ["PROD", "DEV", "UAT"], description: "Sample multi-choice parameter")
+    }
+    stages {
+        stage("output_params") {
+            steps {
+                sh 'hostname'
+                sh 'echo output_params'
+                sh 'echo from GUI'
+                sh "echo $params.bool_parmeter"
+                sh "echo $params.String_Parameter"
+                //sh "echo $params.Multi_line_String_Parameter"
+                sh "echo $params.Password_Parameter"
+                sh "echo $params.Choice_Parameter"
+                sh 'echo -------------------'
+                sh 'echo frome CODE'
+                sh "echo $params.dryrun"
+                sh "echo $params.version"
+                //sh "echo $params.releaseNotes"
+                sh "echo $params.password"
+                sh "echo $params.env"
+                sh 'echo -------------------'
+            }
+        }
+        stage('DryRun') {
+            when {
+                expression { params.dryrun }
+            }
+            steps {
+                echo "THIS IS DRYRUN!"
+            }
+        }
+        stage("Build") {
+            steps {
+                echo "Build stage."
+                echo "Hello $params.version"
+            }
+        }
+        stage("Test") {
+            steps {
+                echo "Test stage."
+            }
+        }
+        stage("Release") {
+            steps {
+                echo "Defined release notes $params.releaseNotes"
+                echo "Starting release on $params.env"
+            }
+        }
+    }
+}

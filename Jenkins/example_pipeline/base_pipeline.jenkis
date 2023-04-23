@@ -1,0 +1,23 @@
+// base_pipeline
+pipeline {
+  // добавление времени выполнения 
+  // сохраниение последних 5 сборок
+  options { timestamps()
+            buildDiscarder(logRotator(numToKeepStr: '5'))
+            ansiColor('xterm')
+  }
+  agent any
+  stages {
+    // ждет наличие файла myfile.yml  5 min
+    stage ('stage1'){
+      steps {
+        sh 'touch 1'
+        timeout(5){
+          waitUntil {
+            fileExists 'myfile.yml'
+          }
+        }
+      }
+    }
+  }
+}  

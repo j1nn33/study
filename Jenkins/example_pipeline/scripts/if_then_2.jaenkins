@@ -1,0 +1,65 @@
+Есть несколько различных условий:
+when { branch ‘develop’ } - выполнить stage если branch = develop 
+when { environment name: "BUILD", value: "DEBUG" } - выполнить если переменная BUILD имеет значение DEBUG 
+when {expression {expression { return params.DEPLOY } } - выполнить если переменная DEPLOY = true ( не false и не null ) 
+Операторы И, ИЛИ, НЕ
+allOf - работает как оператор И, все условия должны быть выполнены для запуска stage
+Пример:
+when { allOf { environment name: "BUILD", value: "DEBUG" branch 'develop' }
+}
+anyOf - работает как оператор ИЛИ, для выполнения этого stage должно быть выполнено любое из условий
+when { anyOf { environment name: "BUILD", value: "DEBUG" branch 'develop' }
+}
+not - для выполнение stage, условие не должно быть выполнено
+when { not { branch ‘main’} 
+}
+
+=================================================================================
+pipeline {
+  // добавление времени выполнения 
+  // сохраниение последних 5 сборок
+  options { timestamps()
+            buildDiscarder(logRotator(numToKeepStr: '3'))
+            ansiColor('xterm')
+  }
+  environment {
+    BUILD = 'DEBUG1'
+    BRANCH_DEV = 'develop'
+   
+  }
+  agent { 
+        label 'any'
+  }
+  
+  stages {
+        stage ('выводим список переменных '){
+        // выводим список переменных 
+            steps {
+                echo "выводим список переменных"
+                sh 'env | sort | grep BUILD'
+                sh 'env | sort | grep BRANCH_DEV'
+                
+           }
+        }
+        
+        stage('develop') { 
+            //- выполнить stage если BRANCH_DEV = develop
+            when { environment name: "BRANCH_DEV", value: "develop"}
+        //    }
+            steps {
+                echo "выполнить stage если BRANCH_DEV = develop"
+            }
+        }
+        
+        stage('develop') { 
+            // пропустить если BRANCH_DEV = develop1
+            when { environment name: "BRANCH_DEV", value: "develop1"}
+        //    }
+            steps {
+                echo "выполнить stage если BRANCH_DEV = develop"
+            }
+        }
+         
+    }
+}
+      
