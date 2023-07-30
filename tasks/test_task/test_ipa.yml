@@ -1,0 +1,25 @@
+---
+- name: TEST_TASK_IPA
+  hosts: all
+  remote_user: root
+  gather_facts: no
+  # Поправить названия и переменные 
+  vars:
+      
+  tasks:
+    - name: Print test message 
+      ansible.builtin.debug:
+        msg: test message in task 
+
+    - name: Ensure sudo rule is present that's allows all every body to execute any command on any host without being asked for a password.
+      community.general.ipa_sudorule:
+        name: tets_sudo_all_nopasswd
+        cmdcategory: all
+        description: Allow to run every command with sudo without password
+        hostcategory: all
+        sudoopt:
+          - '!authenticate'
+        usercategory: all
+        ipa_host: freeipa.local.lan
+        ipa_user: admin
+        ipa_pass: 
