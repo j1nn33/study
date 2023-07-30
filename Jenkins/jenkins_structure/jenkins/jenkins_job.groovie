@@ -1,0 +1,29 @@
+// как включить скрип в pipeline
+// настройки job / секция Pipeline
+//                   - definition: Pipeline script from SCM
+//                   - SCM: Git
+//                      - Repositories
+//                          - Reposiyory URL: https://github.com/j1nn33/study.git
+//                      - Branches to build
+//                          - Branch Specifier (blank for 'any'): */master
+//                      - Script Path: Jenkins/jenkins_structure/jenkins/jenkins_job.groovie       
+//
+
+
+
+pipeline {
+    agent any
+    stages {
+        stage('stage 1'){
+            steps {
+                sh 'echo "stage 1"'
+            }
+        }
+        stage('stage 2'){
+            steps {
+                sh 'echo "stage 2"'
+            }
+        }
+    }
+}
+

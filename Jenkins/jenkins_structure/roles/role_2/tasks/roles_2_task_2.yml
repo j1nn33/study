@@ -1,0 +1,4 @@
+---  
+- name: roles_2_task_2
+  ansible.builtin.debug:
+    msg: test message in roles_2_task_2.yml

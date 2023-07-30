@@ -1,0 +1,4 @@
+---  
+- name: post_action_task_2
+  ansible.builtin.debug:
+    msg: test message in post_action_task_2.yml

@@ -1,0 +1,10 @@
+---
+- name: POST_ACTION
+  hosts: all
+  gather_facts: false
+  become: true
+  vars_files: 
+    - secret.yml
+  roles:
+    - post_action
+  tasks:

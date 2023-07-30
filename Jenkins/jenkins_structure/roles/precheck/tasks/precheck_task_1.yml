@@ -1,0 +1,4 @@
+---  
+- name: precheck_task_1
+  ansible.builtin.debug:
+    msg: test message in precheck_task_1.yml

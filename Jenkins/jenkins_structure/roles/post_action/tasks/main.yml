@@ -1,0 +1,7 @@
+---
+# tasks file for post_action
+- name: "post_action_task_1"
+  include_tasks: post_action_task_1.yml
+
+- name: "post_action_task_2"
+  include_tasks: post_action_task_2.yml

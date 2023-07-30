@@ -1,0 +1,7 @@
+---
+# tasks file for role_2
+- name: "roles_2_task_1"
+  include_tasks: roles_2_task_1.yml
+
+- name: "roles_2_task_2"
+  include_tasks: roles_2_task_2.yml

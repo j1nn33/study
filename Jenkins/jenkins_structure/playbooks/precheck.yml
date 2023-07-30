@@ -1,0 +1,10 @@
+---
+- name: PRECHECK
+  hosts: all
+  gather_facts: false
+  become: true
+  vars_files: 
+    - secret.yml
+  roles:
+    - precheck
+  tasks:

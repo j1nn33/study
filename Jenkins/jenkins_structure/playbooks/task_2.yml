@@ -1,0 +1,12 @@
+---
+- name: TASK_2
+  hosts: all
+  gather_facts: false
+  become: true
+  vars_files: 
+    - secret.yml
+
+  tasks:
+    - name: task_in_task_2
+      ansible.builtin.debug:
+      msg: test message in task_in_task_2.yml
