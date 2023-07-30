@@ -13,15 +13,26 @@
 
 pipeline {
     agent any
+    options {
+        ansiColor("xterm")
+        buildDiscarder logRotator(
+            numToKeepStr: '3'
+        ) 
+    }
     stages {
         stage('stage 1'){
             steps {
-                sh 'echo "stage 1"'
+                sh 'echo "test_from_jenkins_pipeline_stage 1"'
             }
         }
         stage('stage 2'){
             steps {
-                sh 'echo "stage 2"'
+                script {
+                    dir('Jenkins/jenkins_structure'){
+                        sh 'echo "test_from_jenkins_pipeline_stage precheck"'
+                        ansiblePlaybook: "playbooks/precheck.yml"
+                    }
+                }
             }
         }
     }
