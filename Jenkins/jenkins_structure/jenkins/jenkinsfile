@@ -11,12 +11,12 @@
 
 pipeline {
     agent any
-    options {
-        ansiColor("xterm")
-        buildDiscarder logRotator(
-            numToKeepStr: '3'
-        ) 
-    }
+    //options {
+    //    ansiColor("xterm")
+    //    buildDiscarder logRotator(
+    //        numToKeepStr: '3'
+    //    ) 
+    //}
     stages {
         
         stage('Checkout') { // добавим новый Stage
