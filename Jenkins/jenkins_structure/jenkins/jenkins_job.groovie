@@ -24,12 +24,12 @@ pipeline {
             }
         }
         
-        
+        stage('Deploy') {
             steps {
                 sh 'ansible-playbook ./Jenkins/ansble-jenkins/1_st/test_playbook.yaml'
             }
-           
-
+        }    
+        
         //stage('stage 2') {
         //    steps {
         //        sh 'ansible-playbook ./Jenkins/jenkins_structure/playbooks/role_1.yml' // поскольку скрипты работают в одной папке, на втором шаге мы можем просто запустить плейбук
