@@ -1,0 +1,79 @@
+// как включить скрип в pipeline
+// настройки job / секция Pipeline
+//                   - definition: Pipeline script from SCM
+//                   - SCM: Git
+//                      - Repositories
+//                          - Reposiyory URL: https://github.com/j1nn33/study.git
+//                      - Branches to build
+//                          - Branch Specifier (blank for 'any'): */master
+//                      - Script Path: Jenkins/jenkins_structure/jenkins/jenkins_job.groovie       
+//
+
+pipeline {
+    agent any
+    options {
+        ansiColor("xterm")
+        buildDiscarder logRotator(
+            numToKeepStr: '3'
+        ) 
+    }
+    stages {
+        
+        stage('Checkout') { // добавим новый Stage
+            steps {
+                git branch: 'master', url: "https://github.com/j1nn33/study.git" 
+            }
+        }
+        stage('Deploy') {
+            steps {
+                //ansiblePlaybook colorized: true, disableHostKeyChecking: true, credentialsId: 'ssh_cred_for_host', installation: 'ansible-master', inventory: './ROLES/ansible/inventory_monitoring/dev/hosts.ini', playbook: './ROLES/ansible/playbooks_monitoring/prometheus_role.yaml'
+                ansiblePlaybook colorized: true, disableHostKeyChecking: true, installation: 'ansible-master', inventory: './Jenkins/jenkins_structure/hosts.ini', playbook: './Jenkins/jenkins_structure/playbooks/role_1.yml'
+                //sh 'ansible-playbook study/ansble-jenkins/1_st/ansible-playbook/test_playbook.yaml' // поскольку скрипты работают в одной папке, на втором шаге мы можем просто запустить плейбук
+            }
+        }
+        
+        
+        //stage('Checkout') { // Скачивание репозиториая 
+        //    steps {
+        //        git branch: 'master', url: "https://github.com/j1nn33/study.git" // используем встроенный в Jenkins плагин Git для скачивания проекта из бранча main
+        //    }
+        //}
+        
+        //stage('Deploy') {
+        //    steps {
+        //        dir('Jenkins/jenkins_structure'){
+        //            sh 'ansible-playbook playbooks/role_1.yml -i hosts.ini'
+        //        }    
+        //    }
+        //}    
+        
+        //stage('stage 2') {
+        //    steps {
+        //        sh 'ansible-playbook ./Jenkins/jenkins_structure/playbooks/role_1.yml' // поскольку скрипты работают в одной папке, на втором шаге мы можем просто запустить плейбук
+        //    }
+        //}
+
+
+        //stage('test_for groovie'){
+        //    steps {
+        //        script {
+        //           dir('Jenkins/jenkins_structure'){
+        //                sh 'echo "test_from_jenkins_pipeline_stage precheck"'
+        //                sh 'pwd'
+        //                sh 'ls -a'
+        //                //sh 'ansible-playbook Jenkins/jenkins_structure/playbooks/role_2.yml -i hosts.ini'
+        //                ansiblePlaybook(
+        //                    playbook: "playbooks/precheck.yml",
+        //                    //extraVars: []
+        //                    disableHostKeyChecking: true,
+        //                    inventory: "hosts.ini",
+        //                    colorized: true,
+        //                )                            
+        //            }
+        //        }
+        //    }
+        //}
+    }
+}
+
+
