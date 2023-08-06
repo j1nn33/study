@@ -26,7 +26,7 @@ pipeline {
         
         stage('stage 2') {
             steps {
-                sh 'ansible-playbook study/Jenkins/jenkins_structure/playbooks/role_1.yml' // поскольку скрипты работают в одной папке, на втором шаге мы можем просто запустить плейбук
+                sh 'ansible-playbook ./Jenkins/jenkins_structure/playbooks/role_1.yml' // поскольку скрипты работают в одной папке, на втором шаге мы можем просто запустить плейбук
             }
         }
         //stage('test_for groovie'){
