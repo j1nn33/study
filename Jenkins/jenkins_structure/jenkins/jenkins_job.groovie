@@ -33,7 +33,7 @@ pipeline {
                         sh 'pwd'
                         sh 'ls -a'
 
-                        sh 'ansible-playbook  playbooks/role_2.yml -i hosts.ini'
+                        sh 'ansible-playbook  study/Jenkins/jenkins_structure/playbooks/role_2.yml -i hosts.ini'
                         // ansiblePlaybook: "playbooks/precheck.yml"
                         
                     }
