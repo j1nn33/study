@@ -26,7 +26,8 @@ pipeline {
         
         stage('Deploy') {
             steps {
-                sh 'ansible-playbook ./Jenkins/ansble-jenkins/1_st/test_playbook.yaml'
+                dir('Jenkins/jenkins_structure')
+                sh 'ansible-playbook playbooks/role_1.yml -i hosts.ini'
             }
         }    
         
