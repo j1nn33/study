@@ -24,11 +24,19 @@ pipeline {
             }
         }
         
-        stage('stage 2') {
+        
             steps {
-                sh 'ansible-playbook ./Jenkins/jenkins_structure/playbooks/role_1.yml' // поскольку скрипты работают в одной папке, на втором шаге мы можем просто запустить плейбук
+                sh 'ansible-playbook ./Jenkins/ansble-jenkins/1_st/test_playbook.yaml'
             }
-        }
+           
+
+        //stage('stage 2') {
+        //    steps {
+        //        sh 'ansible-playbook ./Jenkins/jenkins_structure/playbooks/role_1.yml' // поскольку скрипты работают в одной папке, на втором шаге мы можем просто запустить плейбук
+        //    }
+        //}
+
+
         //stage('test_for groovie'){
         //    steps {
         //        script {
@@ -36,7 +44,7 @@ pipeline {
         //                sh 'echo "test_from_jenkins_pipeline_stage precheck"'
         //                sh 'pwd'
         //                sh 'ls -a'
-        //                //sh 'ansible-playbook  Jenkins/jenkins_structure/playbooks/role_2.yml -i hosts.ini'
+        //                //sh 'ansible-playbook Jenkins/jenkins_structure/playbooks/role_2.yml -i hosts.ini'
         //                ansiblePlaybook(
         //                    playbook: "playbooks/precheck.yml",
         //                    //extraVars: []
