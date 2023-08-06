@@ -28,7 +28,7 @@ pipeline {
         stage('stage 2'){
             steps {
                 script {
-                    dir('Jenkins/jenkins_structure'){
+                    //dir('Jenkins/jenkins_structure'){
                         sh 'echo "test_from_jenkins_pipeline_stage precheck"'
                         sh 'pwd'
                         sh 'ls -a'
