@@ -24,34 +24,29 @@ pipeline {
                 git branch: 'master', url: "https://github.com/j1nn33/study.git" 
             }
         }
-        stage('Deploy') {
+        stage('ROLE_1') {
             steps {
                 //ansiblePlaybook colorized: true, disableHostKeyChecking: true, credentialsId: 'ssh_cred_for_host', installation: 'ansible-master', inventory: './ROLES/ansible/inventory_monitoring/dev/hosts.ini', playbook: './ROLES/ansible/playbooks_monitoring/prometheus_role.yaml'
                 ansiblePlaybook colorized: true, disableHostKeyChecking: true, installation: 'ansible-master', inventory: './Jenkins/jenkins_structure/hosts.ini', playbook: './Jenkins/jenkins_structure/playbooks/role_1.yml'
-                //sh 'ansible-playbook study/ansble-jenkins/1_st/ansible-playbook/test_playbook.yaml' // поскольку скрипты работают в одной папке, на втором шаге мы можем просто запустить плейбук
+                
             }
         }
         
         
-        //stage('Checkout') { // Скачивание репозиториая 
-        //    steps {
-        //        git branch: 'master', url: "https://github.com/j1nn33/study.git" // используем встроенный в Jenkins плагин Git для скачивания проекта из бранча main
-        //    }
-        //}
+       
+        stage('ROLE_2') {
+            steps {
+                dir('Jenkins/jenkins_structure'){
+                   sh 'ansible-playbook playbooks/role_2.yml -i hosts.ini'
+                }    
+            }
+        }    
         
-        //stage('Deploy') {
-        //    steps {
-        //        dir('Jenkins/jenkins_structure'){
-        //            sh 'ansible-playbook playbooks/role_1.yml -i hosts.ini'
-        //        }    
-        //    }
-        //}    
-        
-        //stage('stage 2') {
-        //    steps {
-        //        sh 'ansible-playbook ./Jenkins/jenkins_structure/playbooks/role_1.yml' // поскольку скрипты работают в одной папке, на втором шаге мы можем просто запустить плейбук
-        //    }
-        //}
+        stage('TASK_1') {
+            steps {
+                sh 'ansible-playbook ./Jenkins/jenkins_structure/playbooks/task_1.yml' // поскольку скрипты работают в одной папке, на втором шаге мы можем просто запустить плейбук
+            }
+        }
 
 
         //stage('test_for groovie'){
