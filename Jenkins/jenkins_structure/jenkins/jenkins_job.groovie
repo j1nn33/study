@@ -30,7 +30,8 @@ pipeline {
                 script {
                     dir('Jenkins/jenkins_structure'){
                         sh 'echo "test_from_jenkins_pipeline_stage precheck"'
-                        ansiblePlaybook: "playbooks/precheck.yml"
+                        sh 'ansible-playbook  ./playbooks/role_2.yml -i hosts.ini'
+                        #ansiblePlaybook: "playbooks/precheck.yml"
                         
                     }
                 }
