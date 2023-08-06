@@ -1,10 +1,10 @@
 ---
-- name: ROLE_1
+- name: ROLE_2
   hosts: all
   gather_facts: false
   become: true
   vars_files: 
-    - secret.yml
+    #- secret.yml
   roles:
-    - role_1  
-  tasks:
+    - ../roles/role_2
+  #tasks:

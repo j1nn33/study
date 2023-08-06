@@ -4,7 +4,7 @@
   gather_facts: false
   become: true
   vars_files: 
-    - secret.yml
+    #- secret.yml
   roles:
-    - precheck
+    - ../roles/precheck
   tasks:

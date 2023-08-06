@@ -31,3 +31,16 @@ ansible-galaxy init role_1
 ansible-galaxy init role_2
 ansible-galaxy init post_action
 ansible-galaxy init precheck
+
+--------------------------------------
+Тестирование 
+pwd
+/root/repo/study/Jenkins/jenkins_structure
+ansible all -i hosts.ini -m ping -k
+
+ansible-playbook playbooks/<name_role>.yml -i hosts.ini -k
+ansible-playbook playbooks/role_2.yml -i hosts.ini -k
+
+
+ansible-playbook playbooks/role_2.yml -i hosts.ini --ask-vault-pass
+ 

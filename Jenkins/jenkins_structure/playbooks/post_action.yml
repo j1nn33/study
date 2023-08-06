@@ -4,7 +4,7 @@
   gather_facts: false
   become: true
   vars_files: 
-    - secret.yml
+    #- secret.yml
   roles:
-    - post_action
+    - ../roles/post_action
   tasks:

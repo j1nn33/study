@@ -4,10 +4,10 @@
   gather_facts: false
   become: true
   vars_files: 
-    - secret.yml
+    #- secret.yml
   roles:
-    - role_1  
+    - ../roles/role_1  
   tasks:
     - name: task_in_role_1
       ansible.builtin.debug:
-      msg: test message in task_in_role_1.yml
+        msg: test message in task_in_role_1.yml
