@@ -26,7 +26,8 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh 'ansible-playbook ./Jenkins/jenkins_structure/playbooks/task_1.yml -i hosts.ini'
+                ansiblePlaybook colorized: true, disableHostKeyChecking: true, installation: 'ansible-master', inventory: './Jenkins/jenkins_structure/hosts.ini', playbook: './Jenkins/jenkins_structure/playbooks/role_1.yml'
+                //sh 'ansible-playbook ./Jenkins/jenkins_structure/playbooks/task_1.yml -i hosts.ini'
                 //ansiblePlaybook colorized: true, disableHostKeyChecking: true, credentialsId: 'ssh_cred_for_host', installation: 'ansible-master', inventory: './ROLES/ansible/inventory_monitoring/dev/hosts.ini', playbook: './ROLES/ansible/playbooks_monitoring/prometheus_role.yaml'
                 //ansiblePlaybook colorized: true, disableHostKeyChecking: true, installation: 'ansible-master', inventory: './Jenkins/jenkins_structure/hosts.ini', playbook: './Jenkins/jenkins_structure/playbooks/role_1.yml'
                 //sh 'ansible-playbook study/ansble-jenkins/1_st/ansible-playbook/test_playbook.yaml' // поскольку скрипты работают в одной папке, на втором шаге мы можем просто запустить плейбук
