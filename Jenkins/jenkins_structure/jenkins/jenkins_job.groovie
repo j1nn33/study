@@ -9,8 +9,6 @@
 //                      - Script Path: Jenkins/jenkins_structure/jenkins/jenkins_job.groovie       
 //
 
-
-
 pipeline {
     agent any
     options {
@@ -33,9 +31,14 @@ pipeline {
                         sh 'pwd'
                         sh 'ls -a'
 
-                        sh 'ansible-playbook  Jenkins/jenkins_structure/playbooks/role_2.yml -i hosts.ini'
-                        // ansiblePlaybook: "playbooks/precheck.yml"
-                        
+                        //sh 'ansible-playbook  Jenkins/jenkins_structure/playbooks/role_2.yml -i hosts.ini'
+                        ansiblePlaybook(
+                            playbook: "playbooks/precheck.yml",
+                            //extraVars: []
+                            disableHostKeyChecking: true,
+                            inventory: hosts.ini,
+                            colorized: true,
+                        )                            
                     }
                 }
             }
