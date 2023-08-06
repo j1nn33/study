@@ -22,7 +22,7 @@ pipeline {
     stages {
         stage('stage 1'){
             steps {
-                sh 'echo "test_from_jenkins_pipeline_stage 1"'
+                sh 'echo "test_from_jenkins_pipeline_stage 1 is begin "'
             }
         }
         stage('stage 2'){
@@ -32,10 +32,11 @@ pipeline {
                         sh 'echo "test_from_jenkins_pipeline_stage precheck"'
                         ansiblePlaybook: "playbooks/precheck.yml"
                         extras: 
-                    }
+                    }}
                 }
             }
         }
     }
 }
+
 
