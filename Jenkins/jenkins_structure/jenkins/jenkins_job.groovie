@@ -18,31 +18,36 @@ pipeline {
         ) 
     }
     stages {
-        stage('stage 1'){
+        stage('Checkout') { // Скачивание репозиториая 
             steps {
-                sh 'echo "test_from_jenkins_pipeline_stage 1 is begin "'
+                git branch: 'master', url: "https://github.com/j1nn33/study.git" // используем встроенный в Jenkins плагин Git для скачивания проекта из бранча main
             }
         }
-        stage('stage 2'){
+        
+        stage('stage 2') {
             steps {
-                script {
-                    dir('Jenkins/jenkins_structure'){
-                        sh 'echo "test_from_jenkins_pipeline_stage precheck"'
-                        sh 'pwd'
-                        sh 'ls -a'
-
-                        //sh 'ansible-playbook  Jenkins/jenkins_structure/playbooks/role_2.yml -i hosts.ini'
-                        ansiblePlaybook(
-                            playbook: "playbooks/precheck.yml",
-                            //extraVars: []
-                            disableHostKeyChecking: true,
-                            inventory: "hosts.ini",
-                            colorized: true,
-                        )                            
-                    }
-                }
+                sh 'ansible-playbook study/Jenkins/jenkins_structure/playbooks/role_1.yml' // поскольку скрипты работают в одной папке, на втором шаге мы можем просто запустить плейбук
             }
         }
+        //stage('test_for groovie'){
+        //    steps {
+        //        script {
+        //           dir('Jenkins/jenkins_structure'){
+        //                sh 'echo "test_from_jenkins_pipeline_stage precheck"'
+        //                sh 'pwd'
+        //                sh 'ls -a'
+        //                //sh 'ansible-playbook  Jenkins/jenkins_structure/playbooks/role_2.yml -i hosts.ini'
+        //                ansiblePlaybook(
+        //                    playbook: "playbooks/precheck.yml",
+        //                    //extraVars: []
+        //                    disableHostKeyChecking: true,
+        //                    inventory: "hosts.ini",
+        //                    colorized: true,
+        //                )                            
+        //            }
+        //        }
+        //    }
+        //}
     }
 }
 
