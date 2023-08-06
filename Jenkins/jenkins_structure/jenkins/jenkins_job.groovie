@@ -8,6 +8,7 @@
 //                          - Branch Specifier (blank for 'any'): */master
 //                      - Script Path: Jenkins/jenkins_structure/jenkins/jenkins_job.groovie       
 //
+//    вызвать можно одним из способов
 
 pipeline {
     agent any
@@ -31,9 +32,7 @@ pipeline {
                 
             }
         }
-        
-        
-       
+                     
         stage('ROLE_2') {
             steps {
                 dir('Jenkins/jenkins_structure'){
@@ -44,30 +43,30 @@ pipeline {
         
         stage('TASK_1') {
             steps {
-                sh 'ansible-playbook ./Jenkins/jenkins_structure/playbooks/task_1.yml' // поскольку скрипты работают в одной папке, на втором шаге мы можем просто запустить плейбук
+                sh 'ansible-playbook ./Jenkins/jenkins_structure/playbooks/task_1.yml -i hosts.ini' // поскольку скрипты работают в одной папке, на втором шаге мы можем просто запустить плейбук
             }
         }
 
 
-        //stage('test_for groovie'){
-        //    steps {
-        //        script {
-        //           dir('Jenkins/jenkins_structure'){
-        //                sh 'echo "test_from_jenkins_pipeline_stage precheck"'
-        //                sh 'pwd'
-        //                sh 'ls -a'
-        //                //sh 'ansible-playbook Jenkins/jenkins_structure/playbooks/role_2.yml -i hosts.ini'
-        //                ansiblePlaybook(
-        //                    playbook: "playbooks/precheck.yml",
-        //                    //extraVars: []
-        //                    disableHostKeyChecking: true,
-        //                    inventory: "hosts.ini",
-        //                    colorized: true,
-        //                )                            
-        //            }
-        //        }
-        //    }
-        //}
+        stage('test_for groovie'){
+            steps {
+                script {
+                   dir('Jenkins/jenkins_structure'){
+                        sh 'echo "test_from_jenkins_pipeline_stage precheck"'
+                        sh 'pwd'
+                        sh 'ls -a'
+                        //sh 'ansible-playbook Jenkins/jenkins_structure/playbooks/task_2.yml -i hosts.ini'
+                        ansiblePlaybook(
+                            playbook: "playbooks/precheck.yml",
+                            //extraVars: []
+                            disableHostKeyChecking: true,
+                            inventory: "hosts.ini",
+                            colorized: true,
+                        )                            
+                    }
+                }
+            }
+        }
     }
 }
 
