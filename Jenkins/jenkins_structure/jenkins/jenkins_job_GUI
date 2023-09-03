@@ -141,11 +141,12 @@ pipeline {
     }
     environment {
      // ANSIBLE Options
-     ANSIBLE_HOST_KEY_CHECKING = "False"
-     ANSIBLE_PLAYBOOK          = "name_playbook.yml"
-     ANSIBLE_HOME              = "${WORKSPACE}"
-     USERHOME                  = "${WORKSPACE}/${PROJECT}"
-
+        ANSIBLE_HOST_KEY_CHECKING = "False"
+        ANSIBLE_PLAYBOOK          = "name_playbook.yml"
+        ANSIBLE_HOME              = "${WORKSPACE}"
+        USERHOME                  = "${WORKSPACE}/${PROJECT}"
+        INVENTORY                 = "/hosts.ini"  
+    
      // ---------------   
      STAND_ARIA = 'test_stand'
      PROJECT    = 'project-c-53'
@@ -183,7 +184,23 @@ pipeline {
                 */
             }
         }
+         stage('stage 4 RUN ansible script'){
+            steps {
+                script{
+                    dir('./Jenkins/jenkins_structure'){
+                        sh "ansible --version"
+                        ansiblePlaybook(
+                            playbook: "playbooks/role_1.yml",
 
+                            colorized: true,
+                            disableHostKeyChecking: true,
+                            inventory: '$INVENTORY'
+                        )
+                    }
+                    //runAnsiblePlaybook("${ANSIBLE_PLABOOK}}")
+                }
+            }
+        }
         // parralel stage
         stage('Parallel Stage') {
             parallel {
@@ -232,10 +249,8 @@ pipeline {
             //when {
             //    expression { params.setup_package }
             //    }
-            
             steps {
                 sh 'echo "stage - зависит от booleanParam setup_package is RUN"'
-                
             }
         }
         stage ('stage (этап выполнятеся когда два условия верны)'){
@@ -265,13 +280,13 @@ pipeline {
             }
             post {
                 always{
-                    coloruedString ("success", "post always")     
+                    coloruedString ("success", "post_always")
                 }
                 success{
-                    coloruedString ("success", "post success")     
+                    coloruedString ("success", "post_success")
                 }
                 failure{
-                    coloruedString ("error", "post failure")
+                    coloruedString ("error", "post_failure")
                 }
             }
         }
