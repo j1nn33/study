@@ -1,0 +1,281 @@
+// как включить скрип в pipeline
+// настройки job / секция Pipeline
+//                   - definition: Pipeline script from SCM
+//                   - SCM: Git
+//                      - Repositories
+//                          - Reposiyory URL: https://github.com/j1nn33/study.git
+//                      - Branches to build
+//                          - Branch Specifier (blank for 'any'): */master
+//                      - Script Path: Jenkins/jenkins_structure/jenkins/jenkins_job.groovie       
+//
+
+import groovy.util.XmlSlurper
+import groovy.json.JsonSlurper
+//
+//
+properties([
+    parameters([
+        // выбор в GUI
+        choice    ( name: 'STAND', description: 'STAND of job execution', choices: ['dev', 'ift', 'psi', 'prom']),
+        string    ( name: 'user', defaultValue: 'user_name', description: 'user for install'),
+        password  ( name: 'user_password', defaultValue: 'user_password', description: 'user password for install'),
+        // требуется plugin separator
+        separator ( name: 'BUILD_env', sectionHeader: 'Настройки для подключения',
+                    separatorStyle: 'border-width: 1',
+                    sectionHeaderStyle: """ 
+                    background-color: #dbdb8e;
+                    text-aligh: center;
+                    padding: 4px;
+                    color: #343434;
+                    font-size: 22px;
+                    font-weight: normal;
+                    text-transform: uppercase;
+                    font-family: 'Orienta', sans-serif;
+                    letter-spacing: 1px;
+                    font-style: italic;
+                    """
+        ),
+        string    (
+            name: 'string_name_1',
+            defaultValue: 'string_name_1',
+            trim: true,
+            description: 'description string_name_1'
+        ),
+        string    (
+            name: 'string_name_2',
+            defaultValue: 'string_name_2',
+            trim: true,
+            description: 'description string_name_2'
+        ),
+        string    (
+            name: 'string_name_3',
+            defaultValue: 'string_name_3',
+            trim: false,
+            description: 'description string_name_3 trim: false'
+        ),
+        // booleanParam
+        booleanParam(
+            name: 'booleanParam_1',
+            defaultValue: 'true',
+            description: 'description booleanParam_1'
+        ),
+        // в если пареметр true то запускается stage ('Произвести установку пакета')
+        booleanParam(
+            name: 'setup_package',
+            defaultValue: 'true',
+            description: 'При наличии галочки происходит установка пакета'
+        ),
+        booleanParam(
+            name: 'if_then_else_val',
+            defaultValue: 'true',
+            description: 'Параметр срабатываня stage - IF THEN ELSE'
+        ),
+
+
+    ]
+    )
+]
+)
+//---------------------------------------------------------------------------------
+def print_message(String mes){
+    def a = mes.split('\n').collect{ it.trim() }
+    int k = 0
+    a.each {
+        if (k < it.length()){ k = it.length() }
+    }
+
+    println "#"*(k+4)
+    a.each {
+        println "# $it" + " "*(k-it.length() + 1) + "#"
+    }
+    println "#"*(k+4)
+
+}  
+//---------------------------------------------------------------------------------
+
+private void coloruedString(state = 'default', str =''){
+    switch(state) {
+        case 'info':
+            echo "\033[35m ${str} \033[0m"
+        break
+        case 'success':
+            echo "\033[32m ${str} \033[0m"
+        break
+        case 'error':
+            echo "\033[31m ${str} \033[0m"
+        break
+        case 'warning':
+            echo "\033[35m ${str} \033[0m"
+        break
+        case 'default':
+            echo "${str}"
+        break
+    }
+}
+
+//---------------------------------------------------------------------------------
+/*
+private void runAnsiblePlaybook(playbook){
+    withCredentials([])
+        withEnv([])
+              ansiblePlaybook(
+                  playbook: 'name_ workspace',
+                  inventory: 'name_ansible_playbook.yml',
+                  credentialsId: 'name_cred',
+                  disableHostKeyChecking: true,
+                  become: true,
+                  colorized: true,
+                  extras: 'Extra_parameters1,Extra_parameters2,Extra_parameters3'
+
+              )
+}
+*/
+
+//---------------------------------------------------------------------------------
+
+pipeline {
+    options { timestamps()                       // добавление времени выполнения
+            buildDiscarder logRotator(
+                numToKeepStr: '5',              // сохраниение последних 5 сборок
+                artifactDaysToKeepStr: '7',
+                artifactNumToKeepStr: '10',
+                daysToKeepStr: '7',            
+                )
+            ansiColor('xterm')
+            //ansiColor('gnone-terminal')
+    }
+    environment {
+     // ANSIBLE Options
+     ANSIBLE_HOST_KEY_CHECKING = "False"
+     ANSIBLE_PLAYBOOK          = "name_playbook.yml"
+     ANSIBLE_HOME              = "${WORKSPACE}"
+     USERHOME                  = "${WORKSPACE}/${PROJECT}"
+
+     // ---------------   
+     STAND_ARIA = 'test_stand'
+     PROJECT    = 'project-c-53'
+    }
+    agent any
+  // agent { node { label 'name_label'} }
+    stages {
+        //--------------------------------------
+        stage('stage 1'){
+            steps {
+                sh 'echo "stage 1"'
+                sh 'echo $STAND_ARIA'
+                sh 'echo $PROJECT'
+                echo '\033[1;36m### Format output ###\033[0m'
+            }
+        }
+        // вызов функции coloruedString
+        stage('stage 2'){
+            steps {
+                sh 'echo "stage 2"'
+                coloruedString ("info", "message INFO")
+                coloruedString ("success", "message success")
+                coloruedString ("error", "message error")
+                coloruedString ("warning", "message warning")
+            }
+        }
+        // Запуск ansible
+        stage('stage 3 RUN ansible'){
+            steps {
+                script{
+                    runAnsiblePlaybook("${ANSIBLE_PLABOOK}}")
+                }
+            }
+        }
+
+        // parralel stage
+        stage('Parallel Stage') {
+            parallel {
+                stage('stage parallel one') {
+                //    agent {
+                //        label "stageonebranch"
+                //    }
+                    steps {
+                        echo "print_message in stage one"
+                    }
+                }
+                stage('Stage parallel two') {
+                //    agent {
+                //        label "stage two"
+                //    }
+                    steps {
+                        echo "print_message in stage two"
+                    }
+                }
+                stage('Stage parallel three') {
+                //    agent {
+                //        label "Stage Three"
+                //    }
+                   steps {
+                        echo "print_message in stage three"
+                    }
+                }
+                stage('stage 4'){
+                    steps {
+                        print_message("stege after parallel. run")
+                        //sh 'echo "stage 4"'
+                    }
+                }  
+            }
+        }
+
+        //--------------------------------------
+        // stage - зависит от booleanParam 'setup_package'
+        stage ('Произвести установку пакета'){
+            when {
+                anyOf{
+                    equals expected: true, actual: params.setup_package
+                }
+            }
+            // другая форма записи на проверку параметра
+            //when {
+            //    expression { params.setup_package }
+            //    }
+            
+            steps {
+                sh 'echo "stage - зависит от booleanParam setup_package is RUN"'
+                
+            }
+        }
+        stage ('stage (этап выполнятеся когда два условия верны)'){
+            when {
+                allOf{
+                    equals expected: true, actual: params.setup_package
+                    equals expected: true, actual: params.booleanParam_1
+                }
+            }
+            steps {
+                sh 'echo "stage - ыполнятеся когда два условия верны"'
+            }
+        }
+        stage ('IF THEN ELSE'){
+            steps{
+                script {
+                    if (params.if_then_else_val){
+                        sh 'echo "сработала ветка true"'
+                        coloruedString ("info", "message сработала ветка true")
+                    }
+                    else {
+                        sh 'echo "сработала ветка false"'
+                        coloruedString ("success", "message сработала ветка false")
+                    }
+                    sh 'echo "сработело действие после выбора"'
+                }
+                post {
+                    always{
+                        coloruedString ("success", "post always")     
+                    }
+                    success{
+                        coloruedString ("success", "post success")     
+                    }
+                    failure{
+                        coloruedString ("error", "post failure")
+                    }
+                }
+            }
+        }
+}
+}
