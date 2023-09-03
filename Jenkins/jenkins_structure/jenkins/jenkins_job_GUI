@@ -70,8 +70,6 @@ properties([
             defaultValue: 'true',
             description: 'Параметр срабатываня stage - IF THEN ELSE'
         ),
-
-
     ]
     )
 ]
@@ -83,13 +81,11 @@ def print_message(String mes){
     a.each {
         if (k < it.length()){ k = it.length() }
     }
-
     println "#"*(k+4)
     a.each {
         println "# $it" + " "*(k-it.length() + 1) + "#"
     }
     println "#"*(k+4)
-
 }  
 //---------------------------------------------------------------------------------
 
@@ -97,22 +93,21 @@ private void coloruedString(state = 'default', str =''){
     switch(state) {
         case 'info':
             echo "\033[35m ${str} \033[0m"
-        break
+            break
         case 'success':
             echo "\033[32m ${str} \033[0m"
-        break
+            break
         case 'error':
             echo "\033[31m ${str} \033[0m"
-        break
+            break
         case 'warning':
             echo "\033[35m ${str} \033[0m"
-        break
+            break
         case 'default':
             echo "${str}"
-        break
+            break
     }
 }
-
 //---------------------------------------------------------------------------------
 /*
 private void runAnsiblePlaybook(playbook){
@@ -180,9 +175,12 @@ pipeline {
         // Запуск ansible
         stage('stage 3 RUN ansible'){
             steps {
+                ansiblePlaybook colorized: true, disableHostKeyChecking: true, installation: 'ansible-master', inventory: './Jenkins/jenkins_structure/hosts.ini', playbook: './Jenkins/jenkins_structure/playbooks/role_1.yml'
+                /*
                 script{
                     runAnsiblePlaybook("${ANSIBLE_PLABOOK}}")
                 }
+                */
             }
         }
 
