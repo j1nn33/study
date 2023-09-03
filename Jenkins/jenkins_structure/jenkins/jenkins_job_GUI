@@ -86,7 +86,7 @@ def print_message(String mes){
         println "# $it" + " "*(k-it.length() + 1) + "#"
     }
     println "#"*(k+4)
-}  
+}
 //---------------------------------------------------------------------------------
 
 private void coloruedString(state = 'default', str =''){
@@ -215,8 +215,8 @@ pipeline {
                     }
                     //runAnsiblePlaybook("${ANSIBLE_PLABOOK}}")
                 }
-            }
         }
+        
         // parralel stage
         stage('Parallel Stage') {
             parallel {
