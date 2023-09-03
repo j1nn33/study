@@ -174,11 +174,6 @@ pipeline {
         stage('stage 3 RUN ansible'){
             steps {
                 ansiblePlaybook colorized: true, disableHostKeyChecking: true, installation: 'ansible-master', inventory: './Jenkins/jenkins_structure/hosts.ini', playbook: './Jenkins/jenkins_structure/playbooks/role_1.yml'
-                /*
-                script{
-                    runAnsiblePlaybook("${ANSIBLE_PLABOOK}}")
-                }
-                */
             }
         }
         stage('stage 4 RUN ansible script'){
@@ -212,10 +207,12 @@ pipeline {
             steps {
                 script{
                     dir('./Jenkins/jenkins_structure'){
+                        sh "ansible --version"
                         runAnsible("playbooks/role_1.yml")
                     }
                     //runAnsiblePlaybook("${ANSIBLE_PLABOOK}}")
                 }
+            }
             post {
                 failure{
                     coloruedString ("error", "post_failure")
