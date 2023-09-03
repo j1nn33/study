@@ -145,7 +145,7 @@ pipeline {
         ANSIBLE_PLAYBOOK          = "name_playbook.yml"
         ANSIBLE_HOME              = "${WORKSPACE}"
         USERHOME                  = "${WORKSPACE}/${PROJECT}"
-        INVENTORY                 = "/hosts.ini"  
+        INVENTORY                 = "hosts.ini"  
     
      // ---------------   
      STAND_ARIA = 'test_stand'
