@@ -109,23 +109,21 @@ private void coloruedString(state = 'default', str =''){
     }
 }
 //---------------------------------------------------------------------------------
-/*
-private void runAnsiblePlaybook(playbook){
-    withCredentials([])
-        withEnv([])
-              ansiblePlaybook(
-                  playbook: 'name_ workspace',
-                  inventory: 'name_ansible_playbook.yml',
-                  credentialsId: 'name_cred',
-                  disableHostKeyChecking: true,
-                  become: true,
-                  colorized: true,
-                  extras: 'Extra_parameters1,Extra_parameters2,Extra_parameters3'
 
-              )
+def runAnsiblePlaybook(playbook  =''){
+    //withCredentials([])
+    //  withEnv([])
+    ansiblePlaybook(
+        //playbook: 'name_ workspace',
+        playbook: ${playbook},
+        inventory: '$INVENTORY',
+ //       credentialsId: 'name_cred',
+        disableHostKeyChecking: true,
+        become: true,
+        colorized: true,
+//        extras: 'Extra_parameters1,Extra_parameters2,Extra_parameters3'
+    )
 }
-*/
-
 //---------------------------------------------------------------------------------
 
 pipeline {
@@ -145,8 +143,7 @@ pipeline {
         ANSIBLE_PLAYBOOK          = "name_playbook.yml"
         ANSIBLE_HOME              = "${WORKSPACE}"
         USERHOME                  = "${WORKSPACE}/${PROJECT}"
-        INVENTORY                 = "hosts.ini"  
-    
+        INVENTORY                 = "hosts.ini"
      // ---------------   
      STAND_ARIA = 'test_stand'
      PROJECT    = 'project-c-53'
@@ -184,18 +181,37 @@ pipeline {
                 */
             }
         }
-         stage('stage 4 RUN ansible script'){
+        stage('stage 4 RUN ansible script'){
             steps {
                 script{
                     dir('./Jenkins/jenkins_structure'){
                         sh "ansible --version"
                         ansiblePlaybook(
                             playbook: "playbooks/role_1.yml",
-
+                            /*
+                            extraVars:[
+                                value_1:[value:"${val1}", hidden:false],
+                                value_2:[value:"${val2}", hidden:false],
+                            ] 
+                            */
                             colorized: true,
                             disableHostKeyChecking: true,
-                            inventory: '$INVENTORY'
+                            inventory: '$INVENTORY',
+                            installation: 'ansible-master',
+                            /*extras: """
+                                $verbosity
+                            """             
+                            */  
                         )
+                    }
+                    //runAnsiblePlaybook("${ANSIBLE_PLABOOK}}")
+                }
+            }
+        }
+        stage('stage 5 RUN ansible form def'){
+            steps {
+                script{
+                    runAnsiblePlaybook("playbooks/role_1.yml")
                     }
                     //runAnsiblePlaybook("${ANSIBLE_PLABOOK}}")
                 }
