@@ -262,16 +262,16 @@ pipeline {
                     }
                     sh 'echo "сработело действие после выбора"'
                 }
-                post {
-                    always{
-                        coloruedString ("success", "post always")     
-                    }
-                    success{
-                        coloruedString ("success", "post success")     
-                    }
-                    failure{
-                        coloruedString ("error", "post failure")
-                    }
+            }
+            post {
+                always{
+                    coloruedString ("success", "post always")     
+                }
+                success{
+                    coloruedString ("success", "post success")     
+                }
+                failure{
+                    coloruedString ("error", "post failure")
                 }
             }
         }
