@@ -208,7 +208,7 @@ pipeline {
                 script{
                     dir('./Jenkins/jenkins_structure'){
                         sh "ansible --version"
-                        runAnsible("playbooks/role_1.yml")
+                        runAnsible("playbooks/role_2.yml")
                     }
                     //runAnsiblePlaybook("${ANSIBLE_PLABOOK}}")
                 }
