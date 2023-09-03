@@ -211,7 +211,8 @@ pipeline {
         stage('stage 5 RUN ansible form def'){
             steps {
                 script{
-                    runAnsible("playbooks/role_1.yml")
+                    dir('./Jenkins/jenkins_structure'){
+                        runAnsible("playbooks/role_1.yml")
                     }
                     //runAnsiblePlaybook("${ANSIBLE_PLABOOK}}")
                 }
@@ -219,7 +220,7 @@ pipeline {
                 failure{
                     coloruedString ("error", "post_failure")
                 }
-            }    
+            }
         }
         
         // parralel stage
