@@ -110,13 +110,13 @@ private void coloruedString(state = 'default', str =''){
 }
 //---------------------------------------------------------------------------------
 
-def runAnsiblePlaybook(playbook  =''){
+def runAnsible(playbook  =''){
     //withCredentials([])
     //  withEnv([])
     ansiblePlaybook(
         //playbook: 'name_ workspace',
-        playbook: ${playbook},
-        inventory: '$INVENTORY',
+        playbook   : "${playbook}",
+        inventory  : "${INVENTORY}",
  //       credentialsId: 'name_cred',
         disableHostKeyChecking: true,
         become: true,
@@ -211,10 +211,15 @@ pipeline {
         stage('stage 5 RUN ansible form def'){
             steps {
                 script{
-                    runAnsiblePlaybook("playbooks/role_1.yml")
+                    runAnsible("playbooks/role_1.yml")
                     }
                     //runAnsiblePlaybook("${ANSIBLE_PLABOOK}}")
                 }
+            post {
+                failure{
+                    coloruedString ("error", "post_failure")
+                }
+            }    
         }
         
         // parralel stage
