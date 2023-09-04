@@ -1,0 +1,87 @@
+properties([
+    parameters([
+        // выбор в GUI
+		separator ( name: 'BUILD_env', sectionHeader: 'Job - добавления групп для CTL CIB',
+                    separatorStyle: 'border-width: 1',
+                    sectionHeaderStyle: """ 
+                    background-color: #dbdb8e;
+                    text-aligh: center;
+                    padding: 4px;
+                    color: #343434;
+                    font-size: 22px;
+                    font-weight: normal;
+                    text-transform: uppercase;
+                    font-family: 'Orienta', sans-serif;
+                    letter-spacing: 1px;
+                    font-style: italic;
+                    """
+        ),
+        choice    ( name: 'STAND', description: 'выберите станд', choices: ['dev', 'ift']),
+        string    ( name: 'user',  description: 'введите УЗ в контуре ипа пример <sisgma>_ipa'),
+    ]
+    )
+]
+)
+//---------------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------------
+
+pipeline {
+    options { timestamps()                       // добавление времени выполнения
+            buildDiscarder logRotator(
+                numToKeepStr: '5',              // сохраниение последних 5 сборок
+                artifactDaysToKeepStr: '7',
+                artifactNumToKeepStr: '10',
+                daysToKeepStr: '7',            
+                )
+            ansiColor('xterm')
+            
+    }
+    environment {
+    IPA_USER_IS = sh(returnStdout:true,script:'ip a | grep 702323242 | awk \'{print $1}\'')
+    }
+    agent any
+  
+    stages {
+        //--------------------------------------
+        stage ('CHECK exist user in IPA'){
+            steps{
+                script {
+				    
+				    sh 'env | sort | grep IPA_USER_IS '
+				    
+                    sh 'echo $IPA_USER_IS'
+                    
+                    if (env.IPA_USER_IS =='inet'){
+                        sh 'echo "сработала ветка true"'
+                    }
+                    else {
+                        sh 'echo "сработала ветка false"'
+                    }
+                    
+        
+                        
+                }
+            }
+        }
+        /*stage ('2'){
+            //when {not{ environment name: "IPA_USER_IS", value: "inet"}}
+            when 
+            steps {
+                sh 'echo "stage - ыполнятеся когда два условия верны"'
+                sh 'echo $IPA_USER_IS'
+            }
+        }
+        */
+        stage ('3'){
+            //when  {expression { environment name: "IPA_USER_IS", value: "inet"} }
+			// выполняется когда в значении что-то есть (те grep возвращает не пустую строку)
+            when  {expression { return env.IPA_USER_IS} }
+            steps {
+                sh 'echo "stage - ыполнятеся когда два условия верны"'
+                sh 'echo $IPA_USER_IS'
+            }
+        }
+		
+    }
+}
