@@ -1,0 +1,46 @@
+# RUN JUPYTER NOTEBOOK
+
+ jupyter notebook --ip 0.0.0.0 --no-browser --port=8888
+
+
+
+cd ~
+./anaconda3/bin/jupyter notebook --ip 0.0.0.0 --no-browser --port=8888
+
+-----------------------------
+install
+# INSTALLING
+
+pip install ipython
+pip install jupyter
+jupyter notebook
+
+---------------------
+python -m pip
+
+pip3 install spyder
+pip3 install jupyter
+pip3 install -r requirements.txt
+
+sudo apt-get install python3-numpy python3-matplotlib python3-scipy python3-pandas python3-simpy
+sudo apt-get install python3-opengl python3-pyqt5 python3-pyqt5.qtopengl python3-pyqt5.qtquic python3-h5py python3-skimage
+
+sudo apt-get install libatlas-dev libatlas3gf-base 
+
+pip3 install scikit-lear
+
+sudo pip3 install —user rope_py3k
+----------------------------
+Running the Notebook
+
+
+
+jupyter notebook
+
+http://localhost:8888
+./anaconda3/bin/jupyter notebook --ip 0.0.0.0 --no-browser --port=8888
+./anaconda3/bin/jupyter notebook --ip 0.0.0.0 --no-browser --port=8888 --allow-root
+
+
+
+
