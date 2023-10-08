@@ -2,6 +2,7 @@
 
 jenkins     
 	|_____<job_name.groovie>	// имя джобы 
+	|_____<jenkins_job_GUI>     // Джоба с элементами интерфейса
 playbook
 	|_____role1.yml      		// базоый файл выхова роли и описание такски
 	|_____role2.yml
