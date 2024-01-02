@@ -5,6 +5,12 @@ cat <<EOF >/app/index.html
 <body>
 <h1 style="color: #5e9ca0;"><span style="color: #000080;">TEST PAGE FOR WEB SERVER IN K8</span></h1>
 <p>&nbsp;</p>
+<!-- IMAGE BEGINS HERE -->
+<font size="-3">
+<pre><font>
+<!-- IMAGE ENDS HERE -->
+</pre></font>
+<!-- IMAGE ENDS HERE -->
 <!-- TEST PHRASE -->
 EOF
 
