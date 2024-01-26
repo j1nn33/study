@@ -1,0 +1,12 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: fileshare    # Имя PVC
+spec:
+  storageClassName: csi-ceph-hdd-ms1
+  accessModes:
+  - ReadWriteMany    # Режим работы с диском
+  resources:
+    requests:
+      storage: 10Mi  # Запрашиваем диск размером в 10 мегабайт (если точнее - мебибайт)

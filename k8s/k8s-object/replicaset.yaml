@@ -1,0 +1,20 @@
+apiVersion: apps/v1   # Which version of the Kubernetes API you're using to create this object 
+kind: ReplicaSet      # What kind of object you want to create
+metadata:
+  name: my-replicaset
+spec:
+  replicas: 2         # how many replicas
+  selector:           # allows to select pods with a matched label ('my-app' here)
+    matchLabels:
+      app: my-app
+  template:           # содержит описание пода, при этом имя пода не указывается, т.к. оно будет генерироваться автоматически
+    metadata:
+      labels:         # you can use labels anywhere (добавляет метку к созданым подам)
+        app: my-app
+    spec:             # to describe k8s what you want to build
+      containers:
+      - image: quay.io/testing-farm/nginx:1.12
+        name: nginx   # name is have to be unique 
+        ports:
+        - containerPort: 80
+...
