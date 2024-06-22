@@ -1,0 +1,114 @@
+=============Подключение 
+/kube/config
+
+=============Запуск 
+
+sudo -i 
+minikube start --force
+minikube dashboard --url=false
+
+# запуск для дашбора 
+kubectl proxy --address='0.0.0.0' --disable-filter=true
+
+minikube stop
+
+=============Проверка
+  # Просмотр версии minikube
+minikube version
+
+  # Проверка подключения к Kubernetes
+kubectl cluster-info
+
+  # Просмотр пододв 
+kubectl get pods -A
+kubectl get pods -n kubernetes-dashboard
+kubectl get pods -n kube-system
+
+  # Кластер работает и находится в исправном состоянии
+kubectl get componentstatuses
+
+============test
+
+- развертываение тестовго приложения см  hw_01.txt
+
+
+======================================
+TROBLESHOOT
+# minikube start --force ######### not work
+sysctl fs.protected_regular=0
+
+minikube start --cpus=4 --memory=4096 --driver
+
+https://learn-codes.org/php/629371-minikube-service-external-ip
+
+===================================
+
+# Пробросить сеть к своему прикладу в minikube
+minikube service <name_servie> -n <name_namespace_of_service>
+
+
+minikube service hello-minikube --url
+
+minikube dashboard
+
+
+ minikube status
+
+
+--------------------------------
+
+
+kubectl get pods -A
+
+minikube addons list
+
+minikube addons enable <nameaddon>
+
+kubectl get pod -A
+
+minkube kubernetis-dashboard -n kubernetis-dashboard
+
+minikube image ls
+
+kubectl get service -A
+
+---------------
+minikube addons enable ingress
+
+kubectl get service -A
+
+minikube service <имя сервиса> -n <имя неймспейса> - создает тунель с локального компа на наш сервис в миникубе 
+
+minikube service kubernetes-dashboard -n kubernetes-dashboard 
+
+# подключение к докеру который находится внутри миникуба
+
+eval $(minikube docker-env)
+Дальше билдим образ
+
+2 способ 
+
+minikube image build . -t <имя_образа>:<tag>
+
+<имя_образа> описано в deployment
+
+
+======================
+
+
+
+kubectl get nodes -o=json | jq '.items[].status.addresses'
+[
+  {
+    "address": "192.168.49.2",
+    "type": "InternalIP"
+  },
+  {
+    "address": "minikube",
+    "type": "Hostname"
+  }
+]
+
+
+kubectl get nodes -o=json | jq '.items[].status.addresses[0].address'
+"192.168.49.2"

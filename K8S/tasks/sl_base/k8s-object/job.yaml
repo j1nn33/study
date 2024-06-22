@@ -1,0 +1,18 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hello
+spec:
+  backoffLimit: 2              # колличество попыток которые Job пытается выполнить задачу описанную в Job
+  activeDeadlineSeconds: 60    # время исполнения задачи, если он превышен Job считется провальным
+  template:
+    spec:
+      containers:
+      - name: hello
+        image: quay.io/prometheus/busybox
+        args:
+        - /bin/sh
+        - -c
+        - date; echo Hello from the Kubernetes cluster
+      restartPolicy: Never     # не перестартовывать контейнер внутри пода в случае ошибки, тогда под падает в ошибку

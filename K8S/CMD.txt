@@ -1,0 +1,49 @@
+ssh-copy-id root@control1.kube.local
+
+ansible all -i hosts.yaml -m shell -a 'date'
+ansible all -i hosts.yaml -m shell -a 'date' -b
+
+systemctl restart kubelet.service
+
+mkdir -p $HOME/.kube
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+
+# ###################################################
+kubectl cluster-info
+
+watch kubectl get nodes
+watch kubectl get pods -A
+
+kubectl -n kube-system get pods -o wide | grep coredns
+
+	# Создать ресурс из манифеста
+kubectl create -f manifest.yml
+kubectl apply -f manifest.yml
+kubectl apply -f link
+kubectl apply -f directory/
+
+  # deployment
+kubectl -n kube-system rollout restart deployment coredns
+
+# rollout status - посмотреть текущее состояние Deployment
+# rollout history - посмотреть на историю развертываний (и причины изменений, если есть)
+# rollout undo - вернуться к предыдущей версии Deployment
+# rollout pause / resume - приостановить обновление или продолжить
+
+
+  #  убрать и возратить taint
+kubectl taint nodes control1.kube.local node-role.kubernetes.io/master-
+kubectl taint nodes control1.kube.local node-role.kubernetes.io/master:NoSchedule
+
+# ##########################
+# API
+
+# Получить описание всех pod в kube-system namespace
+
+curl https://API_SERVER_ADDRESS/api/v1/namespaces/kube-system/pods/ --header
+"Authorization: Bearer $TOKEN" --cacert ca.crt
+
+# Посмотреть логи конкретного pod в kube-system namespace
+
+curl https://API_SERVER_ADDRESS/api/v1/namespaces/kube-system/pods/POD_NAME/log --header
+"Authorization: Bearer $TOKEN" --cacert ca.crt

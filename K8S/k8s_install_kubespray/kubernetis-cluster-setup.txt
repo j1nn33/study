@@ -1,0 +1,202 @@
+установка кластера с помощью kubespray
+Разворачивать лучше на одних и тех же хостах включая бастион для совместимости с ansible 
+
+https://github.com/kubernetes-sigs/kubespray
+
+# SLERM    
+https://github.com/southbridgeio/kubespray
+
+-----------------------------------
+# PREPARE
+
+Master  2 core   /4 RAM
+Ingress 1 core   /2 RAM
+node    2-4 core /4-8 RAM
+
+disaled:  firewalld, swap, SElinx 
+
+root ходит на все ноды по ключам
+
+-----------------------------------
+
+kub-master-1  ip=192.168.1.210
+kub-master-2  ip=192.168.1.211
+kub-master-3  ip=192.168.1.212
+kub-ingress-1 ip=192.168.1.214
+kub-node-1 ip=192.168.1.215
+kub-node-2 ip=192.168.1.216
+
+
+-----------------------------------
+cefs
+
+
+yum install mc epel-release 
+yum install wget curl git screen python-pip sshpass
+
+yum install python3-pip -y
+
+
+cd ~
+cd kubespray
+pip3 install -r requirements.txt
+-------------------
+
+pip3 install -r requirements.txt
+cp -rfp inventory/sample inventory/mycluster
+
+
+быстоое заполнение инвентори кластера inventory/mycluster/hosts.yaml
+
+declare -a IPS=(192.168.1.210 192.168.1.211 192.168.1.212 192.168.1.214 192.168.1.215 192.168.1.216)
+CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
+
+inventory/mycluster/hosts.yaml
+----------
+ cat ./inventory/mycluster/hosts.yaml
+all:
+  hosts:
+    node1:
+      ansible_host: 192.168.1.210
+      ip: 192.168.1.210
+      access_ip: 192.168.1.210
+    node2:
+      ansible_host: 192.168.1.211
+      ip: 192.168.1.211
+      access_ip: 192.168.1.211
+    node3:
+      ansible_host: 192.168.1.212
+      ip: 192.168.1.212
+      access_ip: 192.168.1.212
+    node4:
+      ansible_host: 192.168.1.214
+      ip: 192.168.1.214
+      access_ip: 192.168.1.214
+    node5:
+      ansible_host: 192.168.1.215
+      ip: 192.168.1.215
+      access_ip: 192.168.1.215
+    node6:
+      ansible_host: 192.168.1.216
+      ip: 192.168.1.216
+      access_ip: 192.168.1.216
+  children:
+    kube_control_plane:
+      hosts:
+        node1:
+        node2:
+    kube_node:
+      hosts:
+        node1:
+        node2:
+        node3:
+        node4:
+        node5:
+        node6:
+    etcd:
+      hosts:
+        node1:
+        node2:
+        node3:
+    k8s_cluster:
+      children:
+        kube_control_plane:
+        kube_node:
+    calico_rr:
+      hosts: {}
+----------
+
+
+
+Ручное заполнение 
+
+-----------------
+]# cat ./inventory/mycluster/inventory.ini
+# ## Configure 'ip' variable to bind kubernetes services on a
+# ## different ip than the default iface
+# ## We should set etcd_member_name for etcd cluster. The node that is not a etcd member do not need to set the value, or can set the empty string value.
+[all]
+# node1 ansible_host=95.54.0.12  # ip=10.3.0.1 etcd_member_name=etcd1
+# node2 ansible_host=95.54.0.13  # ip=10.3.0.2 etcd_member_name=etcd2
+# node3 ansible_host=95.54.0.14  # ip=10.3.0.3 etcd_member_name=etcd3
+# node4 ansible_host=95.54.0.15  # ip=10.3.0.4 etcd_member_name=etcd4
+# node5 ansible_host=95.54.0.16  # ip=10.3.0.5 etcd_member_name=etcd5
+# node6 ansible_host=95.54.0.17  # ip=10.3.0.6 etcd_member_name=etcd6
+
+kub-master-1 ansible_host=192.168.1.210 ip=192.168.1.210 etcd_member_name=etcd1
+kub-master-2 ansible_host=192.168.1.211 ip=192.168.1.211 etcd_member_name=etcd2
+kub-master-3 ansible_host=192.168.1.212 ip=192.168.1.212 etcd_member_name=etcd3
+kub-ingress-1 ansible_host=192.168.1.214 ip=192.168.1.214
+kub-node-1 ansible_host=192.168.1.215 ip=192.168.1.215
+kub-node-2 ansible_host=192.168.1.216 ip=192.168.1.216
+
+
+
+[kube_control_plane]
+kub-master-1
+kub-master-2
+kub-master-3
+
+[etcd]
+kub-master-1
+kub-master-2
+kub-master-3
+
+[kube_node]
+kub-node-1
+kub-node-2
+kub-ingress-1
+
+[calico_rr]
+
+[k8s_cluster:children]
+kube_control_plane
+kube_node
+calico_rr
+
+-----------------
+
+ 
+Начнем с файла ~/kubespray/inventory/dev/group_vars/all/all.yml. Добавляем туда параметры:
+
+kubelet_load_modules: true # автоматом загружает модули в ядро системы, не спрашивая админа сервера
+kube_read_only_port: 10255 # порт для мониторинга кублетов, нужен, к примеру, для prometeus
+В файл ~/kubespray/inventory/dev/group_vars/all/docker.yml добавляем:
+
+docker_storage_options: -s overlay2 # использует сторейдж overlay2 для докера
+В файл ~/kubespray/inventory/dev/group_vars/etcd.yml добавляем:
+
+etcd_memory_limit: 0 # дефолтного ограничения в 512 мб может не хватать в больших кластерах, надо либо увеличить значение, либо отключить ограничение
+В файл ~/kubespray/inventory/dev/group_vars/k8s-cluster/k8s-cluster.yml добавляем:
+
+kube_network_plugin: flannel
+kube_proxy_mode: iptables
+kubeconfig_localhost: true # устанавливаем локально инструменты для управления кластером
+Я буду использовать сетевой плагин flannel и iptables. Это хорошо проверенное и полностью готовое к production решение. Никаких особых настроек не требует, кроме пары параметров. Добавляем их в файл ~/kubespray/inventory/dev/group_vars/k8s-cluster/k8s-net-flannel.yml.
+
+flannel_interface_regexp: '10\\.1\\.4\\.\\d{1,3}'
+flannel_backend_type: "host-gw"
+В данном случае 10\\.1\\.4\\.\\d{1,3} это регулярное выражение, которое описывает подсеть 10.1.4.0/24, в которой у меня размещены виртуальные машины под кластер. Если у вас подсеть машин для кластера, к примеру, 192.168.55.0, то регулярка будет 192\\.168\\.55\\.\\d{1,3}
+
+
+kubectl get nodes
+
+ kubectl get nodes
+NAME            STATUS   ROLES                  AGE    VERSION
+kub-ingress-1   Ready    <none>                 132m   v1.23.4
+kub-master-1    Ready    control-plane,master   134m   v1.23.4
+kub-master-2    Ready    control-plane,master   133m   v1.23.4
+kub-master-3    Ready    control-plane,master   133m   v1.23.4
+kub-node-1      Ready    <none>                 132m   v1.23.4
+kub-node-2      Ready    <none>                 132m   v1.23.4
+
+
+ рабочие ноды не получили роли node. Исправить это можно командами.
+
+# kubectl label node kub-node-1 node-role.kubernetes.io/node=
+# kubectl label node kub-node-2 node-role.kubernetes.io/node=
+# kubectl label node kub-ingress-1 node-role.kubernetes.io/node=
+
+
+
+ansible-playbook -i inventory/mycluster/inventory.ini  --become --become-user=root cluster.yml

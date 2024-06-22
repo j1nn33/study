@@ -1,0 +1,4 @@
+---
+- name: Bootstrap a host without python3 installed
+  ansible.builtin.raw: dnf install -y python3
+

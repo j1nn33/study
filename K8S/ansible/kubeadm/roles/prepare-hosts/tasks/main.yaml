@@ -1,0 +1,179 @@
+---
+- name: Add repo kubernetes
+  when: ansible_facts['os_family'] == "RedHat"
+  yum_repository:
+    name: kubernetes
+    description: "Base programs for k8s, version: {{ repo_version }}"
+    baseurl: "https://pkgs.k8s.io/core:/stable:/{{ repo_version }}/rpm/"              
+    gpgcheck: yes
+    enabled: true
+    gpgkey: "https://pkgs.k8s.io/core:/stable:/{{ repo_version }}/rpm/repodata/repomd.xml.key"
+    exclude: kubelet kubeadm kubectl cri-tools kubernetes-cni
+
+- name: Docker repository for containerd
+  when: ansible_facts['os_family'] == "RedHat"
+  yum_repository:
+    name: docker
+    enabled: yes
+    baseurl: "https://download.docker.com/linux/centos/$releasever/$basearch/stable"
+    description: 'Docker'
+    gpgcheck: yes
+    gpgkey: 'https://download.docker.com/linux/centos/gpg'
+
+- name: Install packages dnf
+  dnf:
+    name:
+      - net-tools
+      - mc
+      - iproute-tc
+      - vim
+      - git
+      - bash-completion
+      - nfs-utils
+      - python3
+      - tar
+      - rsyslog
+      - chrony
+      - containerd
+      - jq
+      #- kubectl
+      #- kubelet
+      #- kubeadm
+      #- kubectl-{{ kube_version }}-0.x86_64
+      #- kubelet-{{ kube_version }}-0.x86_64
+      #- kubeadm-{{ kube_version }}-0.x86_64
+      - ipvsadm
+    # state: latest kubelet kubeadm
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: install kubectl
+  ansible.builtin.shell:
+    cmd: yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+
+#- name: Install packages apt
+#  apt:
+#    name:
+#      - net-tools
+#      - mc
+#      - vim
+#      - git
+#      - bash-completion
+#      - nfs-utils
+#      - python3
+#      - tar
+#      - rsyslog
+#      - chrony
+#      - containerd
+#    state: latest
+#  when: ansible_facts['os_family'] == "Debian"
+
+- name: Enable NTP server
+  service:
+    name: chronyd
+    state: started
+    enabled: yes
+
+- name: Enable rsyslog
+  service:
+    name: rsyslog
+    state: started
+    enabled: yes
+
+- name: Disable firewalld
+  service:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: Check is swap enable
+  shell: swapon
+  register: swap_present
+  changed_when: false
+  ignore_errors: true
+
+- name: If swap is enabled - disable it
+  shell: swapoff -a
+  when: swap_present.stdout != ""
+
+- name: Disable SWAP in fstab
+  replace:
+    path: /etc/fstab
+    regexp: '^([^#].*\s*swap\s*.*)$'
+    replace: '# \1'
+
+- name: Check Disable SELinux
+  selinux:
+    state: disabled
+  register: selinux_ret
+
+- name: Disable SELinux
+  shell: setenforce 0
+  when: selinux_ret.reboot_required
+
+- name: Remove containerd config.toml 
+  when: ansible_facts['os_family'] == "RedHat"
+  file:
+    path: /etc/containerd/config.toml
+    state: absent 
+
+
+- name: Containerd
+  service:
+    name: containerd
+    state: started
+    enabled: yes
+
+- name: Set crictl.yaml
+  copy: 
+    src: crictl.yaml
+    dest: /etc/crictl.yaml
+    owner: root
+    mode: 644
+
+- name: Load modules
+  modprobe:
+    name: br_netfilter
+
+- name: Load module permanet
+  copy:
+    src: modules-kubernetes.conf
+    dest: /etc/modules-load.d/modules-kubernetes.conf
+
+- name: Set Sysctl on all nodes
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+    - name: net.ipv4.ip_forward
+      value: 1
+    - name: net.bridge.bridge-nf-call-iptables
+      value: 1
+    - name: net.bridge.bridge-nf-call-ip6tables
+      value: 1
+    - name: vm.max_map_count # for opensearch & elasticserarch
+      value: 262144
+
+- name: Set Sysctl on master node(s)
+  when: inventory_hostname in groups['k8s_masters']
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+    - name: net.ipv4.ip_nonlocal_bind
+      value: 1
+
+- name: Load settings from all system configuration files
+  ansible.builtin.shell:
+    cmd: sysctl --system
+
+- name: Add PS1
+  lineinfile:
+    path: /root/.bashrc
+    state: present
+    line: "PS1='\\[\\e[44;36m\\]\\t:[\\w]\\[\\e[0;0m\\]\\n\\[\\e[0;31;04m\\]\\u\\[\\e[0;0m\\]@\\[\\e[0;32m\\]\\h\\[\\e[0;0m\\] \\$ '"
+
+- name: systemctl enable kubelet.service
+  ansible.builtin.shell:
+    cmd: systemctl enable kubelet.service

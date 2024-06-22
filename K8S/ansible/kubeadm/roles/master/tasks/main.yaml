@@ -1,0 +1,40 @@
+---
+# 1-st control node
+- name: Check if kubeadm has already run
+  stat:
+    path: "/etc/kubernetes/pki/ca.key"
+  register: kubeadm_ca
+
+- meta: end_play
+  when: kubeadm_ca.stat.exists
+
+- name: Create /etc/kubernetes directory
+  file:
+    path: /etc/kubernetes
+    state: directory
+
+- name: Copy kubeadm-config.yaml
+  template:
+    src: kubeadm-config.j2
+    dest: /etc/kubernetes/kubeadm-config.yaml
+
+- name: Install Calicoctl
+  shell: |
+    curl -L https://github.com/projectcalico/calico/releases/download/{{ tigera_operator_version }}/calicoctl-linux-amd64 -o calicoctl
+    chmod +x ./calicoctl
+    mv calicoctl /usr/local/bin
+
+- name: Install Calico
+  when: enableBPF is not defined
+  include_tasks: calico.yaml
+
+#- name: Install Calico with BPF
+#  when: enableBPF is defined
+#  include_tasks: calico-bpf.yaml
+
+# Почему то в 1.25 на AlmaLinux 8 не ставится enabled
+- name: Kubelet enable
+  service:
+    name: kubelet
+    state: started
+    enabled: yes

@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-configmap-env
+data:                   # интересующий нас раздел с настройками
+  dbhost: postgresql    # параметр 1
+  DEBUG: "false"        # параметр 2
+...

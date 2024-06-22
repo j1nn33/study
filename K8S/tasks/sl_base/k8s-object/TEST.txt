@@ -1,0 +1,40 @@
+
+# тестирование приложения 
+https://github.com/j1nn33/study/tree/master/k8s/test_1
+
+
+kubectl create -f app
+
+kubectl get pod -o wide
+
+######################################
+# Тестирование работоспособности внутрикластерного взаимодействия
+
+Создаем Service типа ClusterIP:
+kubectl apply -f clusterip.yaml
+
+Убедимся, что Service работает. Узнаем его IP, зайдем внутрь нашего тестового Pod'а и обратимся к основному приложению, используя имя сервиса и IP:
+
+kubectl get all -o wide
+
+kubectl run test --image=centosadmin/utils:0.3 -it bash
+
+kubectl exec test -it bash
+
+--------------
+curl <ip-адрес сервиса>
+curl my-service
+(возвращает имя пода)
+exit
+
+#####################################
+kubectl get service
+
+kubectl apply -f nodeport.yaml
+
+# у сервиса порт с номером больше 30000 и что он транслируется в 80 порт приложения
+# при обращении на адрес любой ноды в кластере на этот порт, то мы будем перенаправлены на наше приложение
+
+kubectl get nodes -o wide
+ 
+curl <ip_node>:<port_nodeport>

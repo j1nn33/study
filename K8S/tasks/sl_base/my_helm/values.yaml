@@ -1,0 +1,26 @@
+replicas: 1
+
+image:
+  repository: quay.io/testing-farm/nginx
+  tag: 1.12
+
+port: 80
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 80m
+    memory: 64Mi
+
+annotations:
+  val1: foo1
+  val2: foo2
+
+env:
+  MY_SQL_PORT: 3306
+  MY_SQL_USER: root
+  ENV: DEVELOPMENT
+
+service: myservice

@@ -1,0 +1,160 @@
+---
+apiVersion: apps/v1    # видим что версия API такая же как у ReplicaSet
+kind: Deployment       # Соответствующий тип
+metadata:
+  name: my-deployment
+spec:                  # описание идентичное описанию предыдущего ReplicaSet
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  strategy:            # стратегия обнолвения 
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:         # you can use labels anywhere (добавляет метку к созданым подам)
+        app: my-app
+    spec:
+      initContainers:  # контейнер который запускается перед основныым приложением и что-то делает
+      - image: busybox
+        name: mount-permissions-fix
+        command: ["sh", "-c", "chmod 777 /data"]   # выполнялся скрипт по установке прав 777 на каталог /data
+        volumeMounts:              # в контейнер монтировался том с именем data в точку монтирования /data
+        - name: data
+          mountPath: /data         # data - это том, полученный из pvc fileshare
+
+      containers:
+      - image: quay.io/testing-farm/nginx:1.12
+        name: nginx
+            
+        envFrom:                    # раздел для загрузки переменных окружения извне
+        - configMapRef:             # указываем, что будем брать их по ссылке на конфигмап
+            name: my-configmap-env  # указываем наш объект ConfigMap (создан из файла configmap.yaml), из которого будут загружаться данные 
+        
+        env:                        # описание переменных для pod 
+        - name: TEST
+          value: foo
+        - name: TEST_1              # здесь мы можем указать название переменной, отличное от имени ключа в секрете или конфигмапе
+          valueFrom:                # таким образом можно получать значения конкретных ключей из конфигмапов и секретов
+            secretKeyRef:
+              name: test
+              key: test1
+        - name: __NODE_NAME                         # Начало первого интересующего нас блока  Downward API
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName              # Название узла, ноды, где запущен под  Downward API
+        - name: __POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name              # Имя пода из нашего манифеста   Downward API
+        - name: __POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace         # Неймспейс пода Downward API
+        - name: __POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP               # IP-адрес пода  Downward API
+        - name: __NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP              # IP-адрес ноды  Downward API
+        - name: __POD_SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName    # Задаём сервис-аккаунт, Downward API
+                                                    # Конец первого интересующего нас блока  Downward API
+        ports:
+        - containerPort: 80
+                                                    # PROBE
+        readinessProbe:
+          # failureThreshold допустимое количество проваленных попыток подряд, прежде чем приложение будет выведено из балансировки
+          # применяется для того, чтобы из-за каких-то небольших проблем, например с сетью, приложение не останавливалось полностью
+          failureThreshold: 3
+          # httpGet сама проверка, в данном случае мы идём в корневой локейшн нашего приложения по 80 порту, 
+          # для проверки, что nginx готов принимать трафик, этого достаточно
+          httpGet:
+            # успешными считаются коды ответа в диапазоне от 200 до 399
+            # например, 301 - это ОК, а 400, 404 - уже не ОК
+            path: /
+            port: 80
+          periodSeconds: 10       # означает, с какой периодичностью выполнять проверку
+          successThreshold: 1     # сколько успешных проверок сбросит счётчик failureThreshold
+          timeoutSeconds: 1       # ограничение на время выполнения проверки, собственно, таймаут 
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 80
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+          initialDelaySeconds: 10  # отсрочка выполнения первой проверки, использовали до появления startupProbe
+        startupProbe:
+          httpGet:
+            path: /
+            port: 80
+          failureThreshold: 30
+          periodSeconds: 10       #основное отличие от предыдущих проверок - большие значения, т.е. мы даём сервису 5 минут = 30 * 10 на запуск
+        
+        resources:
+          requests:
+            cpu: 10m
+            memory: 100Mi
+          limits:
+            cpu: 100m     # 10% от 1 ядра CPU
+            memory: 100Mi
+                                            # Начало второго интересующего нас блока Downward API
+        volumeMounts:                       # Здесь мы описываем точки монтирования томов внутри контейнера
+        - name: config                      # Указываем имя тома для монтирования
+          mountPath: /etc/nginx/conf.d/     # Здесь мы указываем точку монтирования
+
+        - name: podinfo                     # Монтируем том downwardAPI, аналогично монтированию тома конфигмапы
+          mountPath: /etc/podinfo 
+
+        - name: data_hostPath          # имя тома hostPath
+          mountPath: /files_hostPath   # путь к точке монтирования (внутри пода)  
+        
+        - name: data_emptyDir          # имя тома emptyDir
+          mountPath: /files_hostPath   # путь к точке монтирования (внутри пода) 
+
+        - name: mypd                   # имя тома persistentVolumeClaim
+          mountPath: /data             # путь к точке монтирования (внутри пода) 
+        
+        - name: data_pv 
+          mountPath: /data
+            
+      
+      volumes:                          # Здесь (на уровень выше!) мы описываем тома
+      - name: config                    # Задаём имя тому
+        configMap:                      # Указываем, из какого конфигмапа создать том
+          name: my-configmap_1
+      
+      - name: data_hostPath              # имя тома
+        hostPath:                        # тип тома
+          path: /data_pod                # путь к каталогу (внутри узла)
+      
+      - name: data_emptyDir              # имя тома emptyDir
+        emptyDir: {}                     # тип тома и пустой словарь в качестве значения, чтобы манифест прошел валидацию
+      
+      - name: mypd                       # задаём имя  см pvc.yml
+        persistentVolumeClaim:           # указываем тип тома
+          claimName: fileshare           # название клэйма
+      
+      - name: data_pv
+        persistentVolumeClaim:
+          claimName: fileshare
+
+      - name: podinfo                               # Описываем создание тома downwardAPI
+        downwardAPI:
+          items:
+            - path: "labels"                        # Указываем название создаваемого файла
+              fieldRef:                             # Указываем, что мы заполняем наш файл на базе ссылки на поля манифеста
+                fieldPath: metadata.labels          # Указываем раздел манифеста, из которого мы будем забирать информацию
+            - path: "annotations"
+              fieldRef:
+                fieldPath: metadata.annotations
+...                                                 # Конец второго интересующего нас блока
