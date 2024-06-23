@@ -1,8 +1,9 @@
 # стенд.
 
-# - 8 виртуальных машин.
-# - В Ubuntu установлен ansible: 192.168.1.169
+###### - 8 виртуальных машин.
+###### - В Ubuntu установлен ansible: 192.168.1.169
 
+```
 master.kube.local               (RAM 1GB, CPU 1, 10Gb, 120GB) - вспомогательная машина. 
                                    * Кеширующий DNS сервер для машин тестового стенда.
                                    * Поддержка зоны kube.local.
@@ -10,16 +11,16 @@ master.kube.local               (RAM 1GB, CPU 1, 10Gb, 120GB) - вспомога
 control[1,2,3].kube.local       (RAM 4GB, CPU 4, 20Gb) - control nodes кластера kubernetes.
 worker[1,2,3].kube.local        (RAM 8GB, CPU 6, 20Gb) - общие worker nodes кластера kubernetes.
 db1.kube.local                  (RAM 4GB, CPU 4, 60Gb)** - дополнительная worker node. для базы данных 
-
-# На всех машинах, кроме master, установлен AlmaLinux 8 установлено должно быть dnf install python3
-# Маршрут по умолчанию на всех машинах идёт на мой локальный роутер 192.168.1.1
-# ipv6 - не отключать amation
-# Клиенты DNS настроены на машину master. 
+```
+###### На всех машинах, кроме master, установлен AlmaLinux 8 установлено должно быть dnf install python3
+###### Маршрут по умолчанию на всех машинах идёт на мой локальный роутер 192.168.1.1
+###### ipv6 - не отключать amation
+###### Клиенты DNS настроены на машину master. 
 
 ## DNS сервер
-## хост с ansible ubuntu 192.168.1.169
+##### хост с ansible ubuntu 192.168.1.169
+```
 
-=======================================================
 bastion         IN      A       192.168.1.169   ansible
 master          IN      A       192.168.1.170   DNS NFS      
 control1        IN      A       192.168.1.171
@@ -29,11 +30,11 @@ worker1         IN      A       192.168.1.174
 worker2         IN      A       192.168.1.175
 worker3         IN      A       192.168.1.176
 db1             IN      A       192.168.1.177
+```
 
-=======================================================
-На машине master установлен DNS server BIND.
+##### На машине master установлен DNS server BIND.
 
-В файл `/etc/named.conf` добавлена поддержка двух зон: `kube.local` и `1.168.192.in-addr.arpa`.
+##### В файл `/etc/named.conf` добавлена поддержка двух зон: `kube.local` и `1.168.192.in-addr.arpa`.
 
 ```
 options {
@@ -76,8 +77,7 @@ include "/etc/named.rfc1912.zones";
 include "/etc/named.root.key";
 ```
 
-Файлы описания зон находятся в директории /var/named/kube.local
-
+##### Файлы описания зон находятся в директории /var/named/kube.local
 
 ```
 $TTL 86400
@@ -134,10 +134,10 @@ $TTL 86400
 189     IN      PTR     kubeapi.kube.local.
 ```
 ---------------------------
-## test DNS 
-## По умолчанию, сервер Bind под CentOS хранит логи в файле /var/named/data/named.run.
-## Для его непрерывного просмотра вводим следующую команду:
-
+##### test DNS 
+##### По умолчанию, сервер Bind под CentOS хранит логи в файле /var/named/data/named.run.
+##### Для его непрерывного просмотра вводим следующую команду:
+```
 tail -f /var/named/data/named.run
 
 nslookup master.kube.local 127.0.0.1
@@ -147,13 +147,12 @@ nslookup master 127.0.0.1
 nslookup master 192.168.1.170
 
 dig master.kube.local @192.168.1.170
-
+```
 ---------------------------
 ## NFS сервер
 
-Сервер раздаёт по сети директорию `/var/nfs-disk`.
-
-Конфигурационный файл `/etc/exports`:
+##### Сервер раздаёт по сети директорию `/var/nfs-disk`.
+##### Конфигурационный файл `/etc/exports`:
 
 ```
 /var/nfs-disk 192.168.218.0/24(rw,sync,no_subtree_check,no_root_squash,no_all_squash,insecure)
@@ -176,7 +175,7 @@ dig master.kube.local @192.168.1.170
 192.168.1.189 kubeapi.kube.local
 ```
 
-## В Ubuntu установлен ansible: 192.168.1.169
+###### В Ubuntu установлен ansible: 192.168.1.169
 
 ```
 sudo apt install python3.10-venv
