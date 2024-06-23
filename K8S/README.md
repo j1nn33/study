@@ -16,11 +16,11 @@
            - kryukov
 
 
-# ======================================= #
+# ======================================= 
 
 Ресурсы 
 
-# ############### kryukov
+# kryukov
 # Управление кластером при помощи kubeadm
 https://www.kryukov.biz/kubernetes/poryadok-prosmotra-video-na-moyom-kanale-dlya-nachinayushhih/
 
