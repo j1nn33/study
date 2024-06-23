@@ -1,4 +1,4 @@
-# стенд.
+## Структура стенда.
 
 ###### - 8 виртуальных машин.
 ###### - В Ubuntu установлен ansible: 192.168.1.169
@@ -158,7 +158,7 @@ dig master.kube.local @192.168.1.170
 /var/nfs-disk 192.168.218.0/24(rw,sync,no_subtree_check,no_root_squash,no_all_squash,insecure)
 ```
 
-## Рабочая станция UBUNTU
+### Рабочая станция UBUNTU
 
 \etc\hosts
 
@@ -183,7 +183,7 @@ sudo apt install python3-pip
 python3 -m pip install ansible
 ```
 
-## Ansible можно ставить в venv.
+### Ansible можно ставить в venv.
 
 ```
 apt install python3.10-venv
@@ -192,4 +192,4 @@ python3 -m venv venv
 python3 -m pip install ansible
 ```
 
-## Все файлы проекта будут находиться в домашней директории пользователя в Ubuntu.
+### Все файлы проекта будут находиться в домашней директории пользователя в Ubuntu.

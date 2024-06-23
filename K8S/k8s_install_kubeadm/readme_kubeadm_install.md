@@ -2,8 +2,8 @@
   K8S/k8s_install_kubeadm
 
 
-# ansible  
-  # для kubeadm
+##### ansible  
+  ##### для kubeadm
   - kubeadm 
     - K8S/ansible/kubeadm/group_vars/k8s_cluster    - список переменных
     - K8S/ansible/kubeadm/hosts.yaml                - inventory
@@ -34,7 +34,7 @@ ansible-playbook services/install-workers.yaml
 ---
 ##                      ПОЛНАЯ АВТОМАТИЗАЦИЯ  
 
-## Установка для KUBEADM
+### Установка для KUBEADM
 
 ### k8s с одной control node
 ###### В K8S/ansible/kubeadm/hosts.yaml в группе `k8s_masters` необходимо указать только один хост.
@@ -47,7 +47,7 @@ ansible-playbook install-cluster.yaml
 ```
 ansible-playbook install-cluster.yaml
 ```
-## k8s c HA
+### k8s c HA
 ###### Используются haproxy и keepalived.
 ###### В конфигурационном файле определите параметры доступа к API :
 ######                `ha_cluster_virtual_ip` - виртуальный IP адрес.
@@ -57,7 +57,7 @@ ansible-playbook install-cluster.yaml
 ```
 ansible-playbook reset.yaml
 ```
-## Апдейт кластера
+### Апдейт кластера
 ###### Изменяете версию кластера в `group_vars\k8s_cluster` и запускаете апдейт.
 ```
 ansible-playbook upgrade.yaml

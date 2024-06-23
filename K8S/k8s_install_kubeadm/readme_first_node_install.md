@@ -342,7 +342,7 @@ kubectl describe node control1.kube.local | grep Taints
 ```
 kubectl describe pod <name_pod> -n kube-system
 ```
-# решение убрать и возратить 
+###### решение убрать и возратить 
 ```
 kubectl taint nodes control1.kube.local node-role.kubernetes.io/master-
 
