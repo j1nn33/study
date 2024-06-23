@@ -2,21 +2,21 @@
 ```
   K8S/k8s_install_kubeadm
 ```
-###### Архитектура стенда              - readme_stand.md
-###### установка python3               - /services/install_python3.yaml
-###### Предварительная настройка ОС    - readme_prepare_os.md
-###### High availability               - readme_ha.md
-###### Установка кластера              - readme_kubeadm_install.md
-###### ansible                         - автоматизация K8S/ansible/README.md
-###### Установка первой ноды           - readme_first_node_install.md
-###### Добавление control nodes        - readme_add_other_control_node.md
-###### Добавление worker ноды          - readme_worker-nodes.md
-###### Проверка работоспособности      - readme_check.md
-###### Выключение кластера             - /services/poweroff.yaml
-###### Удаление кластера               - /services/reset.yaml
-###### Обновление версии кластера      - readme_update.md
-###### Удаление нод                    - readme_delete_node.md
-###### Обновление сертификатов         - readme_certificates.md
+- Архитектура стенда              - readme_stand.md
+- установка python3               - /services/install_python3.yaml
+- Предварительная настройка ОС    - readme_prepare_os.md
+- High availability               - readme_ha.md
+- Установка кластера              - readme_kubeadm_install.md
+- ansible                         - автоматизация K8S/ansible/README.md
+- Установка первой ноды           - readme_first_node_install.md
+- Добавление control nodes        - readme_add_other_control_node.md
+- Добавление worker ноды          - readme_worker-nodes.md
+- Проверка работоспособности      - readme_check.md
+- Выключение кластера             - /services/poweroff.yaml
+- Удаление кластера               - /services/reset.yaml
+- Обновление версии кластера      - readme_update.md
+- Удаление нод                    - readme_delete_node.md
+- Обновление сертификатов         - readme_certificates.md
 
 
 ---
