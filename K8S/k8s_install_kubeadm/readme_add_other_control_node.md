@@ -51,9 +51,9 @@
 ###### ca_cert_hash       e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 ###### certificate_ke     97d3b9cf6d10e70abcd73ae4783b9b1c8cd8be3703b229df6122e17a6aa166b6
 
-  kubeadm join join_path --token <join_token> \
-    --discovery-token-ca-cert-hash sha256:<ca_cert_hash> \
-    --control-plane --certificate-key <certificate_key>
+    kubeadm join join_path --token <join_token> \
+      --discovery-token-ca-cert-hash sha256:<ca_cert_hash> \
+      --control-plane --certificate-key <certificate_key>
 
 ###### Подставьте свои значения и запустите команду на остальных серверах, где планируется разместить control ноды.
 
