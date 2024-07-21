@@ -41,7 +41,7 @@ kubectl port-forward -n kubernetes-dashboard kubernetes-dashboard-78f87ddfc-g7c5
 ```
 
 ###### Получим снаружи 2 вариант NodePort
-# cгенерируем/проверим содержимое в файла node_port_ks_dasboard.yaml на основе service kubernetes-dashboard
+###### cгенерируем/проверим содержимое в файла node_port_ks_dasboard.yaml на основе service kubernetes-dashboard
 ```
 kubectl -n kubernetes-dashboard edit service kubernetes-dashboard
 kubectl apply -f node_port_ks_dasboard.yaml
