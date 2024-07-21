@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-nodeport-openresty
+  namespace: volumes-sample
+  labels:
+    app: openresty
+  
+spec:
+  selector:
+    app: openresty
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30880 
+

@@ -1,3 +1,42 @@
+https://kubernetes.io/ru/docs/reference/kubectl/cheatsheet/
+
+# ###################################################
+kubectl get pods -ALL -o wide
+kubectl get all -o wide
+
+kubectl get all -o wide
+NAME           READY   STATUS    RESTARTS   AGE     IP             NODE                  NOMINATED NODE   READINESS GATES
+pod/dnstools   1/1     Running   0          3h35m   10.233.66.46   control1.kube.local   <none>           <none>
+pod/nginx      1/1     Running   0          3h12m   10.233.66.47   control1.kube.local   <none>           <none>
+
+kubectl port-forward <pod_name> --address 0.0.0.0 8888:80
+kubectl port-forward nginx --address 0.0.0.0 8888:80
+
+kubectl delete pods nginx
+kubectl delete namespace kube-system 
+
+kubectl get pods --all-namespaces
+
+#### Подключение к определённому контейнеру в pod
+    
+kubectl -n volumes-sample exec openresty-566b47789b-kd9qc -i -t -c centos -- bash
+kubectl -n volumes-sample exec openresty-566b47789b-kd9qc -i -t -c openresty -- bash
+
+# ###################################################
+Поставить label на node. directory=centos
+kubectl label nodes worker1.kube.local directory=centos
+
+Удалит метку с node
+kubectl label nodes worker1.kube.local directory-
+
+# ###################################################
+#### Создание configMap из файла index.html:
+kubectl create configmap index-html --from-file=index.html --dry-run=client -o yaml | sed '/creationTimestamp/d' > 00-index-html.yaml
+
+#### Создание configMap, включая в него все файлы в текущей директории:
+kubectl create configmap index-html --from-file=./ --dry-run=client -o yaml | sed '/creationTimestamp/d' > 00-index-html.yaml
+
+# ###################################################
 ssh-copy-id root@control1.kube.local
 
 ansible all -i hosts.yaml -m shell -a 'date'
@@ -9,20 +48,60 @@ mkdir -p $HOME/.kube
 cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 
 # ###################################################
+# ################ INFO
 kubectl cluster-info
+kubectl config view
+kubectl config get-contexts
 
 watch kubectl get nodes
-watch kubectl get pods -A
+watch kubectl get pods -ALL -o wide
 
-kubectl -n kube-system get pods -o wide | grep coredns
+kubectl get pods --show-labels
+kubectl get pods --all-namespaces
+kubectl get pods -o wide
+kubectl describe pod <pod-name>
 
-	# Создать ресурс из манифеста
+kubectl describe pod <pod-name> -n <namespace>
+kubectl describe pod coredns-6d87999bc6-s7b4s -n kube-system
+
+kubectl exec -it <pod_name> /bin/sh
+
+# ################ POD
+# запуск пода 
+kubectl run -it --rm --restart=Never --image=infoblox/dnstools:latest dnstools
+
+# Запуск на конктретной ноде
+kubectl run -it --rm --restart=Never --image=infoblox/dnstools:latest dnstools \
+                --overrides='{"apiVersion": "v1", "spec": {"nodeSelector": { "kubernetes.io/hostname": "worker3.kube.local" }}}'   
+
+# -c nginx - обратиться к определенному контейнеру в поде
+kubectl -n test-volumes-sample exec test-volume-emptydir-openresty-75fd977f5-jxlxt -it -c nginx -- bash
+
+# Удалить pod
+kubectl delete pod <pod name>
+
+# add a label to a pod 
+kubectl label pods my-pod new-label=awesome
+# remove the label
+kubectl label pods my-pod new-label-
+
+# ################ Создать ресурс из манифеста
 kubectl create -f manifest.yml
 kubectl apply -f manifest.yml
-kubectl apply -f link
+kubectl apply -f ./file1.yaml  -f ./file2.yaml 
+kubectl apply -f https://link
 kubectl apply -f directory/
 
-  # deployment
+# ################ REPLICASET
+kubectl get replicasets
+kubectl describe replicasets <replicasetname>
+
+# ################ DEPLOYMENT 
+kubectl get deployment
+kubectl describe deployment <deployment-name>
+kubectl delete deployment <deployment-name>
+kubectl create deployment <deployment-name>
+
 kubectl -n kube-system rollout restart deployment coredns
 
 # rollout status - посмотреть текущее состояние Deployment
@@ -30,20 +109,81 @@ kubectl -n kube-system rollout restart deployment coredns
 # rollout undo - вернуться к предыдущей версии Deployment
 # rollout pause / resume - приостановить обновление или продолжить
 
+# ################ DSERVICES 
+kubectl get services
+kubectl describe services
 
+# ################ SERVICEACCOUNTS
+kubectl get serviceaccounts
+kubectl describe serviceaccounts
+kubectl delete serviceaccounts <serviceaccount>
+
+# ################ NAMESPACES
+kubectl get namespaces
+kubectl describe namespace <namespace_name>
+kubectl create namespace <namespace_name>
+kubectl edit namespace <namespace_name>
+kubectl top namespace <namespace_name>
+kubectl delete namespace <namespace_name>
+
+# ################ SECRETS
+kubectl get secret
+kubectl describe secrets
+kubectl create secret [flags] [options]
+kubectl delete secret <secret_name>
+# ################ INFO 
+
+kubectl get events
+#  Nodes in Kubernetes Cluster 
+kubectl get nodes
+kubectl get pods -o wide | grep <node_name>
+
+# list events but exclude pod event
+kubectl get events --field-selector involvedObject.kind!=Pod
+# list events alongside their timestamps and sorted according to time of creation
+kubectl get events --sort-by=.metadata.creationTimestamp
+
+# Получить описание всех pod в kube-system namespace
+curl https://API_SERVER_ADDRESS/api/v1/namespaces/kube-system/pods/ --header "Authorization: Bearer $TOKEN" --cacert ca.crt
+
+# Посмотреть логи конкретного pod в kube-system namespace
+curl https://API_SERVER_ADDRESS/api/v1/namespaces/kube-system/pods/POD_NAME/log --header "Authorization: Bearer $TOKEN" --cacert ca.crt
+
+# ################ Kubernetes Logs
+
+kubectl logs <pod_name>
+# real-time logs
+kubectl logs -f <pod_name>
+# logs for a pod for the last 3 hours
+kubectl logs --since=3h <pod_name>
+kubectl logs --tail=20 <pod_name>
+kubectl logs <pod_name> pod.log
+# ################ NODES 
+
+# Сдеалть ноду недоступной  
+kubectl cordon <node_name>
+# Сдеалть ноду доступной  
+kubectl uncordon <node_name>
+
+#To display resource usage metrics such as RAM and CPU run:
+kubectl top node <node_name>
+
+# delete a node
+kubectl delete node <node_name>
+
+
+
+# ################# TAINT
   #  убрать и возратить taint
 kubectl taint nodes control1.kube.local node-role.kubernetes.io/master-
 kubectl taint nodes control1.kube.local node-role.kubernetes.io/master:NoSchedule
 
-# ##########################
-# API
 
-# Получить описание всех pod в kube-system namespace
 
-curl https://API_SERVER_ADDRESS/api/v1/namespaces/kube-system/pods/ --header
-"Authorization: Bearer $TOKEN" --cacert ca.crt
 
-# Посмотреть логи конкретного pod в kube-system namespace
+# ################# API
 
-curl https://API_SERVER_ADDRESS/api/v1/namespaces/kube-system/pods/POD_NAME/log --header
-"Authorization: Bearer $TOKEN" --cacert ca.crt
+kubectl api-resources
+kubectl api-versions
+
+

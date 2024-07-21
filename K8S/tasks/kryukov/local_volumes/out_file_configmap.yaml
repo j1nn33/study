@@ -1,0 +1,17 @@
+apiVersion: v1
+data:
+  index.html: |-
+    <html>
+    <head>
+        <title>Тестовая страница</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+    <h1>Тестовая страница</h1>
+    <p>Простая тестовая страница</a>.
+    </p>
+    </body>
+    </html>
+kind: ConfigMap
+metadata:
+  name: index-html

@@ -1,0 +1,86 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-volume-emptydir-openresty
+  namespace: test-volumes-sample
+  labels:
+    app: test-openresty
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: test-openresty
+  template:
+    metadata:
+      labels:
+        app: test-openresty
+    spec:
+      initContainers:
+        - name: busybox-init
+          image: busybox:1.32.0
+          command: ['sh', '-c', 'touch /empty/init-file']
+          volumeMounts:
+            - name: empty-volume
+              mountPath: /empty
+      containers:
+      - name: openresty
+        image: openresty/openresty:centos-rpm
+        env:
+        - name: NGINX_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        resources:
+          limits:
+            cpu: "0.2"
+            memory: "300Mi"
+          requests:
+            cpu: "0.2"
+            memory: "100Mi"
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        volumeMounts:
+          - name: empty-volume
+            mountPath: /empty
+      - name: centos
+        image: centos:centos8
+        command: ['bash']
+        args: ['-c','sleep 50000']
+        volumeMounts:
+          - name: empty-volume
+            mountPath: /empty
+        env:
+          - name: ENV_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+        resources:
+          limits:
+            cpu: "0.2"
+            memory: "300Mi"
+          requests:
+            cpu: "0.1"
+            memory: "100Mi"
+      volumes:
+        - name: empty-volume
+          emptyDir:
+            medium: "Memory"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-service-nodeport-volume-openresty
+  namespace: test-volumes-sample
+spec:
+  selector:
+    app: test-openresty
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080
