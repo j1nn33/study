@@ -6,9 +6,9 @@ spec:
   hostname: dns
   subdomain: tools
 ```
-# у контейнера будет установлено имя dns.tools.default.svc.cluster.local
+#### у контейнера будет установлено имя dns.tools.default.svc.cluster.local
 
-##  /etc/hosts
+######  /etc/hosts
 ###### Для добавления записей в файл /etc/hosts контейнеров пода 
 ```
 hostAliases:
@@ -27,7 +27,7 @@ hostAliases:
 ###### dns.google.local и dns8.google.local преобразовывваем в 8.8.8.8
 ###### dns4.google.local преобразовывваем 8.8.4.4
 
-## /etc/resolve
+###### /etc/resolve
 ###### вместо стандартного файла /etc/resolvr.conf настроить свой собственный вариант
 ```
 dnsPolicy: "None"

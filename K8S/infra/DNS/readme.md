@@ -144,6 +144,12 @@ nslookup master.kube.local 192.168.1.170
 dig master.kube.local @127.0.0.1
 dig master.kube.local @192.168.1.170
 
+dig -x <ip>
+dig -x <ip> +short
+dig -x <hostname> +short
+dig -x <hostname> +short @<DNS_server>
+dig -x <ip> +short @<DNS_server>
+
 # ;; ANSWER SECTION:
 # master.kube.local.      86400   IN      A       192.168.1.170
 
