@@ -1,0 +1,196 @@
+YAML
+
+lists:
+  - item1
+  - item2
+
+key1: [value1,value2,value3,value4,value5]
+
+package: "{{ lists[0] }}"  - обращени
+
+-------------------------------
+dict:
+  key1: val1
+  key2: 'val2'
+
+dict['key1']
+
+-------------------------------
+vars:
+  var1:
+    foo1:
+      field1: example_name_1
+      field2: example_name_2
+
+tasks:
+- name: Create user for field2 value
+  user: 
+    name: "{{ var1['foo1']['field2'] }}"
+
+-------------------------------    
+
+		#YAML										
+-list_element1		
+-list_element2		
+
+		#PYTHON	
+['list_element1', 'list_element2']		
+
+
+----------------------------------------
+		#YAML								
+key1:valye1				 
+key2:valye2				  
+
+		#PYTHON	
+{'key1':'value1',
+ 'key2':'value2',	}
+----------------------------------------
+		#YAML									
+foo:whatever			
+  bar:						
+    - bar_el1			
+    - bar_el2				
+
+		#PYTHON		
+{'foo':'whatever',
+ 'bar':[' bar_el1',' bar_el2']} 
+----------------------------------------
+		#YAML
+foo:							
+  -bar1: note1		
+   do1: what1			
+	-bar2: note2		
+	 do2: what2			
+
+		#PYTHON	
+['foo':['{'bar1':'note1',
+         'do1':'what1'}',
+  			 '{'bar2':'note2',
+					 'do2':'what2'}'
+				]
+]
+
+----------------------------------------
+
+----------------------------------------
+примеры YAML
+
+(key value pair)
+Title: "Hello World"
+Pages: 19
+Price: 999.99
+For_sale: yes
+
+(array/list)
+
+- toy
+- animal
+
+(именнованная последовательность)
+Coold_drinks:
+ - coke
+ - pepsi
+ - sprite
+Hot_Drinks:
+ - tea
+ - coffee
+
+(вложенные структуры)
+- toy
+  - car 
+  - plane
+  - doll
+- animal
+  - cat 
+  - dog 
+
+(Dictionary)
+
+Banana:
+ Calories: 105
+ Fat: 0.4 g
+ Carbs: 27 g
+
+Grapes:
+ Calories: 62
+ Fat: 0.3 g
+ Carbs: 16 g
+
+(Complex structure)
+Fruits:
+ - Banana:
+   Calories: 105
+   Fat: 0.4 g
+ - Grapes:
+   Calories: 62
+   Fat: 0.3 g
+
+(List of dictionaries)
+- Color: Blue
+  Model:
+    Name: Corvete
+    Model: 1995
+  Tansition: Manual
+  Price: $20,000
+- Color: Grey 
+
+
+fruit:['Apple','Orange','Mango']
+
+----------------------------------------
+Проверка  yaml
+yq
+https://github.com/mikefarah/yq/tree/master
+https://github.com/mikefarah/yq/releases/tag/v4.44.3
+
+Latest version install 
+wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq &&\
+    chmod +x /usr/bin/yq
+
+
+cat yaml.yml | yq .
+Coold_drinks:
+  - coke
+  - pepsi
+  - sprite
+Hot_Drinks:
+  - tea
+  - coffee
+
+cat yaml.yml | yq .Hot_Drinks
+  - tea
+  - coffee
+
+cat yaml.yml | yq .Coold_drinks[2]
+sprite
+
+cat yaml1.yml | yq .
+Banana:
+  Calories: 105
+  Fat: 0.4 g
+  Carbs: 27 g
+Grapes:
+  Calories: 62
+  Fat: 0.3 g
+  Carbs: 16 g
+
+cat yaml1.yml | yq .Grapes.Calories
+62
+
+
+cat yaml2.yml | yq .
+Fruits:
+  - Banana:
+    Calories: 105
+    Fat: 0.4 g
+  - Grapes:
+    Calories: 62
+    Fat: 0.3 g
+
+cat yaml2.yml | yq .Fruits[1].Calories
+62
+
+
+----------------------------------------
+----------------------------------------
