@@ -39,13 +39,13 @@ worker1    192.168.1.174
 worker2    192.168.1.175
 worker3    192.168.1.176
 db1        192.168.1.177
-
 ```
 
 ### План установки кластера 
 #####  1.  Подготвока серверов         - ./K8S/k8s_install_kubeadm/readme_stand.md
 #####  2.  Развертывание кластера      - ./K8S/ansible/kubeadm 
 #####  3.  Постнастрйка калстере       - ./K8S/infra/utils/README.md
+######     - Metallb                   - ./K8S/infra/metallb
 ######     - Устанвока K8S dasboard    - ./K8S/infra/kubernetes-dashboar
 ######     - Namespaces                - ./K8S/infra/utils/ 
 ######     - Metrics server            - ./K8S/infra/utils/  
@@ -63,6 +63,7 @@ db1        192.168.1.177
 #####  11. арр                         - ./K8S/app/README.md
 #####  12. ingress                     - ./K8S/infra/ingress/README.md
 #####  13. Docker_Podman               - ./K8S/docker_podman/README.md
+
 
 ### Ресурсы & и теория
 #### Kubernetes                                           https://kubernetes.io/ru/docs/home/
@@ -91,6 +92,7 @@ db1        192.168.1.177
 #####    - Calico                                         https://www.kryukov.biz/kubernetes/set-kubernetes-teoriya/calico/	
 ######          - calicoctl Calico IPAM                   ./K8S/tasks/kryukov/network/calico.md
 ######
+#####    - metallb                                        ./K8S/infra/metallb
 #####    - ingress                                        https://www.youtube.com/watch?v=-kUr-sExQtg&list=PLmxqUDFl0XM6wDtlCkwdjU55z_WeBgBsZ&index=11
 ######                                                    ./K8S/tasks/kryukov/network/ingress.md
 ######

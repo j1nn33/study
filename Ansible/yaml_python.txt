@@ -72,7 +72,58 @@ foo:
 ]
 
 ----------------------------------------
+Любой валидный JSON - это валидный YAML
 
+JSON
+
+{
+  "apiVersion": "v1",
+  "kind": "Pod"
+}
+
+YAML
+apiVersion: v1
+kind: Pod
+
+JSON                                   |    YAML
+Строки обязательно экранированы        |   Строки можно не экранировать
+"var": true - это точно boolean        |   var: true - это boolean, но это неточно
+Удобнее парсить машиной                |   Удобнее парсить человеком
+Каждый документ при потоковой          |   Тут скобок нет, но есть --- и ...
+обработке в своих { .. }               |
+
+YAML
+Списки 
+
+numbers:
+  - one
+  - two
+  - three
+
+numbers: [ one, two, three ]
+
+Cловари
+
+numbers:
+  first: one
+  second: two
+  third: three
+
+numbers: { first: one, second: two, third: three }
+
+YAML |	Multiline	strings
+
+Сохраняем переносы строки:
+include_newlines: |
+             exactly as you see
+             will appear these three
+             lines of poetry
+
+Игнорируем переносы строки:
+fold_newlines: >
+            this is really a
+            single line of text
+            despite appearances
 ----------------------------------------
 примеры YAML
 

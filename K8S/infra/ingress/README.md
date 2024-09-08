@@ -22,17 +22,15 @@ kubectl label nodes worker2.kube.local ingress-nginx-node=enable
 kubectl apply -f nodeport-ingress-controller.yaml
 
 # Посмотреть порты 
-kubectl get service -ALL | grep ingress-nginx
 
-# ingress-nginx          ingress-nginx-controller             NodePort    10.233.53.170   <none>        80:30180/TCP,443:30443/TCP   63m
-# ingress-nginx          ingress-nginx-controller-admission   ClusterIP   10.233.62.16    <none>        443/TCP                      63m
+# kubectl get svc -A
+NAMESPACE              NAME                                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+ingress-nginx          ingress-nginx-controller             NodePort    10.233.53.170   <none>        80:30180/TCP,443:30443/TCP   9h
+ingress-nginx          ingress-nginx-controller-admission   ClusterIP   10.233.62.16    <none>        443/TCP                      9h
 
-
-
-
-
-
-
+# когда устанавливаешь k8s на голое железо, внешний балансировщик отсутствует, поэтому службы не получают EXTERNAL-IP
+# поставим Metallb, который заменит нам внешний балансировщик
+# ./K8S/infra/ingress/README.md
 
 ```
 
