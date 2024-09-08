@@ -1,0 +1,10 @@
+
+
+============
+beeline -u "jdbc:hive2://localhost:1000/default"
+
+beeline -u "jdbc:hive2://<host_name>:2181/default" -n <name_ipa_login>
+============
+
+# запуск скрипта 
+!run <name_script>

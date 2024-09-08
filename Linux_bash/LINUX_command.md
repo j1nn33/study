@@ -1,6 +1,9 @@
-#### Комманды  
+#### Комманды 
+#### other 
 #### search  
 #### Файловая система 
+#### DISK
+#### RPM
 #### Logs
 #### DNS
 #### TIPS 
@@ -8,10 +11,34 @@
 #### REST 
 #### CERT
 #### Нагрузочное тестирование  
- 
+#### АНАЛИЗ ППО 
+#### Text-Editors
+#### NET
 
+ 
+####
+```
+```
+
+#### other
+```
+ssh user@ip
+scp <path_source> user@ip:<path_tagert>
+
+systemctl -a | grep fail
+
+
+
+```
 #### search   
 ```
+
+grep "^[^#*/;]" <name_config>
+
+grep -i error /var/log/message
+
+find /opt/dir -name *name* -type f 
+
 # найти где встречается строка в файлах каталога 
 grep -ri "ca.ru" . 
 
@@ -33,6 +60,56 @@ du -sh /etc
 df -h
 
 ```
+#### DISK
+```
+sda1	sda2	sdb	sdc  |  	PV физические диски
+		VG00	 		 |	VG   группа томов
+root	usr	home	var	 |	LV логические диски (нарезаются поверх группы томов)
+ext3	reiserfs	xfs	 |	файловые системы
+-----------------------------------------------------
+
+lsblk 				– просмотр информации о дисках
+sfdisk /dev/sdb    	- аналог fdisk
+
+du -ha --time /etc/
+du -sh /home/mial/
+df -x tmpfs -h
+df -k /tmp
+iotop
+
+du -d l -h /var/log/*
+du -sh /var/log/*
+
+vgs
+
+# добавляет пространство +10G
+lvextend -r -L +10G /dev/mapper/rootvg-lvroot
+
+# расширяет до 10G
+lvextend -r -L10G /dev/mapper/rootvg-lvroot
+
+```
+
+#### RPM
+```
+yum update -y 
+yum -y install epel-release
+yum install <name>
+yum remove  <name>
+yum -y install epel-release
+
+yum install <name_pack> --enablerepo=<name_repo>
+yum clean all
+yum update
+yum update --disablerepo=* --enablerepo=<name_repo>
+yum search
+
+rm -f /var/lib/rpm/__db*
+db_verify /var/lib/rpm/Packages
+rpm --rebuild
+yum clean all
+```
+
 #### Logs  
 ```
 # если файл логов большое и не вариант его убить, то можно его обнлить
@@ -140,4 +217,65 @@ echo $FILE_MAX > file_max.conf;
 sudo sysctl -w fs.file-max=10000 && $HOME/utils/filedescrutilize --file 150 -time 600;
 # Освобождение дескрипторов, востановление прежних значений 
 sudo sysctl -w fs.file-max=$FILE_MAX
+```
+
+#### АНАЛИЗ ППО
+```
+which <name_app>
+locate <file_name>
+
+rpm -qa | grep <name_app>
+rpm -qf  /etc/pam.d
+
+dpkg-query -S 
+```
+
+#### Text-Editors
+```
+NANO
+---------------------------------------
+Выделение				|	Alt-A    + стрелочка
+скопировать в буффер	|	Ctrl-K
+вставить текст			|	Ctrl-U
+
+---------------------------------------
+VI
+
+вернуться в командный режим		| esc
+вернуться/войти в режим ввода	| a i
+выход без изменений				| :q!
+сохранить и выйти				| :wq
+удаление текущей строки   		| dd
+создание копии текущей строки	| yy
+вставить						| p
+
+---------------------------------------
+MC
+SHIFT + F4		Создает новый файл.
+ALT + ENTER		Вставить файл или каталог, на котором установлен курсор в командную строку.
+CTRL + F  		Копировать выделенный текст в файл.
+SHIFT + F5 		Вставка текста из файла.
+
+```
+
+#### NET 
+```
+nmtui
+
+/etc/sysconfig/network-scripts/ifcfg-eth0
+/etc/init.d/network restart
+/etc/resolv.conf
+/etc/hostname 
+/etc/hosts
+
+service network restart
+
+ip addr show
+ip a
+netstat - tulpen | grep sshd
+iftop   nload    -  мониторинг сетевых интерфейсов
+ip route
+ping  10.0.0.1 -s 1500
+locate file_name
+
 ```

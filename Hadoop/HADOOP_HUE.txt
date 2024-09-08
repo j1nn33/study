@@ -1,0 +1,17 @@
+
+============
+CREATE DATABASE <name_database> LOCATION '<path_to_location>';
+DESCRIBE DATABASE <name_database>;
+DESCRIBE SCHEMA <name_schema>;
+SHOW TABLE IN <name_database>;
+
+============
+SHOW CREATE TABLE <name_table>;
+
+SELECT * FROM <name_table>;
+TRUNCATE TABLE <name_table>;
+DROP TABLE IF EXISTS <name_table>;
+ALTER TABLE <name_table> SET LOCATION '<path_to_location>';
+============
+
+MSCK repair table;

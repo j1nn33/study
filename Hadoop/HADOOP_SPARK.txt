@@ -1,0 +1,6 @@
+
+
+============
+spark-submit -v --class org.apache.spark.examples.SparkPi --master yarn --queue root.default <path_jar> 100
+
+============

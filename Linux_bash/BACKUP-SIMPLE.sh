@@ -27,3 +27,21 @@ echo "===========Архивируем файлы======="
 
 tar -czvf $DEST_DIR$ARCHIVE.gz $SCR_DIR
 
+
+
+<name_command> >> <name_file>
+for <name_command> in cat <name_file>; do <name_command>; done
+# пример
+hdfs fsck / | grep 'Under replicated' | awk -F':' '{print $1}' >> <name_file>
+for hdfsfile in cat <name_file>; do hadoop fs -setrep 2 $hdfsfile; done
+============
+============
+#!/bin/bash
+
+var_name='name'
+
+for i in $list
+do
+   ipa group-add_member $group --user=$var_name
+done
+

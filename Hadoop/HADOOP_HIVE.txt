@@ -1,0 +1,4 @@
+# запусть скрипты в файле 
+vi <name_file>
+
+hive -f <name_file>

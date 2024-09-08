@@ -1,11 +1,18 @@
-**study** 
+# Структура 
+    - Ansible                    - записки по Ansible
+    - ELK                        - записки по ELK
+    - Hadoop                     - записки по Hadoop 
+    - Jenkins                    - записки по Jenkins 
+    - K8S                        - записки по K8S
+    - Linux_bash                 - записки по Linux_bash
+    - data_science               - Установка minicube    
+    - python                    
+        -
+        -
+        -
+    - GIT-COMMAND (help)
+    
 
- 1. PYTHON (task and conspect for study)
- 2. Django
- 3. Ansible
- 4. BASH
- 2. GIT-COMMAND (help)
- 3. Other
+    
+    
 
-
- 

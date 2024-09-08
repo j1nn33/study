@@ -65,6 +65,7 @@ db1        192.168.1.177
 #####  13. Docker_Podman               - ./K8S/docker_podman/README.md
 
 ### Ресурсы & и теория
+#### Kubernetes                                           https://kubernetes.io/ru/docs/home/
 
 #### kryukov
 #####    - Общее                                          https://www.kryukov.biz/kubernetes/
