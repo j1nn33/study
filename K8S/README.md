@@ -45,25 +45,24 @@ db1        192.168.1.177
 #####  1.  Подготвока серверов         - ./K8S/k8s_install_kubeadm/readme_stand.md
 #####  2.  Развертывание кластера      - ./K8S/ansible/kubeadm 
 #####  3.  Постнастрйка калстере       - ./K8S/infra/utils/README.md
-######     - Metallb                   - ./K8S/infra/metallb
-######     - Устанвока K8S dasboard    - ./K8S/infra/kubernetes-dashboar
 ######     - Namespaces                - ./K8S/infra/utils/ 
 ######     - Metrics server            - ./K8S/infra/utils/  
 ######     - Priority class            - ./K8S/infra/utils/
-######     - Reloader                  - ./K8S/infra/utils/  TODO
-######     - Cert-manager              - ./K8S/infra/utils/  TODO
-#####  4.  Monitoring                  - TODO
-#####  5.  ELK                         - TODO
+######     - Reloader                  - ./K8S/infra/utils/                                     TODO
+######     - Cert-manager              - ./K8S/infra/utils/                                     TODO
+#####  4.  Monitoring                  -                                                        TODO
+#####  5.  ELK                         -                                                        TODO
 #####  6.  Test                        - ./K8S/useful/test_case/
 #####  7.  NFS                         - ./K8S/infra/NFS/
-#####  8.  Vault                       - TODO
-#####  9.  Jenkins                     - TODO
-#####  10. Nexus                       - TODO
-#####  11. Helm                        - TODO
+#####  8.  Vault                       -                                                        TODO
+#####  9.  Jenkins                     -                                                        TODO
+#####  10. Nexus                       -                                                        TODO
+#####  11. Helm                        -                                                        TODO
 #####  11. арр                         - ./K8S/app/README.md
 #####  12. ingress                     - ./K8S/infra/ingress/README.md
 #####  13. Docker_Podman               - ./K8S/docker_podman/README.md
-
+#####  14. metallb                     - ./K8S/infra/metallb
+#####  15. Устанвока K8S dasboard      - ./K8S/infra/kubernetes-dashboar
 
 ### Ресурсы & и теория
 #### Kubernetes                                           https://kubernetes.io/ru/docs/home/
@@ -95,10 +94,13 @@ db1        192.168.1.177
 #####    - metallb                                        ./K8S/infra/metallb
 #####    - ingress                                        https://www.youtube.com/watch?v=-kUr-sExQtg&list=PLmxqUDFl0XM6wDtlCkwdjU55z_WeBgBsZ&index=11
 ######                                                    ./K8S/tasks/kryukov/network/ingress.md
-######
+######       
 ######
 
 #### Вечерняя школа Слёрма по Kubernetes.                  https://www.youtube.com/playlist?list=PL8D2P0ruohOA4Y9LQoTttfSgsRwUGWpu6
-####                                                       ./K8S/tasks/sl_base/k8s-object/README.txt
-####    Разное 
+#####                                                      ./K8S/tasks/sl_base/k8s-object/README.txt
+
+
+
+####   Разное 
 

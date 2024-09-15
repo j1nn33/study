@@ -144,9 +144,7 @@ Deployment
         # - --watch-namespace=my-project-namespace
 ---
 
-```
-####  пример ingress controller (Over a NodePort Service)   
-```
+# Запуск и проверка
 # сделать лейбы на ноды, чтобы igress-controller запускался только на них 
 
 kubectl label nodes worker1.kube.local ingress-nginx-node=enable
@@ -156,17 +154,68 @@ kubectl label nodes worker2.kube.local ingress-nginx-node=enable
 
 kubectl apply -f nodeport-ingress-controller.yaml
 
-# Посмотреть порты  
+# посмотеть поды в namespace  ingress-nginx
+
+kubectl get pods -n ingress-nginx
+# NAME                                       READY   STATUS      RESTARTS        AGE
+# ingress-nginx-admission-create-nsf45       0/1     Completed   0               28d    - 
+# ingress-nginx-admission-patch-fz69q        0/1     Completed   1               28d    -
+# ingress-nginx-controller-f7587f845-g5wq9   1/1     Running     2 (6h36m ago)   28d    - сам ingress-nginx-controller
+
+# Посмотреть порты на которых висит ingress-controllre 30180  30443
 kubectl get service -ALL | grep ingress-nginx
 
 # ingress-nginx          ingress-nginx-controller             NodePort    10.233.53.170   <none>        80:30180/TCP,443:30443/TCP   63m
 # ingress-nginx          ingress-nginx-controller-admission   ClusterIP   10.233.62.16    <none>        443/TCP                      63m
 
+# В логах контейнера ingress-nginx-controller можно увидеть что подхвачены configmap
+#
+# Event(v1.ObjectReference{Kind:"ConfigMap", Namespace:"ingress-nginx", Name:"ingress-nginx-controller", UID:"ef56ee62-6158-4e3b-a6ad-3060b3df1be8", APIVersion:"v1", ResourceVersion:"397351", FieldPath:""}): type: Normal' reason: 'CREATE' ConfigMap ingress-nginx/ingress-nginx-controller
+# Event(v1.ObjectReference{Kind:"ConfigMap", Namespace:"ingress-nginx", Name:"tcp-services", UID:"18b7db30-26fd-4e5e-b893-2a9478eaa1ac", APIVersion:"v1", ResourceVersion:"397352", FieldPath:""}): type: 'Normal' reason: 'CREATE' ConfigMap ingress-nginx/tcp-services
+# Event(v1.ObjectReference{Kind:"ConfigMap", Namespace:"ingress-nginx", Name:"udp-services", UID:"26c35cc3-67f2-4cbe-8979-11bac4f521db", APIVersion:"v1", ResourceVersion:"397353", FieldPath:""}): type: 'Normal' reason: 'CREATE' ConfigMap ingress-nginx/udp-services
 
+# Смотрим сервисы 
+# kubectl get service -n ingress-nginx
+# NAME                                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+# ingress-nginx-controller             NodePort    10.233.53.170   <none>        80:30180/TCP,443:30443/TCP   28d
+# ingress-nginx-controller-admission   ClusterIP   10.233.62.16    <none>        443/TCP                      28d
 
+# Попасть к сервисам с наружи можно по этим ссыкам
 http://192.168.1.171:30180/
 https://192.168.1.171:30443/
+```
+####  пример ingress controller (Over a NodePort Service)   
 
+```
+# Запускаем следующий ingress для примера (Openresty)
+# выставляем наружу сервис ./K8S/tasks/kryukov/local_volumes/prepare-cluster-volume.yaml
+# сервис для               ./K8S/tasks/kryukov/local_volumes/12_openresty_projected.yaml 
+# ingress                  ./K8S/tasks/kryukov/network/ingress/openresty.yml
+kubectl apply -f openresty.yml
+
+# cat openresty.yml
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: access-openresty            
+#   namespace: volumes-sample
+# spec:
+#   ingressClassName: nginx    - имя ingressClass указывали  ./K8S/tasks/kryukov/network/ingress/nodeport-ingress-controller.yaml - --ingress-class=nginx (строка 468)
+#   rules:
+#   - http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: openresty-srv
+#             port:
+#               number: 80
+
+
+
+
+# При проблемах смотрим логи ingress controller
 
 ```
 #### ingress controller (Via the host network) 

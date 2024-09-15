@@ -1,9 +1,85 @@
 # best practice 
 ===========================
+Установка в виртуальное окружение 
+python3 -V
+mkdir python-venv
+cd !$
+
+python3 -m venv ansible2.9
+ls
+# ansible2.9
+source ansible2.9/bin/activate
+(ansible2.9)$ python3 -V
+# Python 3.6.8
+
+# Установка с 0
+(ansible2.9)$ python3 -m pip install ansible==2.9
+
+# Установка из зависимостей 
+# pip install -r requirements.txt || true
+# pip freeze > requirements.txt
+
+(ansible2.9)$ deactivate 
+
+
+===========================
+# start
+
+ansible -i host all -m ping
+ansible-inventory -i host --list
+
+-k или --ask-pass               запросить пароль
+-u <username>  или --user       
+-b  или  --become
+--become-user                   в какого пользователя переключисться
+-K  или --ask-bekome-pass       запросить пароль для sudo
+===========================
+# debug
+- name: playbook_for_debug
+  hosts: hostname1
+  vars:
+    - NIFI_HOME: /tmp
+
+# вывод переменной   
+  tasks:
+    - name: "task_for_debug"
+      debug:
+        var: NIFI_HOME
+
+# переопределине переменной 
+    - name: "set var"
+      set_fact: NIFI_HOME=/tmp2
+    - name: "task_for_debug"
+      debug:
+        var: NIFI_HOME
+
+# получение вывода в переменную 
+    - name: "Stat"
+      stat:
+        path: file_name
+      register: stat_info
+    - name: "task_for_debug"
+      debug:
+        var: stat_info.stat.exists
+
+
+# Запуск с дебагом 
+ansible-playbook -i hosts.ini playbook_name.yml -v 
+
+ansible-playbook -i hosts.ini playbook_name.yml > output.json
+
+# DRY RUN
+ansible-playbook -i hosts.ini playbook_name.yml -C
+
+# Примеры 
+https://github.com/geerlingguy
+
+===========================
 ansible.cfg - конфигурационный файл для Ansible.
 
 [defaults]
 hostfile = ./hosts
+roles = roles
 remote_user = appuser
 private_key_file = ~/.ssh/appuser
 host_key_checking = False
@@ -81,7 +157,7 @@ roles/
 ===========================
 Directory layout 2
 
-nventories/
+inventories/
    production/
       hosts               # inventory file for production servers
       group_vars/
@@ -113,6 +189,52 @@ roles/
     webtier/
     monitoring/
     fooapp/
+===========================
+Directory by SBER
+|- Ansible
+|  |__ ansible.cfg
+|  |__ inventories
+|  |   |__dev
+|  |   |  |__APP1
+|  |   |  |  |__group_vars
+|  |   |  |  |  |__all.yml
+|  |   |  |  |  |__secret.yml
+|  |   |  |__APP2
+|  |   |  |  |__group_vars
+|  |   |  |  |  |__all.yml
+|  |   |  |  |  |__secret.yml
+|  |   |
+|  |   |__prod
+|  |   |  |__APP1
+|  |   |  |  |__group_vars
+|  |   |  |  |  |__all.yml
+|  |   |  |  |  |__secret.yml
+|  |   |  |__APP2
+|  |   |  |  |__group_vars
+|  |   |  |  |  |__all.yml
+|  |   |  |  |  |__secret.yml
+|  |
+|  |__ playbooks
+|  |   |  |__APP1
+|  |   |  |  |__install.yml
+|  |   |  |  |__restart.yml
+|  |   |  |  |__stop.yml
+|  |   |  |  |__delete.yml
+|  |   |  |__APP2
+|  |   |  |  |__install.yml
+|  |   |  |  |__restart.yml
+|  |   |  |  |__stop.yml
+|  |   |  |  |__delete.yml
+|  |
+|  |__ roles
+|  |   |  |__APP1
+|  |   |  |  |__tasks
+|  |   |  |     |__task_root.yml
+|  |   |  |     |__task_user.yml
+|  |   |  |__APP2
+|  |   |  |  |__tasks
+|  |   |  |     |__task_root.yml
+|  |   |  |     |__task_user.yml
 ===========================
 Тестирование Molecule, Ansible, Testinfra
 requirements.txt

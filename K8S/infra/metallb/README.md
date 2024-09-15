@@ -4,7 +4,9 @@
 ######    - подготовка 
 ######    - Install      
 ######    - ingress (type loabalancer)
-   
+######    - service (type loabalancer)   
+#####     - Тест 
+
 
 ####    - Теория  
 ```
@@ -13,8 +15,11 @@
 
 https://metallb.universe.tf/
 
-# Поставляет некоторый ip адрес для сервивиса типа loadbalancer
+# Поставляет некоторый ip адрес (ip к реальным нодам отношения может не иметь) для сервивиса типа loadbalancer
 # обратившись на этот ip получаем доступ к сервису loadbalancer
+#
+# metallb --->  service (type loabalancer)
+#
 
 # Metallb - необходимо прдеостваить пул ip адресов 
 # имеет 2 режима работы:
@@ -119,6 +124,18 @@ http://192.168.1.171:31126/
 # loadBalancerIP: 192.168.1.173
 # решает проблему на каком ip запуститься
 ```
+
+######    - service (type loabalancer)  
+
+```
+# пример как вытащить kubernetis dashboard 
+./K8S/infra/metallb/load-balance-ks-dashboard.yaml
+kubectl apply -f load-balance-ks-dashboard.yaml
+
+https://192.168.1.171/#/workloads?namespace=default 
+```
+
+
 ### Тест 
 от пода с 0 (при этом был удаелен ingress (type loabalancer) созданый по выше )
 

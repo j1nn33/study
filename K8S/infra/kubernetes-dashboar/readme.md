@@ -54,6 +54,17 @@ kubectl -n kubernetes-dashboard get service
 
 
 https://192.168.1.171:30800/#/login
+
+```
+###### Получим снаружи 3 вариант metallb 
+```
+# тебуется развернутый metallb
+# ./K8S/infra/metallb
+# минифест получен путем замены type: NodePort на type: LoadBalancer 	
+kubectl apply -f load-balance-ks-dashboard.yaml
+
+https://192.168.1.171/#/workloads?namespace=default
+
 ```
 
 ###### Доступ к дашборду 
