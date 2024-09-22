@@ -1,26 +1,26 @@
-# Структура 
+### Структура 
     - K8S/k8s_install_kubeadm    - Установка кластера с помощью kubeadm
     - K8S/k8s_install_kubespray  - Установка кластера с помощью kubespray
     - K8S/minicube               - Установка minicube            
 
-# Aвтоматизация ansible
+### Aвтоматизация ansible
     - ./K8S/ansible/
     - kubeadm                  - автоматизацивя для kubeadm
     - kubespray                - автоматизацивя для kubespray
 
-# Структура приложения 
+### Структура приложения 
     - ./K8S/app
 
-# infra
+### infra
     - ./K8S/infra/
     - kubernetes-dashboar       - kubernetes-dashboar
      
-# Полезное
+### Полезное
     - ./K8S/useful/
     - network              - сеть и тестирование сети
     - pod_tuning           - настройка параметров пода
            
-# Задачи по изучению K8S
+#### Задачи по изучению K8S
     - ./K8S/tasks/
       - sl_base             - Вечерняя школа Слёрма по Kubernetes
       - sl_mega
