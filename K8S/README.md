@@ -3,29 +3,29 @@
     - K8S/k8s_install_kubespray  - Установка кластера с помощью kubespray
     - K8S/minicube               - Установка minicube            
 
-### Aвтоматизация ansible
-  ./K8S/ansible/
-      - kubeadm                  - автоматизацивя для kubeadm
-      - kubespray                - автоматизацивя для kubespray
+# Aвтоматизация ansible
+    - ./K8S/ansible/
+    - kubeadm                  - автоматизацивя для kubeadm
+    - kubespray                - автоматизацивя для kubespray
 
-### Структура приложения 
-  ./K8S/app
+# Структура приложения 
+    - ./K8S/app
 
-### infra
-  ./K8S/infra/
-     - kubernetes-dashboar       - kubernetes-dashboar
+# infra
+    - ./K8S/infra/
+    - kubernetes-dashboar       - kubernetes-dashboar
      
-### Полезное
-  ./K8S/useful/
-          - network              - сеть и тестирование сети
-          - pod_tuning           - настройка параметров пода
+# Полезное
+    - ./K8S/useful/
+    - network              - сеть и тестирование сети
+    - pod_tuning           - настройка параметров пода
            
-### Задачи по изучению K8S
-  ./K8S/tasks/
-           - sl_base             - Вечерняя школа Слёрма по Kubernetes
-           - sl_mega
-           - k8s_arch
-           - kryukov             - заметки о kubernetes по материалам сайта (с некоторой попровакой) https://www.kryukov.biz/kubernetes/ 
+# Задачи по изучению K8S
+    - ./K8S/tasks/
+      - sl_base             - Вечерняя школа Слёрма по Kubernetes
+      - sl_mega
+      - k8s_arch
+      - kryukov             - заметки о kubernetes по материалам сайта (с некоторой попровакой) https://www.kryukov.biz/kubernetes/ 
 
 ### STAND
 ######   - расширеное описаниен ./K8S/k8s_install_kubeadm/readme_stand.md
