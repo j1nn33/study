@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: access-openresty-host
+  namespace: volumes-sample
+spec:
+  ingressClassName: nginx-host
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: openresty-srv
+            port:
+              number: 80

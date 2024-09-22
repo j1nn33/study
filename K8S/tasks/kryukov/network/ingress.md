@@ -4,6 +4,8 @@
 ######    - пример ingress (Over a NodePort Service)  
 ######    - ingress controller (Via the host network)       
 ######    - пример ingress (Via the host network)         
+######    - DEBUG
+
 
 #### ingress controller (теория)
 ```
@@ -137,10 +139,11 @@ Deployment
         - --udp-services-configmap=$(POD_NAMESPACE)/udp-services 
         - --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
         # Задаём класс, который можно указывать при 
-        # определении ingress
-        # - --ingress-class=my-test-ingress
+        # определении ingress это необходимо когда на кластере есть несколько ingress-controller 
+        # в этом случае при создании ingress (ingressClassName: nginx) явно указываем на какой завязываться ingress-controller 
+        #  - --ingress-class=nginx
         # Определяет namespace ingress которого будет обслуживать
-        # контроллер. Если пустой, то отслеживаются все namespaces
+        # контроллер. Если пустой, то отслеживаются все namespaces 
         # - --watch-namespace=my-project-namespace
 ---
 
@@ -220,9 +223,160 @@ kubectl apply -f openresty.yml
 ```
 #### ingress controller (Via the host network) 
 ```
+ingress-controller садиться сетевой loopback interface хостовой ноды
+
+архитектура goal3
+на картинке изображены 2 ингресс контролера (для кластера это нормально):
+   - ingress controller nodeport(ingress-class=nginx) 
+   - ingress controller HostNetwork(ingress-class=nginx-host) 
+   - при такой схеме ingress нужно явно указывать на какой ingress controller завязываться (ingress-class=nginx или ingress-class=nginx-host)
+в нашем случае конролер сядет на попорты 280, 2443
+
+плюсы решения
+    - можно посадить конртолер на 80, 443 порты, если они свободны на хосте (ingress controller nodeport сделать без танцев не получиться - делать так bad practics)  
+    - не нужно делать перед ним сервис
+    - нет NAT преобразований  	
+минусы решения
+    - если его ломанут, то попадают на loopback interface хостовой ноды
+
+----------------
+манифест ingress-controller HostNetwork на основе манифеста ingress controller nodeport
+измения описаны в host-ingress-controller.yaml
+
+для работы требуется теже сущности что и nodeport-ingress-controller.yaml
+(тк они созданы и расктаны в  nodeport-ingress-controller.yaml то их раскатывать заново не требутеся )
+
+сущности которые уже расктаны и если host-ingress-controller.yaml будте подниматься отдельно то необходимо их применить 
+
+- Namespace
+    name: ingress-nginx
+- ServiceAccount
+    name: ingress-nginx
+    name: ingress-nginx-admission
+- ClusterRole
+    name: ingress-nginx
+    name: ingress-nginx-admission
+- ClusterRoleBinding
+    name: ingress-nginx
+    name: ingress-nginx-admission
+- Role
+    name: ingress-nginx
+    name: ingress-nginx-admission
+- RoleBinding
+    name: ingress-nginx
+    name: ingress-nginx-admission
+- Service
+    name: ingress-nginx-controller
+    name: ingress-nginx-controller-admission
+- ValidatingWebhookConfiguration
+- Job
+- ServiceAccount
+
+измения  
+- ConfigMap
+  имя, label
+  удалено (тк нет балансировщика и клиенты идут на него напрямую)
+   - use-forwarded-headers: "true"
+   - use-gzip: "false
+
+- Deployment
+  spec:
+      dnsPolicy: ClusterFirst
+      # Вешаем поды непосредственно на сетевые интерфейсы node. 
+      # --->>>> В том числе и на loopback!!!!! <<<< -----
+      hostNetwork: true
+	  
+  args:
+      - --ingress-class=nginx-host
+      - --configmap=$(POD_NAMESPACE)/ingress-nginx-controller-host
+      # Определяет namespace ingress которого будет обслуживать
+      # контроллер. Если пустой, то отслеживаются все namespaces
+      # - --watch-namespace=my-project-namespace
+	  
+	  # убедиться что порты на этих нода свободны
+      - --http-port=280  
+      - --https-port=2443
+ 
+ убраны 
+    # добавлены конфиги для tcp и udp сервисов
+    # --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
+    # --udp-services-configmap=$(POD_NAMESPACE)/udp-services
+
+
+# Запуск
+kubectl apply -f host-ingress-controller.yaml
+
+# Для тестового кластера replicaset=1 
+kubectl -n ingress-nginx get  pods
+# NAME                                             READY   STATUS      RESTARTS        AGE
+# ingress-nginx-admission-create-nsf45             0/1     Completed   0               34d
+# ingress-nginx-admission-patch-fz69q              0/1     Completed   1               34d
+# ingress-nginx-controller-f7587f845-5wt74         1/1     Running     1 (5d15h ago)   6d17h
+# ingress-nginx-controller-host-6756b9c66c-wmp76   1/1     Running     0               5m7s
+
 
 ```
 #### пример ingress controller (Via the host network)        
 ```
+# Запускаем следующий ingress для примера (Openresty)
+
+kubectl apply -f openresty_ingress_host.yml
+
+Отличия от передыдущего openresty.yml
+
+# cat openresty_ingress_host.yml
+name: access-openresty-host
+ spec:
+  ingressClassName: nginx-host    - имя ingressClass указывали  ./K8S/tasks/kryukov/network/ingress/nodeport-ingress-controller.yaml - --ingress-class=nginx (строка 468)
+
+http://192.168.1.171:280/
+https://192.168.1.171:2443/
+
+# Проверка портов 
+netstat -tulpen | grep 80
+# tcp        0      0 0.0.0.0:280             0.0.0.0:*               LISTEN      101        395404     66732/nginx: master
+# tcp6       0      0 :::280                  :::*                    LISTEN      101        395395     66732/nginx: master
+
+netstat -tulpen | grep 443
+# tcp        0      0 0.0.0.0:2443            0.0.0.0:*               LISTEN      101        395410     66732/nginx: master
+# tcp6       0      0 :::2443                 :::*          
+
+# При проблемах смотрим логи ingress controller
+
+"Configuration changes detected, backend reload required"
+"New leader elected" identity="ingress-nginx-controller-f7587f845-2w4d7"
+"Backend successfully reloaded"
+"Initial sync, sleeping for 1 second"
+Event(v1.ObjectReference{Kind:"Pod", Namespace:"ingress-nginx", Name:"ingress-nginx-controller-host-c4f6d77c9-7rvrv", UID:"8e624301-b5a2-48e2-a37e-0e9dedd21db6", APIVersion:"v1", ResourceVersion:"690321", FieldPath:""}): type: 'Normal' reason: 'RELOAD' NGINX reload triggered due to a change in configuration
+{"time": "2024-09-22T11:01:23+00:00", "remote_addr": "", "x-forward-for": "192.168.1.37", "request_id": "907bbdacc44b8546632ba291358a696e", "remote_user": "", "bytes_sent": 129110, "request_time": 0.002, "status":200, "vhost": "192.168.1.171", "request_proto": "HTTP/2.0", "path": "/", "request_query": "", "request_length": 2062, "duration": 0.002,"method": "GET", "http_referrer": "", "http_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36", "namespace": "volumes-sample", "ingress_name": "access-openresty", "service_name": "openresty-srv", "service_port": "80" }
+
+```
+
+#### DEBUG
+```
+ingres(port 80)  ----> service (clusterIP:80)
+
+ingress ссылается на service приложения 
+
+Важно 
+  указываем на какой ingress-controller вешается ingress
+  annotations:  
+    kubernetes.io/ingress.class: "nginx-host"  
+
+ingress debug
+- log ingress-controller
+  идем в POD ingress-controller
+  
+# ЗАГРУЗКА И СТАРТ INGRESS в INGRESS-CONTROLLER  
+	"successfully validated configuration, accepting" ingress="volumes-sample/access-openresty"
+	"Found valid IngressClass" ingress="volumes-sample/access-openresty" ingressclass="nginx"
+	"Configuration changes detected, backend reload required"
+	Event(v1.ObjectReference{Kind:"Ingress", Namespace:"volumes-sample", Name:"access-openresty", UID:"ce0b9195-76e2-4cee-92d6-8886cb9ef237", APIVersion:"networking.k8s.io/v1", ResourceVersion:"655342", FieldPath:""}): type: 'Normal' reason: 'Sync' Scheduled for sync
+	"Backend successfully reloaded"
+	Event(v1.ObjectReference{Kind:"Pod", Namespace:"ingress-nginx", Name:"ingress-nginx-controller-f7587f845-5wt74", UID:"f135e38e-c412-484f-86fd-5e95dc49de38", APIVersion:"v1", ResourceVersion:"649774", FieldPath:""}): type: 'Normal' reason: 'RELOAD' NGINX reload triggered due to a change in configuration
+
+# ЛОГИ ДОСТПУПА К ПОДУ ПРИЛОЖЕНИЯ в формате json как определяли выше для разбора в ELK
+
+	{"time": "2024-09-22T07:09:28+00:00", "remote_addr": "", "x-forward-for": "192.168.1.37", "request_id": "f8e9ccc66186124a550276e1f5b78f63", "remote_user": "", "bytes_sent": 129110, "request_time": 0.012, "status":200, "vhost": "192.168.1.171", "request_proto": "HTTP/2.0", "path": "/", "request_query": "", "request_length": 2065, "duration": 0.012,"method": "GET", "http_referrer": "", "http_user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36", "namespace": "volumes-sample", "ingress_name": "access-openresty", "service_name": "openresty-srv", "service_port": "80" }
 
 ```

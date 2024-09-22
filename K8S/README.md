@@ -25,7 +25,7 @@
            - sl_base             - Вечерняя школа Слёрма по Kubernetes
            - sl_mega
            - k8s_arch
-           - kryukov             - заметки о kubernetes
+           - kryukov             - заметки о kubernetes по материалам сайта (с некоторой попровакой) https://www.kryukov.biz/kubernetes/ 
 
 ### STAND
 ######   - расширеное описаниен ./K8S/k8s_install_kubeadm/readme_stand.md
@@ -94,8 +94,13 @@ db1        192.168.1.177
 #####    - metallb                                        ./K8S/infra/metallb
 #####    - ingress                                        https://www.youtube.com/watch?v=-kUr-sExQtg&list=PLmxqUDFl0XM6wDtlCkwdjU55z_WeBgBsZ&index=11
 ######                                                    ./K8S/tasks/kryukov/network/ingress.md
-######       
-######
+#####    - Network Policies       
+#####    - Calico Network Polices
+#####    - Calico eBPF
+
+
+
+
 
 #### Вечерняя школа Слёрма по Kubernetes.                  https://www.youtube.com/playlist?list=PL8D2P0ruohOA4Y9LQoTttfSgsRwUGWpu6
 #####                                                      ./K8S/tasks/sl_base/k8s-object/README.txt
