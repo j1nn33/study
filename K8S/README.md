@@ -42,6 +42,7 @@ db1        192.168.1.177
 ```
 
 ### План установки кластера 
+```
 #####  1.  Подготвока серверов         - ./K8S/k8s_install_kubeadm/readme_stand.md
 #####  2.  Развертывание кластера      - ./K8S/ansible/kubeadm 
 #####  3.  Постнастрйка калстере       - ./K8S/infra/utils/README.md
@@ -63,11 +64,12 @@ db1        192.168.1.177
 #####  13. Docker_Podman               - ./K8S/docker_podman/README.md
 #####  14. metallb                     - ./K8S/infra/metallb
 #####  15. Устанвока K8S dasboard      - ./K8S/infra/kubernetes-dashboar
-
+```
 ### Ресурсы & и теория
 #### Kubernetes                                           https://kubernetes.io/ru/docs/home/
 
-#### kryukov
+### kryukov
+```
 #####    - Общее                                          https://www.kryukov.biz/kubernetes/
 #####    - План                                           https://www.kryukov.biz/kubernetes/poryadok-prosmotra-video-na-moyom-kanale-dlya-nachinayushhih/
 #####    - Установка кластера (video по kubeadm)          https://www.youtube.com/playlist?list=PLmxqUDFl0XM4sJxAocidRKMNzAB48oEnU
@@ -97,7 +99,7 @@ db1        192.168.1.177
 #####    - Network Policies       
 #####    - Calico Network Polices
 #####    - Calico eBPF
-
+```
 
 
 
