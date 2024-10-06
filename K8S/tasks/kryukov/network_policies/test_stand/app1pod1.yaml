@@ -1,0 +1,75 @@
+---
+# ConfigMap в котором подменяется стартовая страница
+apiVersion: v1
+data:
+  index.html: |-
+    <html>
+    <head>
+        <title>Тестовая страница app1-pod1</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+    <h1>Тестовая страница app1-pod1</h1>
+    <p>Простая тестовая страница app1-pod1</a>.
+    </p>
+    </body>
+    </html>
+kind: ConfigMap
+metadata:
+  name: index-html-app1-pod1
+  namespace: app1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app1-pod1-deployment
+  namespace: app1
+  labels:
+    app: app1-pod1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app1-pod1
+  template:
+    metadata:
+      labels:
+        app: app1-pod1
+    spec:
+      containers:
+        - name: app1-pod1
+          image: openresty/openresty:centos-rpm
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+#          resources: {}
+          resources:
+            limits:
+              cpu: "0.2"
+              memory: "300Mi"
+            requests:
+              cpu: "0.1"
+              memory: "100Mi"
+          volumeMounts:
+            - name: index-html-app1-pod1
+              mountPath: /usr/local/openresty/nginx/html/
+      volumes:
+        - name: index-html-app1-pod1
+          configMap:
+            name: index-html-app1-pod1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-app1-pod1
+  namespace: app1
+spec:
+  ports:
+    - protocol: TCP
+      port: 81
+      targetPort: 80
+  selector:
+    app: app1-pod1
+  type: ClusterIP
+---

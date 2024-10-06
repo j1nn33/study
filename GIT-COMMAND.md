@@ -1,5 +1,6 @@
 GIT - COMMAND
-    # ТЕХНОЛОГИЯ РАБОТЫ
+### ТЕХНОЛОГИЯ РАБОТЫ
+```
 1. синхронизировать локальное содержимое с GitHub
    git pull (синхронизация из GitHub в локальный репозиторий)
 2. работа с файлами
@@ -8,10 +9,10 @@ GIT - COMMAND
 4. делаем commit с помощью git commit -m "1 commit"
 5. закачать локальные изменения на GitHub
    git push
+```
 
-
-    # НАСТРОЙКА
-
+### НАСТРОЙКА
+```
 $ git config --global user.name "username"
 $ git config --global user.email "username.user@example.com"
 
@@ -37,9 +38,9 @@ ll ~/.ssh/
 копируем публичный ключ на гитхаб
 
 cat ~/.ssh/id_rsa.pub
-
-    # ИНИЦИАЛИЗАЦИЯ РЕПОЗИТОРИЯ
-
+```
+### ИНИЦИАЛИЗАЦИЯ РЕПОЗИТОРИЯ
+```
 [~/git/first_repo]
 $ git init
 Initialized empty Git repository in /home/tooks/git/first_repo/.git/
@@ -65,10 +66,10 @@ git log                      когда были выполнены послед
 
 git pull                     синхронизация из github в локальный репозиторий
 git push                     синхронизация из локального репозитория в github
+```
 
-=======================================================
-Работа с git основные команды
-
+### Работа с git основные команды
+```
 git branch   				- посмотреть какие ветки есть
 git branch test   			- создать ветку test
 
@@ -105,3 +106,4 @@ git push --set-upstream origin test
 git checkout master			- возвратиться обратно
 git branch -d test     		- удалить  локальную ветку когда изменеия приняты
 git push origin --delete test - удалить ветку удаленно
+```
