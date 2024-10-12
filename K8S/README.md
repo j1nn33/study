@@ -39,6 +39,7 @@ worker1    192.168.1.174
 worker2    192.168.1.175
 worker3    192.168.1.176
 db1        192.168.1.177
+MetalLB    192.168.1.180
 ```
 
 ### План установки кластера 
@@ -104,7 +105,7 @@ db1        192.168.1.177
   - ingress                                        https://www.youtube.com/watch?v=-kUr-sExQtg&list=PLmxqUDFl0XM6wDtlCkwdjU55z_WeBgBsZ&index=11
                                                    ./K8S/tasks/kryukov/network/ingress.md
   - Network Policies                               ./K8S/tasks/kryukov/network_policies/README.md       
-  - Calico Network Polices                                                                                                                      TODO
+  - Calico Network Polices                         ./K8S/tasks/kryukov/calico_network_polices/README.md      
   - Calico eBPF                                    ./K8S/tasks/kryukov/calico/Calico_eBPF.md
 ```
 

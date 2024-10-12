@@ -1,0 +1,26 @@
+---
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name: allow-to-app1
+  namespace: app1
+spec:
+  types:
+    - Ingress # разрешает входящий тафик для всех подов у котрых label app = app1-pod1
+  selector: 'app == "app1-pod1"'
+  ingress:
+    - action: Allow
+---
+kind: NetworkPolicy  # исходяций трафик из пода в app2
+apiVersion: projectcalico.org/v3
+metadata:
+  name: allow-to-ns-app2
+  namespace: app1
+spec:
+  types:
+    - Egress
+  selector: 'app == "app1-pod1"'
+  egress:
+    - action: Allow
+      destination:
+        namespaceSelector: 'kubernetes.io/metadata.name == "app2"'

@@ -222,9 +222,9 @@ spec:
             app: app1-pod1
             #app.kubernetes.io/instance: app1  второй вариант лейбы 
 ```
-# Важное замечание по поводу AND и OR.
-# Это AND:
-```
+#### Важное замечание по поводу AND и OR.
+#### Это AND:
+
 ```yaml
 - from:
   - namespaceSelector:
@@ -234,9 +234,8 @@ spec:
       matchLabels:
         app: app1
 ```
-```
-# Это OR:
-```
+#### Это OR:
+
 ```yaml
 - from:
   - namespaceSelector:
@@ -302,7 +301,7 @@ curl http://service-app2-pod1.app2:81
 # "всё запрещено, разрешено только то, что разрешено".
 
 # Вернем обратно политику по умолчанию для namespace app2:
-kubectl apply -f np/np-01.yaml
+kubectl apply -f np-01.yaml
 ```
 
 #### Две сетевых политики
@@ -347,9 +346,9 @@ curl http://service-app2-pod1.app2:81
 kubectl delete -f np-02.yaml
 
 # FROM app1 TO app2
-curl http://service-app2-pod1.app2:81 --connect-timeout=3
+curl http://service-app2-pod1.app2:81 
 curl: (28) Connection timed out after 3001 milliseconds
-curl http://service-app2-pod2.app2:81 --connect-timeout=3
+curl http://service-app2-pod2.app2:81 
 curl: (28) Connection timed out after 3001 milliseconds
 
 # FROM default TO app2

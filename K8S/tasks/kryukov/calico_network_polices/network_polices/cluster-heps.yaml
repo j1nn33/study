@@ -1,0 +1,91 @@
+---
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: control1-ens160
+  labels:
+    node-endpoint: home
+    node-role: control
+spec:
+  interfaceName: ens160
+  node: control1.kube.local
+  expectedIPs:
+    - 192.168.1.171
+---
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: control2-ens160
+  labels:
+    node-endpoint: home
+    node-role: control
+spec:
+  interfaceName: ens160
+  node: control2.kube.local
+  expectedIPs:
+    - 192.168.1.172
+---
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: control3-ens160
+  labels:
+    node-endpoint: home
+    node-role: control
+spec:
+  interfaceName: ens160
+  node: control3.kube.local
+  expectedIPs:
+    - 192.168.1.173
+---
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: worker1-ens160
+  labels:
+    node-endpoint: home
+    node-role: ws
+spec:
+  interfaceName: ens160
+  node: worker1.kube.local
+  expectedIPs:
+    - 192.168.1.174
+---
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: worker1-ens160
+  labels:
+    node-endpoint: home
+    node-role: ws
+spec:
+  interfaceName: ens160
+  node: worker1.kube.local
+  expectedIPs:
+    - 192.168.1.175
+---
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: worker1-ens160
+  labels:
+    node-endpoint: home
+    node-role: ws
+spec:
+  interfaceName: ens160
+  node: worker1.kube.local
+  expectedIPs:
+    - 192.168.1.176
+---
+apiVersion: projectcalico.org/v3
+kind: HostEndpoint
+metadata:
+  name: db1-ens160
+  labels:
+    node-endpoint: home
+    node-role: db
+spec:
+  interfaceName: ens160
+  node: db1.kube.local
+  expectedIPs:
+    - 192.168.1.177
