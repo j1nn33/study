@@ -70,7 +70,7 @@ MetalLB    192.168.1.180
   6.  арр                         - ./K8S/app/README.md
   7.  Docker_Podman               - ./K8S/docker_podman/README.md
   8.  metallb                     - ./K8S/infra/metallb
-  9.  Security                    -                                                        TODO
+  9.  Security                    - ./K8S/security                                         TODO
      
 ```
 ### Ресурсы & и теория
@@ -97,16 +97,20 @@ MetalLB    192.168.1.180
 
   - Сеть                                           https://www.kryukov.biz/kubernetes/set-kubernetes-teoriya/ 
                                                    https://www.kryukov.biz/kubernetes/set-kubernetes-teoriya/pered/
-  - DNS и kubernetes                               https://www.kryukov.biz/kubernetes/dns-i-kubernetes/
-  - Calico                                         https://www.kryukov.biz/kubernetes/set-kubernetes-teoriya/calico/	
+    - DNS и kubernetes                             https://www.kryukov.biz/kubernetes/dns-i-kubernetes/
+    - Calico                                       https://www.kryukov.biz/kubernetes/set-kubernetes-teoriya/calico/	
          - calicoctl Calico IPAM                   ./K8S/tasks/kryukov/network/calico.md
-
-  - metallb                                        ./K8S/infra/metallb
-  - ingress                                        https://www.youtube.com/watch?v=-kUr-sExQtg&list=PLmxqUDFl0XM6wDtlCkwdjU55z_WeBgBsZ&index=11
+  
+    - metallb                                      ./K8S/infra/metallb
+    - ingress                                      https://www.youtube.com/watch?v=-kUr-sExQtg&list=PLmxqUDFl0XM6wDtlCkwdjU55z_WeBgBsZ&index=11
                                                    ./K8S/tasks/kryukov/network/ingress.md
-  - Network Policies                               ./K8S/tasks/kryukov/network_policies/README.md       
-  - Calico Network Polices                         ./K8S/tasks/kryukov/calico_network_polices/README.md      
-  - Calico eBPF                                    ./K8S/tasks/kryukov/calico/Calico_eBPF.md
+    - Network Policies                             ./K8S/tasks/kryukov/network_policies/README.md       
+    - Calico Network Polices                       ./K8S/tasks/kryukov/calico_network_polices/README.md      
+    - Calico eBPF                                  ./K8S/tasks/kryukov/calico/Calico_eBPF.md
+  - RBAC                                           ./K8S/security/RBAC.md
+  - Resource Quota                                 ./K8S/tasks/kryukov/resource_quota/readme.md  
+  - Priority Class                                   
+
 ```
 
 ##### Вечерняя школа Слёрма по Kubernetes.                  https://www.youtube.com/playlist?list=PL8D2P0ruohOA4Y9LQoTttfSgsRwUGWpu6

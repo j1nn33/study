@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: kubetest
+  name: kubetest-account
+  namespace: app1
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: kubetest
+  name: kubetest-role
+  namespace: app1
+rules:
+  - apiGroups:
+      - ''
+    resources:
+      - endpoints
+      - nodes
+      - pods
+      - secrets
+      - configmaps
+    verbs:
+      - list
+      - watch
+      - get
+
+# или другая запись 
+# - apiGroups: [""]      
+#   resources: ["endpoints", "nodes", "pods", "secrets", "configmaps"]  
+#   verbs: ["list", "watch", "get"]       
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: kubetest
+  name: kubetest-rb
+  namespace: app1
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: kubetest-role
+subjects:
+  - kind: ServiceAccount      # Для ServiceAccount
+    name: kubetest-account
+    namespace: app1

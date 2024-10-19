@@ -1,0 +1,24 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: app1    # namespace к которому применяются огранияения
+  name: tux-role-1   # название роли 
+rules:
+- apiGroups: [""]   # какое apiGroups
+  resources: ["pods"]   # какие ресурсы 
+  verbs: ["list"]       # что конкретно делать 
+---
+apiVersion: rbac.authorization.k8s.io/v1 
+kind: RoleBinding
+metadata:
+ name: tux-rb
+ namespace: app1     # namespace к которому применяются огранияения
+subjects: 
+- kind: User         # какой объект 
+  name: tux          # кому 
+  apiGroup: rbac.authorization.k8s.io 
+roleRef:
+ kind: Role          # на что 
+ name: tux-role-1    # какое имя роли 
+ apiGroup: rbac.authorization.k8s.io
