@@ -2,6 +2,7 @@
 #### ADD SLAVE
 #### POST_INSTALL
 #### TEST
+#### WORK_STRUKTURE
 #### ADMIN
 #### KURS (ресурсы с картинками )
 ```
@@ -24,11 +25,10 @@ PPM_Role_base_model
 Shared_library
 Sonarqube
 ```
-#### declarate_pipelin
+#### declarate_pipelin.md
 #### scripted_pipeline.md
 ####
 #### BEST-PRACTIS
-
 
 ###### INSTALL
 ```
@@ -36,11 +36,15 @@ Sonarqube
 ```
 ###### POST_INSTALL
 ```
-
+./study/Jenkins/ADMIN/post_install.md
 ```
 ###### TEST
 ```
 
+```
+###### WORK_STRUKTURE
+```
+./study/Jenkins/ADMIN/work_strukture.md
 ```
 ###### ADMIN
 ```
@@ -48,11 +52,11 @@ Sonarqube
 ```
 ######
 ```
-./study/Jenkins/declarate_pipeline.md
+./study/Jenkins/example_pipeline/declarate_pipeline.md
 ```
 ######
 ```
-./study/Jenkins/scripted_pipeline.md
+./study/Jenkins/example_pipeline/scripted_pipeline.md
 ```
 ###### BEST-PRACTIS
 ```
