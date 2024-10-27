@@ -5,8 +5,8 @@
 
 ### Aвтоматизация ansible
     - ./K8S/ansible/
-    - kubeadm                  - автоматизацивя для kubeadm
-    - kubespray                - автоматизацивя для kubespray
+    - kubeadm                    - автоматизацивя для kubeadm
+    - kubespray                  - автоматизацивя для kubespray
 
 ### Структура приложения 
     - ./K8S/app
@@ -17,15 +17,15 @@
      
 ### Полезное
     - ./K8S/useful/
-    - network              - сеть и тестирование сети
-    - pod_tuning           - настройка параметров пода
+    - network                   - сеть и тестирование сети
+    - pod_tuning                - настройка параметров пода
            
 #### Задачи по изучению K8S
     - ./K8S/tasks/
-      - sl_base             - Вечерняя школа Слёрма по Kubernetes
+      - sl_base                 - Вечерняя школа Слёрма по Kubernetes
       - sl_mega
       - k8s_arch
-      - kryukov             - заметки о kubernetes по материалам сайта (с некоторой попровакой) https://www.kryukov.biz/kubernetes/ 
+      - kryukov                 - заметки о kubernetes по материалам сайта (с некоторой попровакой) https://www.kryukov.biz/kubernetes/ 
 
 ### STAND
 ######   - расширеное описаниен ./K8S/k8s_install_kubeadm/readme_stand.md
@@ -66,7 +66,7 @@ MetalLB    192.168.1.180
   2.  Vault                       -                                                        TODO
   3.  Jenkins                     -                                                        TODO
   4.  Nexus                       -                                                        TODO
-  5.  Helm                        -                                                        TODO
+  5.  Helm                        - ./K8S/helm/READ.ME                                     TODO
   6.  арр                         - ./K8S/app/README.md
   7.  Docker_Podman               - ./K8S/docker_podman/README.md
   8.  metallb                     - ./K8S/infra/metallb
@@ -74,7 +74,7 @@ MetalLB    192.168.1.180
      
 ```
 ### Ресурсы & и теория
-##### Kubernetes                                           https://kubernetes.io/ru/docs/home/
+##### Kubernetes                                   https://kubernetes.io/ru/docs/home/
 
 ##### kryukov
 ```
@@ -109,11 +109,11 @@ MetalLB    192.168.1.180
     - Calico eBPF                                  ./K8S/tasks/kryukov/calico/Calico_eBPF.md
   - RBAC                                           ./K8S/security/RBAC.md
   - Resource Quota                                 ./K8S/tasks/kryukov/resource_quota/readme.md  
-  - Priority Class                                   
+  - Priority Class                                 ./K8S/tasks/kryukov/priority_class/readme.md  
 
 ```
 
-##### Вечерняя школа Слёрма по Kubernetes.                  https://www.youtube.com/playlist?list=PL8D2P0ruohOA4Y9LQoTttfSgsRwUGWpu6
+##### Вечерняя школа Слёрма по Kubernetes.         https://www.youtube.com/playlist?list=PL8D2P0ruohOA4Y9LQoTttfSgsRwUGWpu6
 ```
                                                    ./K8S/tasks/sl_base/k8s-object/README.txt
 ```

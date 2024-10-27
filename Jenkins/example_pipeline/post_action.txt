@@ -1,0 +1,24 @@
+Директива post – доступна для использования в pipeline или в stage. В обоих случаях он необязателен. Если он присутствует, то выполняется в конце pipeline или stage, если выполняются условия. Можно рассматривать его как действия после сборки
+Условия в блоке post основаны на статусе pipeline:
+always - выполняется всегда
+success - ****выполняется если текущая сборка прошла успешно
+failure- выполняется если текущая сборка завершилась неудачно
+unstable - выполняется если текущая сборка отмечена как нестабильная
+Пример:
+
+post {
+    always {
+        script {
+            def connection = new URL("https://")
+                .openConnection() as HttpURLConnection
+                connection.setRequestProperty('Accept', 'application/json')
+            def json = connection.inputStream.text
+                data = new JsonSlurperClassic().parseText(json)
+            def requestID = data.id
+                println requestID
+        }
+    }
+    cleanup {
+        cleanWs()
+    }
+}

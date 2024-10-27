@@ -4,3 +4,35 @@
 spark-submit -v --class org.apache.spark.examples.SparkPi --master yarn --queue root.default <path_jar> 100
 
 ============
+# Создать DataFrame
+
+val df=spark.sql("""select 2+2 as nmbr, 'abracadabra' as txt_field, current_timestamp asCURRENT_DATE""")
+
+# Вывести результаты 
+
+df.show()
+
+# все сразу
+
+val df=spark.sql("""select 2+2 as nmbr, 'abracadabra' as txt_field, current_timestamp asCURRENT_DATE""").show()
+
+# Создать таблицу из запроса
+
+spark.sql("""create table <name_schema.name.table> elect 2+2 as nmbr, 'abracadabra' as txt_field, current_timestamp asCURRENT_DATE""")
+
+#записать DataFrame в таблицу
+
+df.write.format("parquet").mode("overwrite").saveAsTable(s"<name_schema.name.table>") 
+df.write.format("parquet").mode("append").saveAsTable(s"<name_schema.name.table>") 
+
+# Очистить или удалить таблицу
+
+sparc.sql("""truncate table <name_schema.name.table>""")
+sparc.sql("""drop table <name_schema.name.table>""")
+
+# Собрать статистику
+
+spark.sql(""" analyze table <name_schema.name.table> statistics""")
+
+# выйти 
+System.exit(0)

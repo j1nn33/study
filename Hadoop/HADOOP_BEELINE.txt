@@ -8,3 +8,100 @@ beeline -u "jdbc:hive2://<host_name>:2181/default" -n <name_ipa_login>
 
 # запуск скрипта 
 !run <name_script>
+==================
+
+
+
+При работе с hive можно выделить следующие объекты которыми оперирует hive:
+
+База данных
+Таблица
+Партиция (partition)
+Бакет (bucket)
+
+
+
+BEELINE
+
+# Запустить beeline
+beeline -u "jdbc:hive2://localhost:10000/default"
+
+# Запустить beeline c параметрами
+
+beeline -u jdbc:hive2://localhost:10000/default -n root -p root -f sorted.sql  
+
+# База данных
+
+CREATE DATABASE|SCHEMA [IF NOT EXISTS] <database name>
+
+#Пример создания базы данных:
+CREATE DATABASE userdb;
+
+
+#--Show and describe database with wildcards
+SHOW DATABASES;
+DESCRIBE DATABASE hivetest;
+
+# Для переключения на соответствующую базу данных используем команду USE:
+USE userdb;
+
+#--Show current database
+SELECT current_database();
+
+#--Drop the empty database.
+DROP DATABASE IF EXISTS hivetest;
+
+#--Drop database with CASCADE если в базе что-то есть
+DROP DATABASE IF EXISTS hivetest CASCADE;
+
+ALTER DATABASE hivetest SET OWNER user cloudera;
+
+#-------------------------------
+
+* Создать таблицу
+CREATE TABLE <NAME> (
+  name string,
+  work_place ARRAY<string>,
+  gender_age STRUCT<gender:string,age:int>,
+  skills_score MAP<string,int>,
+  depart_title MAP<STRING,ARRAY<STRING>>
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '|'
+COLLECTION ITEMS TERMINATED BY ','
+MAP KEYS TERMINATED BY ':'
+STORED AS TEXTFILE;
+
+
+--Show tables
+SHOW TABLES;
+
+* Проверить таблицу 
+!table employee
+!column employee
+
+ !table employee
++------------+--------------+-------------+-------------+----------+--+
+| TABLE_CAT  | TABLE_SCHEM  | TABLE_NAME  | TABLE_TYPE  | REMARKS  |
++------------+--------------+-------------+-------------+----------+--+
+|            | default      | employee    | TABLE       | NULL     |
++------------+--------------+-------------+-------------+----------+--+
+
+
+
+* Грузим данные
+LOAD DATA LOCAL INPATH 'home/employee.txt' OVERWRITE INTO TABLE employee;
+
+* Запускаем запросы
+
+--Query the whole table
+SELECT * FROM employee;
+
+
+--Query the ARRAY in the table
+SELECT work_place FROM employee;
+
+--Show columns
+SHOW COLUMNS IN employee_internal;
+
+--Drop table 

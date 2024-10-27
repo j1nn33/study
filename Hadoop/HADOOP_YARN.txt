@@ -1,0 +1,4 @@
+yarn application -list | grep <user>
+yarn application -kill <app_id>
+yarn application -movetoqueue <app_id> -queue <name_queue>
+yarn log -application <app_id> -appOwner <user> > file.txt

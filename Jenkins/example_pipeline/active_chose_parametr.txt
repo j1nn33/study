@@ -1,0 +1,106 @@
+Active Choice Parameter
+Active Choice Parameter не добавляется по умолчанию. Для его использования сначала нужно установить плагин Active Choices.
+
+«Active Choices используется для параметризация Jenkins Job и для создания динамических и интерактивных параметров.
+Параметры Active Choices могут динамически обновляться и отображаться в виде полей со списком, флажков, переключателей или виджетов пользовательского интерфейса с HTML».
+
+Active Choices Parameter                       позволяет использовать сценарий Groovy или Scriplet(плагин), чтобы определить, будет ли ввод вычисляться или он уже предопределен, и возвращать результаты в зависимости от выполненных скриптов.
+Active Choices Reactive Parameter              похож на Active Choice Parameter. Он позволят использовать Groovy или Scriplet, а его значение меняется в зависимости от значения выбранного зависимого параметра.
+Active Choices Reactive Reference Parameter    содержит параметры Active Choice Parameter и Active Choice Reactive Parameter, а также добавляет новые опции. Например, HTML-виджеты, маркированные или нумерованные списки и поля ввода.
+
+ПРИМЕР
+
+ сделать Job, который позволит разработке или L2 support устанавливать сервис определенной версии в нужное окружение.
+ Кажется, всё должно быть автоматизировано, но на практике возникает ситуация, когда разработчик или QA-инженер хочет 
+ проверить свою версию микросервиса на определенном окружении. Это можно было бы сделать и с использованием обычных
+ string-параметров, но давайте упростим задачу и предоставим более дружественный интерфейс.
+
+
+
+ Теперь перейдем к созданию Active Choices Reactive Parameter. В зависимости от выбранного компонента нам будут показываться все версии компонента в артефатори.
+Важное изменение — это опция referencedParameters. В ней мы указываем параметр, от которого зависит выполнение скрипта. Запускаем нашу Job, выбираем компонент и версию и смотрим на результат:
+
+ 
+
+ properties([
+    parameters([
+        [$class: 'ChoiceParameter',
+            choiceType: 'PT_SINGLE_SELECT',
+            description: 'Select a choice',
+            filterLength: 1,
+            filterable: false,
+            name: 'component',
+            script: [$class: 'GroovyScript',
+                fallbackScript: [classpath: [], sandbox: false, script: 'return ["Could not get component"]'],
+                script: [classpath: [], sandbox: false, 
+                    script: """
+                         import groovy.json.JsonSlurperClassic
+                            def list = []
+                            def connection = new URL("https://run.mocky.io/v3/e406ee99-be79-4d50-818f-b186dad7f4f4")
+                            .openConnection() as HttpURLConnection
+                            connection.setRequestProperty('Accept', 'application/json')
+                            def json = connection.inputStream.text
+                            data = new JsonSlurperClassic().parseText(json)
+                            data.each { component ->
+                                list += component.name
+                            }
+                            return list
+                    """
+                ]]],
+                , 
+    [$class: 'CascadeChoiceParameter', 
+        choiceType: 'PT_SINGLE_SELECT', 
+        description: 'Select Version', 
+        filterLength: 1, 
+        filterable: true, 
+        name: 'version', 
+        referencedParameters: 'component', 
+        script: [
+            $class: 'GroovyScript', 
+            fallbackScript: [
+                classpath: [], 
+                sandbox: false, 
+                script: 
+                    'return[\'Could not get version\']'
+            ], 
+            script: [
+                classpath: [], 
+                sandbox: false, 
+                script: 
+                    """
+                            import groovy.json.JsonSlurperClassic
+                            def list = []
+                            def connection = new URL("https://run.mocky.io/v3/c782ae33-98a2-4994-acc4-14c0b5cc7655")
+                            .openConnection() as HttpURLConnection
+                            connection.setRequestProperty('Accept', 'application/json')
+                            def json = connection.inputStream.text
+                            data = new JsonSlurperClassic().parseText(json)
+                            data.data.each { it ->
+                              if  (it.component == component ) {
+                                	list += it.version
+                              		}
+                               }
+                            return list
+                            """
+            ]
+        ]
+    ]   
+    ])
+])
+
+pipeline {
+    agent any
+
+    stages {
+        stage("Component Name") {
+            steps {
+                sh "echo Selected component  ${params.component}"
+            }
+        }
+        stage("Version") {
+            steps {
+                sh "echo Selected version  ${params.version}"
+            }
+        }
+    }
+}

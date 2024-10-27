@@ -2,3 +2,24 @@
 vi <name_file>
 
 hive -f <name_file>
+
+chmod u+x -R <name_DIR>                                         - выдать парава на папку со скриптом
+hive  -f file.txt                                               - запустить скрипт из файла
+hive -e "select count(1) from <name_schema.name.table>"         - запрос к таблице
+hive -e "create database db_name LOCATION '/data/custom/etc'"   - создание талицы с определнным локешном
+hive -e "show partitions <name_schema.name.table>"              - посмотреть партиции таблицы 
+hive -e "show create table  <name_schema.name.table>"           - посмотреть сведениая о таблице
+hive -e "show schemas;" | grep <name_schema>                    - сведения о схеме, по части ее имени
+hive -e "show tables from <name_schema>"                        - список талбиц в схеме
+hive -e "msck repair table name_schema.name.table"              - обнолвение метаданных таблицы 
+hive -e "show role grant group <name_group>"                    - посмотреь роли у группы
+hive -e "show grant role <name_role>"                           - посмотреь гранты роли
+set hive.auto.convert.join=false;                               - выполнить если не воспринимается join в скрипте 
+
+BEELINE
+подключиться к нужному кластеру
+
+beeline -u "jdbc:hive2://<host_name>:10000/default:principal=hive/_host@DEV.RU"
+
+Запуск команды
+-e show tables in internal_ekp_ibs 

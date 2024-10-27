@@ -1,0 +1,24 @@
+Для дополнительных опций pipeline используется секция options
+
+buildDiscarder - сохраняет заданное количество артефактов и логов консоли для задания
+Пример:
+options { buildDiscarder(logRotator(numToKeepStr: '20')) }
+оставляет историю 20 последних сборок
+
+disableConcurrentBuilds - запрещает запускать параллельное выполнение одного и того же pipeline
+Пример:
+options { disableConcurrentBuilds() }
+
+retry - если выполнение pipeline завершится неудачно, то он будет перезапущен указанное количество раз
+Пример:
+options { retry(2) }
+в случае неудачи перезапустит pipeline
+
+timeout - устанавливает значение timeout для pipeline, если время выполнения превысит timeout, pipeline завершит работу
+Пример:
+options { timeout (time: 15, unit: 'MINUTES') } 
+устанавливает timeout 15 минут
+
+timestamps - добавляет в лог консоли отметку времени
+Пример:
+options { timestamps() }
