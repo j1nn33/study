@@ -88,6 +88,12 @@ lvextend -r -L +10G /dev/mapper/rootvg-lvroot
 # расширяет до 10G
 lvextend -r -L10G /dev/mapper/rootvg-lvroot
 
+# Анализ дисковой подсистемы
+# Определение программ, производящих запись на накопитель
+iotop -obPat
+
+# Определение файлов, в которые производится запись
+fatrace -f W
 ```
 
 #### RPM
