@@ -3,6 +3,13 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: {{ include "openresty-art.fullname" . }}-html
+  labels:
+    {{- include "openresty-art.labels" . | nindent 4 }}
+  {{- if .Values.application.reloader }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+    configmap.reloader.stakater.com/reload: {{ include "openresty-art.fullname" . }}-conf,{{ include "openresty-art.fullname" . }}-html
+  {{- end }}
 data:
   index.html: |
     <html>

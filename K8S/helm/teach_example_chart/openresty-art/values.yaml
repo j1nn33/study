@@ -1,7 +1,9 @@
 # Default values for openresty-art.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
+application:
+  reloader: false
+  
 replicaCount: 1
 
 image:

@@ -1,30 +1,32 @@
 #### Пример
-##### Описание
-##### Создание chart
-##### Chart.yaml
-##### templates
-##### Файл _helpers.tpl
-##### - реадктирвоание deployment
-##### -   Встроенные объекты
-##### -   Labels
-##### -   Annotations
-##### Проверка работы шаблонов
-##### Переопределение параметров по умолчанию
-##### Работа с приложением
-##### Раздел spec deployment.
-##### Спецификация контейнера.
-###### -  Container
-###### -  Пробы
-###### -  Ресурсы
-#####  Service
-##### Ingress
-##### NOTE.txt
-##### VARIANT 1
-##### VARIANT 2
-##### Удалить лишнее.
-##### Добавить нужное.
-##### Создать файл чарта.
-##### Опубликовать чарт.
+```
+   Описание
+   Создание chart
+   Chart.yaml
+   templates
+   Файл _helpers.tpl
+   - реадктирвоание deployment
+   -   Встроенные объекты
+   -   Labels
+   -   Annotations
+   Проверка работы шаблонов
+   Переопределение параметров по умолчанию
+   Работа с приложением
+   Раздел spec deployment.
+   Спецификация контейнера.
+   -  Container
+   -  Пробы
+   -  Ресурсы
+    Service
+   Ingress
+   NOTE.txt
+   VARIANT 1
+   VARIANT 2
+   Удалить лишнее.
+   Добавить нужное.
+   Создать файл чарта.
+   Опубликовать чарт.
+```
 ###### Описание
 ```
 Обчающий пример 
@@ -248,22 +250,35 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 # по итогу правим в файлах 
 # ./K8S/helm/teach_example_chart/openresty-art/templates/deployment.yaml
 {{- include "openresty-art.labels" . | nindent 4 }}
-# ./K8S/helm/teach_example_chart/openresty-art/templates/configmap-html.yaml
-{{- include "openresty-art.labels" . | nindent 4 }}
 # ./K8S/helm/teach_example_chart/openresty-art/templates/configmap-conf.yaml
 {{- include "openresty-art.labels" . | nindent 4 }}
 # ./K8S/helm/teach_example_chart/openresty-art/templates/service.yaml
 {{- include "openresty-art.labels" . | nindent 4 }}
 
-
-
-
-
-
-
 ```
-
 ##### Annotations
+```
+# Предполагается использовать reloader.stakater.com, который перезапускает приложение, в случае изменения ConfigMap или Secret. 
+# Но, есть вероятность, что в кластере это приложение не установлено. Эту возможность надо предусмотреть.
+
+# В файле values.yaml добавим объект application, в который мы будем помещать все параметры деплоймента. 
+# Там же добавим объект reloader и присвоим ему значение по умолчанию false.
+
+application:
+  reloader: false
+
+# те когда chart будте ставиться
+# при reloader: false 
+
+# строк в deployment.yaml (./K8S/helm/teach_example_chart/openresty-art/templates/deployment.yaml)
+
+# НЕ БУДЕТ, они появятся при reloader: true
+  {{- if .Values.application.reloader }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+    configmap.reloader.stakater.com/reload: {{ include "openresty-art.fullname" . }}-conf,{{ include "openresty-art.fullname" . }}-html
+  {{- end }}
+```
 ##### Проверка работы шаблонов
 ##### Переопределение параметров по умолчанию
 ##### Работа с приложением

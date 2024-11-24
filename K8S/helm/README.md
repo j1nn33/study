@@ -20,6 +20,7 @@
 Создание chart
  -  Chart.yaml
  -  Файл _helpers.tpl
+ -  редактирование deployment
  -  Встроенные объекты
  -  Labels
  -  Annotations
