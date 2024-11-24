@@ -1,5 +1,5 @@
 ### work_strukture
-
+### Пример
 ##### work_strukture
 ```
 Описание структуры для запуска джобы которая запускает ansible-role
@@ -7,10 +7,12 @@
 #####
 ```
 Repository URL  - ссылка на репу 
-Script_path     - ./study/Jenkins/Project/temp_job/Jenkins/temp.groovy
+Script_path     - ./study/Jenkins/Project/Jenkins/temp.groovy
 
-
+--
 --Project
+  |_Jenkins/temp.groovy
+  |
   |__<name_job>
        |__Jenkins/temp.groovy                # groovy for jenkins_job
        |__Ansible
@@ -19,6 +21,11 @@ Script_path     - ./study/Jenkins/Project/temp_job/Jenkins/temp.groovy
                |__ift/all.yaml
           |__plabook
                |__roles
-                  |__tasks/main.yaml 
+                  |__role_name
+                     |__tasks/main.yaml 
                |__<role_name>.yaml
+```
+#####
+```
+./Jenkins/Project
 ```

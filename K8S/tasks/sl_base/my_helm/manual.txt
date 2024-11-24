@@ -1,0 +1,148 @@
+### Знакомимся с Helm
+
+### Создадим свой чарт
+
+1) Возьмем за основу нашего чарта готовый Deployment. Создадим папку будущего чарта и создадим внутри необходимые файлы и папки:
+
+cd ~
+mkdir myapp
+
+cd myapp
+
+touch Chart.yaml values.yaml
+mkdir templates
+
+cp ~/deployment.yaml ~/myapp/templates/
+
+
+# Добавим в файл `Chart.yaml` минимально необходимые поля:
+
+name: myapp
+version: 1
+
+# Проверим что рендеринг чарта работает, в выводе команды должны увидеть наш Deployment
+# данная команда выводит все манифесты с переменными которые у нас поедут в кубер 
+
+helm template .
+
+### Темплейтируем свой чарт
+
+
+# Смотрим на файл `templates/deployment.yaml` и темплейтируем в нем количество реплик и image
+
+replicas: 1
+# меняем на
+replicas: {{ .Values.replicas }}
+
+image: nginx:1.14.2
+# меняем на
+image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
+
+
+2) Добавляем значения этих переменных в файл `values.yaml`:
+
+replicas: 3
+
+image:
+  repository: nginx
+  tag: 1.12
+
+
+3) Проверяем что все корректно и что наши values подцепились:
+
+
+helm template .
+
+### Стандартизируем наш чарт
+# Заменяем все лейблы в Deployment, а также имя деплоймента и контейнера
+
+  labels:
+    app: nginx
+# меняем на
+  labels:
+    app: {{ .Chart.Name }}-{{ .Release.Name }}
+
+name: nginx-deployment
+# меняем на
+name: {{ .Chart.Name }}-{{ .Release.Name }}
+
+      containers:
+      - name: nginx
+# меняем на
+      containers:
+      - name: {{ .Chart.Name }}
+
+# Для проверки используем ту же команду, но с доп ключом:
+
+helm template . --name-template foobar
+
+# Указываем количество реплик по-умолчанию:
+
+{{ .Values.replicas | default 2 }}
+
+### Добавляем в наш Deployment `requests/limits`
+#  Добавляем в `values.yaml` реквесты и лимиты, прям в их обычном формате:
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 80m
+    memory: 64Mi
+
+# В  темплейтированном манифесте говорим, чтобы за ресурсами он сходил в `values.yaml` и взял оттуда секцию целиком:
+
+        ports:
+        - containerPort: {{ .Values.port }}
+        resources:    <--- вставляем в это место
+{{ toYaml .Values.resources | indent 10 }}
+
+# indent 10 позволяте задать отступы группе resources -  limits:
+
+# Добавляем условие в аннотации:
+
+#было
+  annotations:
+{{ toYaml .Values.annotations | indent 4 }}
+
+#стало
+{{ if .Values.annotations }}
+  annotations:
+{{ toYaml .Values.annotations | indent 4 }}
+{{ end }}
+
+# Смущают пустые строчки. Уберем их
+
+{{- if .Values.annotations }}
+  annotations:
+{{ toYaml .Values.annotations | indent 4 }}
+{{- end }}
+
+### Добавляем указание переменных окружения
+
+# Вносим в наш темплейтированный манифест следующее:
+
+      - containerPort: {{ .Values.port }}
+{{ if .Values.env }}    <--- Сюда вставляем
+        env:
+        {{ range $key, $val := .Values.env }}
+        - name: {{ $key | quote }}
+          value: {{ $val | quote }}
+        {{ end }}
+{{ end }}
+
+# quote - добавляет двойные кавычки или удаляет их если они eсть
+# Добавляем в `values.yaml` переменные окружения:
+
+env:
+  one: two
+  ENV: DEVELOPMENT
+
+# Установка чарта в кластер
+
+helm install release-name repo/chart [--atomic] [--namespace namespace]
+
+# Локально отрендерить чарт
+
+helm template /path/to/chart

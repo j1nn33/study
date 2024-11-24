@@ -1,0 +1,8 @@
+---
+- name: after_client
+  hosts: all
+  gather_facts: yes
+  become: true
+
+  roles:
+    - ../roles/after_client_config

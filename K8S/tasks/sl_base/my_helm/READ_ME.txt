@@ -1,4 +1,4 @@
-# мануал по созданию см MANUALS/K8S/helm/My_new_chart.txt 
+# мануал по созданию см ./K8S/tasks/sl_base/my_helm/manual.txt
 # 
 #
 cd ~
@@ -37,3 +37,5 @@ exit
 
 helm list
 helm delete <name>
+
+

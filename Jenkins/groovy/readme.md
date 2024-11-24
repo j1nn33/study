@@ -10,6 +10,7 @@
 ###### Closure
 #### Операторы условного выполнениея 
 #### Циклы
+#### Работа с файлами
 #### ОПП
 ###### Классы 
 ###### Интерфейсы 
@@ -243,12 +244,23 @@ do {
 
 
 ```
-##### ОПП
+###### Работа с файлами
 ```
+bro_file.yml
+---
+bro:
+  - val1
+  - val2
+  - val3
+---
+```
+```groovy
+
+def list_file_bro = readYaml(file: "$(env.WORKSPACE)/bro_file.yml")
+value: list_file_bro.join(','),  // значения записать в виде val1,val2,val3
 ```
 ###### Классы 
-```
-```
+
 ```groovy
 class ColoredText {
     String text
