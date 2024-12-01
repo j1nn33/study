@@ -4,6 +4,7 @@
    Создание chart
    Chart.yaml
    templates
+   my-values.yaml
    Файл _helpers.tpl
    - реадктирвоание deployment
    -   Встроенные объекты
@@ -12,8 +13,9 @@
    Проверка работы шаблонов
    Переопределение параметров по умолчанию
    Работа с приложением
-   Раздел spec deployment.
-   Спецификация контейнера.
+   Раздел spec deployment
+   Аннотации пода
+   Спецификация контейнера
    -  Container
    -  Пробы
    -  Ресурсы
@@ -22,10 +24,10 @@
    NOTE.txt
    VARIANT 1
    VARIANT 2
-   Удалить лишнее.
-   Добавить нужное.
-   Создать файл чарта.
-   Опубликовать чарт.
+   Удалить лишнее
+   Добавить нужное
+   Создать файл чарта
+   Опубликовать чарт
 ```
 ###### Описание
 ```
@@ -89,6 +91,10 @@ cp ./K8S/helm/teach_example_chart/base-application/* .
 
 далее пойдет процесс шаблонизации этих файлов 
 ```
+##### my-values.yaml
+```
+используется для задания своих параметров и переопределениая параметров по умолчанию
+```
 ##### Файл _helpers.tpl
 ```
 # Команда helm create создала шаблон _helpers.tpl, в который поместила вспомогательные (условно) функции. 
@@ -108,11 +114,9 @@ cp ./K8S/helm/teach_example_chart/base-application/* .
 # Тут будет что то вставлено: {{ include "openresty-art.chart" . }}
 
 # После обработки, в данном месте будет подставлено содержимое вложенного шаблона:
-
 # Тут будет что то вставлено: {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 
 # Итого в файле определено:
-
 openresty-art.name                 - имя чарта.
 openresty-art.fullname             - имя приложения.
 openresty-art.chart                - имя чарта с версией.
@@ -278,22 +282,368 @@ application:
     reloader.stakater.com/auto: "true"
     configmap.reloader.stakater.com/reload: {{ include "openresty-art.fullname" . }}-conf,{{ include "openresty-art.fullname" . }}-html
   {{- end }}
+
 ```
 ##### Проверка работы шаблонов
+```
+# перейдём в директорию, в которой находится наш чарт.
+
+helm template <release_name> ./openresty-art --debug > app.yaml
+
+# Эта команда заставляет helm преобразовать шаблоны и выдать на стандартный вывод итоговый набор манифестов.
+# Дополнительный парамер --debug, заставляет программу выводить отладочную информацию, которая будет полезной в случае обнаружения ошибок в шаблонах.
+
+helm template app ./openresty-art --debug > app.yaml
+
+# В результате формируется файл с манифестами app.yaml. Откройте его и посмотрите начало определения деплоймента.
+
+
+```
 ##### Переопределение параметров по умолчанию
+```
+# Настройки по умолчанию
+values.yaml (./K8S/helm/teach_example_chart/openresty-art/values.yaml)
+
+# Для переопределения настроек по умолчанию используется 2 спосба 
+# 1 При помощи параметра --set
+helm template app ./openresty-art --set "application.reloader=true" --debug > app.yaml
+
+# 2 Создав и применив собственный yaml файл с переопределёнными параметрами.
+
+# Файл my-values.yaml
+```
+```yaml
+fullnameOverride: "art"
+
+application:
+  reloader: true
+```
+```
+helm template app ./openresty-art -f my-values.yaml > app.yaml
+helm template app ./openresty-art -f ./openresty-art/my-values.yaml > app.yaml
+
+```
 ##### Работа с приложением
+```
+Установим приложение.
+
+# helm install app ./openresty-art --namespace app -f ./openresty-art/my-values.yaml
+# ./study/K8S/helm/teach_example_chart/openresty-art/my-values.yaml
+helm install app ./openresty-art -f ./openresty-art/my-values.yaml
+
+# helm list --namespace app
+helm list
+# NAME    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
+# app     default         1               2024-10-09 12:11:02.053952538 +0300 MSK deployed        openresty-art-0.1.0     1.19.9.1-centos-rpm
+
+# Удалим приложение.
+# helm uninstall <relese_name>
+# helm uninstall app --namespace app
+helm uninstall app
+```
+
 ##### Раздел spec deployment.
-##### Спецификация контейнера.
+```
+В values.yaml переносим replicaCount в раздел application и добавим revisionHistoryLimit
+```
+```yaml
+application:
+  reloader: false
+  replicaCount: 1
+  revisionHistoryLimit: 3
+```  
+В шаблоне deployment.yaml добавляем соответствующие шаблоны.
+```yaml
+spec:
+  replicas: {{ .Values.application.replicaCount }}
+  revisionHistoryLimit: {{ .Values.application.revisionHistoryLimit }}
+```
+изменим раздел selector.matchLabels. Тут просто подставим готовый именованный шаблон, 
+при помощи которого определяем labels селектора подов. 
+берем из сгенерированного файла (при создании helm chart)
+./K8S/helm/teach_example_chart/old-templates/deployment-orig.yaml
+ {{- include "openresty-art.selectorLabels" . | nindent 6 }}
+ссылается на _helpers.tpl
+
+Аналогичный шаблон, подставляем в разделе template.metadata.labels.
+```yaml
+  selector:
+    matchLabels:
+      {{- include "openresty-art.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "openresty-art.selectorLabels" . | nindent 8 }}
+```
+#####  Аннотации пода
+```
+Аннотации пода нам могут потребоваться например, для сбора метрик. 
+Для данного случая не актуально тк этот образ openresty такие метрики отдавать не умеет
+
+В values.yaml переносим podAnnotations в раздел application. 
+И Оставляем его значение пустым. Т.е. по умолчанию аннотаций нет.
+```
+```yaml
+application:
+  podAnnotations: {}
+```
+
+В шаблоне deployment.yaml в template.metadata добавляем шаблон.
+```yaml
+template:
+    metadata:
+      {{- with .Values.application.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+```
+В этом шаблоне мы применяем структуру управления with, которая устанавливает область видимости переменных.
+т.е. смещение пространства имен
+
+Когда мы пишем путь к переменным, мы его обычно начинаем с символа точка (вершина пространства имён). Например: .Values.application.podAnnotations. Если предполагается, что в указанном узле много переменных, то можно "переместить" точку в конец podAnnotations.
+
+Затем при помощи toYaml перенесём все как есть в итоговый манифест. (которые находятся в простренстве .Values.application.podAnnotations) 
+тк with мы уже сместили пространство имен 
+Т.е. не будем разрешать остальные переменные и их значения. Просто скопируем.
+напирмет будет то что снизу 
+  prometheus.io/scrape: "true" и тд
+
+Предполагается, что my-values.yaml мы будем явно описывать аннотации. Например, вот так:
+Как работает пример:
+указыавем в файле my-values.yaml (файл который используем для переопределиня параметров)
+./study/K8S/helm/teach_example_chart/openresty-art/my-values.yaml
+значения поедут из файла my-values.yaml
+
+```yaml
+application:
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "80"
+```
+в deployment получаем 
+
+helm template app ./openresty-art -f my-values.yaml > app.yaml
+```yaml
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openresty-art
+      app.kubernetes.io/instance: app
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openresty-art
+        app.kubernetes.io/instance: app
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "80"
+        prometheus.io/scrape: "true"
+
+```
+##### Спецификация контейнера
+```
+spec.template.spec.containers.
+
+imagePullSecrets
+добавим возможность указать imagePullSecrets.
+
+В values.yaml переносим в раздел application imagePullSecrets. По умолчанию, массив пустой.
+```
+```yaml
+application:
+  imagePullSecrets: []
+```
+В шаблоне deployment.yaml добавим следующую конструкцию. из файла 
+study/K8S/helm/teach_example_chart/old-templates/deployment-orig.yaml
+с учетом того что в файле values.yaml imagePullSecrets в разделе application
+поэтом будет Values.application.imagePullSecrets 
+вместо       Values.imagePullSecrets
+
+```yaml
+    spec:
+      {{- with .Values.application.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+```
+При помощи with меняем область видимости. И при помощи toYaml преобразуем все что там есть в yaml. По умолчанию у нас там пустой массив. Поэтому в итоговый манифест не подставиться.
+
+Но если в my-values.yaml мы добавим указание имени сикрета, то секция будет сформирована.
+```yaml
+application:
+  reloader: true
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "80"
+  imagePullSecrets:
+    - name: MypullSecretName
+```
+```
+Проверим
+helm template app ./openresty-art -f my-values.yaml > app.yaml
+    spec:
+      imagePullSecrets:
+        - name: pullSecretName
+Удалим imagePullSecrets из my-values.yaml, поскольку мы предполагаем использование публичного docker registry.
+
+```
 ###### -  Container
+```
+В первую очередь определим: name, image и imagePullPolicy. 
+(имена подов, image и откуда забирать imagePullPolicy)
+
+образец берем из ./study/K8S/helm/teach_example_chart/old-templates/deployment-orig.yaml
+
+имя пода соотаветсвует имени чарта {{ .Chart.Name }}
+или {{ include "openresty-art.fullname" . }}
+
+image
+образец использует значения сгенерированные автоматикой в values.yaml
+image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+image: "{{ .Values.application.image.repository }}:{{ .Values.application.image.tag | default "centos-rpm" }}"
+
+В values.yaml добавим в раздел application значения по умолчанию:
+```
+```yaml
+application:
+  image:
+    repository: openresty/openresty
+    tag: "centos-rpm"
+    pullPolicy: IfNotPresent
+```
+```
+В deployment.yaml добавим соответствующие шаблоны.
+```
+```yaml
+      containers:
+        - name: {{ include "openresty-art.fullname" . }}
+          image: "{{ .Values.application.image.repository }}:{{ .Values.application.image.tag | default "centos-rpm" }}"
+          imagePullPolicy: {{ .Values.application.image.pullPolicy }}
+```
+```          
+Из интересного тут только установка значения по умолчанию в шаблоне {{ .Values.application.image.tag | default "centos-rpm" }}
+
+Если tag не определен, будет подставлено значение "centos-rpm".
+
+Проконтролируем правильность создания шаблона.
+helm template app ./openresty-art -f my-values.yaml > app.yaml
+```
 ###### -  Пробы
+```
+В созданном helm create шаблоне пробы не обёрнуты в шаблон.
+B values.yaml, раздел application добавим следующие строки:
+```
+```yaml
+application:
+  probe:
+    readinessProbe:
+      httpGet:
+        path: /
+        port: http
+    livenessProbe:
+      httpGet:
+        path: /
+        port: http
+```
+В deployment.yaml вместо определения проб:
+```
+```yaml
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.application.image.repository }}:{{ .Values.application.image.tag | default "centos-rpm" }}"
+          imagePullPolicy: {{ .Values.application.image.pullPolicy }}
+          ports:
+            - containerPort: 80
+              name: http
+          {{- with .Values.application.probe }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+```
+В my-values.yaml добавим немного изменённое определение проб.
+```yaml
+  probe:
+    readinessProbe:
+      httpGet:
+        path: /index.html
+        port: http
+      initialDelaySeconds: 5
+      periodSeconds: 15
+    livenessProbe:
+      httpGet:
+        path: /index.html
+        port: http
+      initialDelaySeconds: 5
+      periodSeconds: 15
+      timeoutSeconds: 5
+```      
+Проконтролируем правильность генерации проб.
+helm template app ./openresty-art -f my-values.yaml > app.yaml
+
+```
 ###### -  Ресурсы
+```
+В файле values.yaml переносим resources в раздел application.
+
+```yaml
+application:
+  resources: {}
+```  
+По умолчанию у нас нет ограничений.
+
+В файле deployment.yaml добавим соответствующий шаблон.
+```yaml
+      containers:
+
+          {{- with .Values.application.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+```          
+Проверим, что по умолчанию ресурсы не добавляются в манифест.
+```
+helm template app ./openresty-art > app.yaml
+Добавим в файл my-values.yaml определение ресурсов:
+```
+```yaml
+application:
+  resources:
+    limits:
+      cpu: "0.2"
+      memory: "400Mi"
+    requests:
+      cpu: "0.1"
+      memory: "200Mi"
+```
+```
+Проверим, что ресурсы корректно подставляются.
+```
 #####  Service
+```
+# - исходник (оригинал который не helm)           ./K8S/helm/teach_example/base-application/service.yaml
+# - образец  (оригинал который сгенерирован helm) ./K8S/helm/teach_example_chart/old-templates/service-orig.yaml
+# - целевой  (итоговый файл helm)                 ./K8S/helm/teach_example_chart/openresty-art/templates/service.yaml
+
+```
 ##### Ingress
+```
+```
 ##### NOTE.txt
+```
+```
+
+
+
+
+
+
 ##### VARIANT 1
 ##### VARIANT 2
-##### Удалить лишнее.
-##### Добавить нужное.
-##### Создать файл чарта.
-##### Опубликовать чарт.
+##### Удалить лишнее
+##### Добавить нужное
+##### Создать файл чарта
+##### Опубликовать чарт
 ###### Описание

@@ -11,48 +11,38 @@ metadata:
     configmap.reloader.stakater.com/reload: {{ include "openresty-art.fullname" . }}-conf,{{ include "openresty-art.fullname" . }}-html
   {{- end }}
 spec:
-  replicas: 2
-  revisionHistoryLimit: 3
+  replicas: {{ .Values.application.replicaCount }}
+  revisionHistoryLimit: {{ .Values.application.revisionHistoryLimit }}
   selector:
     matchLabels:
-      k8s-app: openresty
+      {{- include "openresty-art.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- with .Values.application.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
-        k8s-app: openresty
+        {{- include "openresty-art.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.application.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
-        - name: openresty
-          image: openresty/openresty:centos-rpm
-          imagePullPolicy: IfNotPresent
+        - name: {{ include "openresty-art.fullname" . }}
+          image: "{{ .Values.application.image.repository }}:{{ .Values.application.image.tag | default "centos-rpm" }}"
+          imagePullPolicy: {{ .Values.application.image.pullPolicy }}
           ports:
             - containerPort: 80
               name: http
-          readinessProbe:
-            httpGet:
-              path: /index.html
-              port: http
-            initialDelaySeconds: 5
-            periodSeconds: 15
-          livenessProbe:
-            httpGet:
-              path: /index.html
-              port: http
-            initialDelaySeconds: 5
-            periodSeconds: 15
-            timeoutSeconds: 5
+          {{- with .Values.application.probe }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}          
+          {{- with .Values.application.resources }}
           resources:
-            limits:
-              cpu: "0.2"
-              memory: "400Mi"
-            requests:
-              cpu: "0.1"
-              memory: "200Mi"
-          volumeMounts:
-            - name: html
-              mountPath: /usr/local/openresty/nginx/html/
-            - name: config
-              mountPath: /etc/nginx/conf.d/
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       volumes:
         - name: html
           configMap:
