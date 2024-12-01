@@ -35,3 +35,24 @@ application:
     requests:
       cpu: "0.1"
       memory: "200Mi"
+
+service:
+  type: NodePort
+  nodePort: 31002
+  name: proxy
+
+
+ingress:
+  enabled: false
+  className: "system-ingress"
+  annotations: 
+    certmanager.k8s.io/cluster-issuer: monitoring-issuer
+  hosts:
+    - host: control1.kube.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - hosts:
+        - application
+      secretName: art-tls

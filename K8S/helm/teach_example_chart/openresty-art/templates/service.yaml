@@ -1,17 +1,19 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ include "openresty-art.fullname" . }}-srv
+  name: {{ include "openresty-art.fullname" . }}-svc
   labels:
     {{- include "openresty-art.labels" . | nindent 4 }}
-  {{- if .Values.application.reloader }}
-  annotations:
-    reloader.stakater.com/auto: "true"
-    configmap.reloader.stakater.com/reload: {{ include "openresty-art.fullname" . }}-conf,{{ include "openresty-art.fullname" . }}-html
-  {{- end }}
 spec:
+  type: {{ .Values.service.type }}
   ports:
-    - port: 80
-      targetPort: 80
+    - port: {{ .Values.service.port }}
+      targetPort: 80      
+      {{- if .Values.service.name }}
+      name: {{ .Values.service.name }}
+      {{- end }}
+      {{- if and (eq .Values.service.type "NodePort") .Values.service.nodePort }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}
   selector:
-    k8s-app: openresty
+     {{- include "openresty-art.selectorLabels" . | nindent 4 }}

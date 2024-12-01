@@ -6,7 +6,7 @@
    templates
    my-values.yaml
    Файл _helpers.tpl
-   - реадктирвоание deployment
+   реадктирвоание deployment
    -   Встроенные объекты
    -   Labels
    -   Annotations
@@ -19,9 +19,9 @@
    -  Container
    -  Пробы
    -  Ресурсы
-    Service
-   Ingress
-   NOTE.txt
+   реадктирвоание Service
+   реадктирвоание Ingress
+   реадктирвоание NOTE.txt
    VARIANT 1
    VARIANT 2
    Удалить лишнее
@@ -125,7 +125,7 @@ openresty-art.selectorLabels       -  набор labels, которые можн
 openresty-art.serviceAccountName   - имя SeviceAccount. При условии, что оно определено в файле values.
 
 ```
-##### - реадктирвоание deployment
+##### реадктирвоание deployment
 ```
 
 # - исходник (оригинал который не helm)           ./K8S/helm/teach_example/base-application/deployment.yaml
@@ -208,7 +208,7 @@ name: {{ include "openresty-art.fullname" . }}-html
 # ./K8S/helm/teach_example_chart/openresty-art/templates/configmap-conf.yaml
 name: {{ include "openresty-art.fullname" . }}-conf
 # ./K8S/helm/teach_example_chart/openresty-art/templates/service.yaml
-name: {{ include "openresty-art.fullname" . }}-srv
+name: {{ include "openresty-art.fullname" . }}-svc
 ```
 ##### Labels
 ```
@@ -583,7 +583,6 @@ application:
 Проконтролируем правильность генерации проб.
 helm template app ./openresty-art -f my-values.yaml > app.yaml
 
-```
 ###### -  Ресурсы
 ```
 В файле values.yaml переносим resources в раздел application.
@@ -627,19 +626,215 @@ application:
 # - образец  (оригинал который сгенерирован helm) ./K8S/helm/teach_example_chart/old-templates/service-orig.yaml
 # - целевой  (итоговый файл helm)                 ./K8S/helm/teach_example_chart/openresty-art/templates/service.yaml
 
+В файле values.yaml переносим (добавляем) строки:
+```
+```yaml
+service:
+  # Service type: ClusterIP or NodePort (используем только один из двух типов сервисов)
+  type: ClusterIP
+  port: 80
+  # Если сервис типа NodePort
+  nodePort: ""
+  # Если необходимо, определите имя порта
+  name: ""
+```  
+Предполагается, что наш чарт будет поддерживать только два типа сервисов: CluserIP (по умолчанию) и NodePort.
+В фале service.yaml добавляем шаблон.
+```yaml
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+```    
+Так же нам необходимо отработать ситуацию, когда сервиса типа NodePort. В этом случае следует определить параметр nodePort, в случае, если он определён. В этом нам поможет следующая конструкция:
+```yaml
+      {{- if and (eq .Values.service.type "NodePort") .Values.service.nodePort }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}
+```      
+В качестве значения оператору if передаётся функция and. Которая проверяет истинность двух значений:
+
+eq .Values.service.type "NodePort" - истина, если type равен NodePort.
+.Values.service.nodePort - истина, если значение определено.
+Если оба значения истина, то будет подставлен параметр nodePort.
+
+Так же добавим формирование имени порта:
+```yaml
+      {{- if .Values.service.name }}
+      name: {{ .Values.service.name }}
+      {{- end }}
+```      
+Добавим в файл my-values.yaml следубщие строки:
+```yaml
+service:
+  type: NodePort
+  nodePort: 31002
+  name: proxy
+```  
+selector берем из deployment
+```yaml
+  selector:
+     {{- include "openresty-art.selectorLabels" . | nindent 4 }}
+```
+```
+Проверим создание шаблона.
+helm template app ./openresty-art/ -f my-values.yaml > app.yaml
+
 ```
 ##### Ingress
 ```
+# - исходник (оригинал который не helm)           ./K8S/helm/teach_example/base-application/ingress.yaml
+# - образец  (оригинал который сгенерирован helm) ./K8S/helm/teach_example_chart/old-templates/ingress-orig.yaml
+# - целевой  (итоговый файл helm)                 ./K8S/helm/teach_example_chart/openresty-art/templates/ingress.yaml
+
+Сначала в values.yaml перенесем всю секцию ingress. Так же скопируем эту секцию в my-values.yaml и немного её отредактируем.
+на основении ./K8S/helm/teach_example/base-application/ingress.yaml
+```
+```yaml
+ingress:
+  enabled: true
+  className: "system-ingress"
+  annotations:
+    certmanager.k8s.io/cluster-issuer: monitoring-issuer
+  hosts:
+    - host: control1.kube.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - hosts:
+        - application
+      secretName: art-tls
+```      
+А затем просто скопируем ingress-orig.yaml в директорию templates и назовём его ingress.yaml. Т.е. просто удалим старый ingress.
+Поскольку имя сервиса, относительно первоначально сгенерированного шаблона у нас изменено, добавим несколько дополнений/изменений в файле шаблона.
+
+Правим 
+{{- $fullName := include "openresty-art.fullname" . -}}
+чтобы было как в service.yaml
+name: {{ include "openresty-art.fullname" . }}-svc
+
+После второй строки 
+{{- $fullName := include "openresty-art.fullname" . -}}
+добавим переменную:
+{{- $svcName := printf "%s-%s" $fullName "svc" -}}
+
+зедесь мы к $fullName добавляем -svc
+
+В строках номер 53 и 57 заменим $fullName на $svcName.
+
+Проверяем 
+
+helm template app ./openresty-art/ -f my-values.yaml > app.yaml
+
+Что бы разобраться в шаблоне, выпишем все используемые в нём, ещё не известный нам функции.
+
+semverCompare - Семантическое сравнение двух строк. Два аргумента - строки в формате версии. Позволяет сравнить версии приложений.
+hasKey - Возвращает истину, если данный словарь содержит данный ключ.
+set - Добавляет в словарь новую пару ключ/значение.
+
+```yaml
+# Если .Values.ingress.className - определен и (версия kubernetis ) не выше 1.18-0
+{{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  # тогда ищем ключ Values.ingress.annotations равный kubernetes.io/ingress.class
+  # если его нет то добавяленм ключ .Values.ingress.className = "kubernetes.io/ingress.class" в словарь .Values.ingress.annotations
+  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
+  {{- end }}
+{{- end }}
+# если semverCompare (версия kubernetis) >=1.19-0 то версия apiVersion
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+
+spec:
+  # если semverCompare (версия kubernetis) >=1.18-0 то подставляем ingressClassName:
+  {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  # если определена tls то пробегаемся по элементам массива range
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- range .Values.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    # в зависимости от версии kubernetis пробегаемся по элементам массива range внизу пример элемента массива
+    # - host: control1.kube.local
+    #   http:
+    #     paths:
+    #       - path: /
+    #         pathType: Prefix
+    {{- range .Values.ingress.hosts }}
+    # в массиве есть параметр host который помещаем в двойные кавычки 
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: {{ .pathType }}
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              # генерация значений в зависимости от версии kubernetis
+              service:
+                name: {{ $svcName }}
+                port:
+                  number: {{ $svcPort }}
+              {{- else }}
+              # генерация значений в зависимости от версии kubernetis
+              serviceName: {{ $svcName }}
+              servicePort: {{ $svcPort }}
+              {{- end }}
+          {{- end }}
+    {{- end }}
+{{- end }}
+ 
 ```
 ##### NOTE.txt
 ```
+Содержимое файла NOTE.txt выводится на стандартный вывод после установки или обновления чарта (helm install или helm upgrade).
 ```
+```yaml
+1. Get the application URL by running these commands:
+# если ingress включен то 
+{{- if .Values.ingress.enabled }}
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  # информация к каким хостам подключаемся 
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+# иначе идет проверка на тип сервиса NodePort
+{{- else if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "openresty-art.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+# иначе идет проверка на тип сервиса LoadBalancer  
+{{- else if contains "LoadBalancer" .Values.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch its status by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "openresty-art.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "openresty-art.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.service.port }}
+# в случае   ClusterIP
+{{- else if contains "ClusterIP" .Values.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "openresty-art.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+{{- end }}
 
-
-
-
-
-
+```
 ##### VARIANT 1
 ##### VARIANT 2
 ##### Удалить лишнее

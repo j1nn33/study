@@ -8,7 +8,7 @@ metadata:
     certmanager.k8s.io/cluster-issuer: monitoring-issuer
 spec:
   rules:
-    - host: "application.kryukov.local"
+    - host: "control1.kube.local"
       http:
         paths:
           - pathType: Prefix

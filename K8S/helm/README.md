@@ -29,7 +29,7 @@
    templates
    my-values.yaml
    Файл _helpers.tpl
-   - реадктирвоание deployment
+   реадктирвоание deployment
    -   Встроенные объекты
    -   Labels
    -   Annotations
@@ -42,9 +42,9 @@
    -  Container
    -  Пробы
    -  Ресурсы
-    Service
-   Ingress
-   NOTE.txt
+   реадктирвоание Service
+   реадктирвоание Ingress
+   реадктирвоание NOTE.txt
    VARIANT 1
    VARIANT 2
    Удалить лишнее
