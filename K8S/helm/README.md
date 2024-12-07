@@ -19,7 +19,7 @@
 ```
 #### Примеры 
 ###### - ./K8S/tasks/sl_base/my_helm/READ_ME.txt
-###### - ./K8S/helm/teach_example/README.md
+###### - ./K8S/helm/teach_example_chart/README.md
 ###### ###############################################
 ###### - ./K8S/tasks/sl_base/my_helm/READ_ME.txt
 ```
@@ -45,8 +45,9 @@
    реадктирвоание Service
    реадктирвоание Ingress
    реадктирвоание NOTE.txt
-   VARIANT 1
-   VARIANT 2
+   ConfigMap
+    VARIANT 1
+    VARIANT 2
    Удалить лишнее
    Добавить нужное
    Создать файл чарта

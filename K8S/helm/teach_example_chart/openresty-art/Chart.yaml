@@ -23,3 +23,9 @@ version: 0.1.0
 # It is recommended to use it with quotes.
 # appVersion: "1.16.0"
 appVersion: "1.19.9.1-centos-rpm"
+
+home: https://github.com/j1nn33/study/blob/master/K8S/helm/teach_example_chart/README.md
+maintainers:
+  - name: teach helm chart
+    email: 
+    url: https://

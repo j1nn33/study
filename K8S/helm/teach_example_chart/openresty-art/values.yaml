@@ -1,24 +1,40 @@
+# Строка для частичного переопределения шаблона openresty-art.fullname (сохранит имя релиза)
+nameOverride: ""
+# Строка для частичного переопределения шаблона openresty-art.fullname
+fullnameOverride: ""
+
+# Параметры deployment
+
 # раздел application делаем для удобства 
 # здесь все что используется для определенного deployment
 # удобно когда deployment много
 application:
+  # Включение аннотации stakater reloader
   reloader: false
+  # Количество реплик
   replicaCount: 1
+  # Ограничение revisionHistoryLimit
   revisionHistoryLimit: 3
+  # Аннотации, добавляемые в под
   podAnnotations: {}
   #  если раскоментить то поедут в deployment в таком виде как есть  
   #  prometheus.io/scrape: "true"
   #  prometheus.io/path: "/metrics"
   #  prometheus.io/port: "80"
+
+  # Secret для доступа к containers repository
   imagePullSecrets: []
   #  imagePullSecrets:
   # - name: MypullSecretName     если используется секрет к  docker registry
+
+  # Параметры образа контейнера
   image:
     # значения забрали из  ./study/K8S/helm/teach_example/base-application/deployment.yaml
     repository: openresty/openresty
     tag: ""
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
+  # Настройки проб  
   probe:
     readinessProbe:
       httpGet:
@@ -28,6 +44,7 @@ application:
       httpGet:
         path: /
         port: http 
+  # Определение ресурсов.      
   resources: {}     
     # limits:
     #   cpu: 100m
@@ -35,8 +52,10 @@ application:
     # requests:
     #   cpu: 100m
     #   memory: 128Mi
+
+# Настройки сервиса
 service:
-  # Service type: ClusterIP or NodePort
+  # Services type может быть только ClusterIp или NodePort
   type: ClusterIP
   port: 80
   # Если сервис типа NodePort
@@ -44,8 +63,11 @@ service:
   # Если необходимо, определите имя порта
   name: ""
 
+# Настройки ingress
 ingress:
+  # По умолчанию ingress отключён
   enabled: false
+  # Если необходимо, определите ingress class.
   className: "system-ingress"
   annotations: {}
     # kubernetes.io/ingress.class: nginx
@@ -60,60 +82,111 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+# Основной конфигурационный файл.
+conf:
+  defaultConf: |-
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location / {
+            root   /usr/local/openresty/nginx/html;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/local/openresty/nginx/html;
+        }
+    }
+
+# Список html файлов.
+html:
+  index: |-
+    <html>
+      <head>
+        <title>Тестовая страница</title>
+        <meta charset="UTF-8">
+      </head>
+      <body>
+        <h1>Тестовая страница</h1>
+      </body>
+    </html>
+  50x: |-
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <title>Error</title>
+    <style>
+        body {
+            width: 35em;
+            margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif;
+        }
+    </style>
+    </head>
+    <body>
+    <h1>An error occurred.</h1>
+    <p>Sorry, the page you are looking for is currently unavailable.<br/>
+    Please try again later.</p>
+    </body>
+    </html>
 ##########################################################
 # все что сгенерировано автоматикой при создании чарта 
 ##########################################################
-
-nameOverride: ""
-fullnameOverride: ""
-
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Automatically mount a ServiceAccount's API credentials?
-  automount: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
-
-podAnnotations: {}
-podLabels: {}
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-
-# Additional volumes on the output Deployment definition.
-volumes: []
-# - name: foo
-#   secret:
-#     secretName: mysecret
-#     optional: false
-
-# Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
+# 
+# nameOverride: ""
+# fullnameOverride: ""
+# 
+# serviceAccount:
+#   # Specifies whether a service account should be created
+#   create: true
+#   # Automatically mount a ServiceAccount's API credentials?
+#   automount: true
+#   # Annotations to add to the service account
+#   annotations: {}
+#   # The name of the service account to use.
+#   # If not set and create is true, a name is generated using the fullname template
+#   name: ""
+# 
+# podAnnotations: {}
+# podLabels: {}
+# 
+# podSecurityContext: {}
+#   # fsGroup: 2000
+# 
+# securityContext: {}
+#   # capabilities:
+#   #   drop:
+#   #   - ALL
+#   # readOnlyRootFilesystem: true
+#   # runAsNonRoot: true
+#   # runAsUser: 1000
+# 
+# autoscaling:
+#   enabled: false
+#   minReplicas: 1
+#   maxReplicas: 100
+#   targetCPUUtilizationPercentage: 80
+#   # targetMemoryUtilizationPercentage: 80
+# 
+# # Additional volumes on the output Deployment definition.
+# volumes: []
+# # - name: foo
+# #   secret:
+# #     secretName: mysecret
+# #     optional: false
+# 
+# # Additional volumeMounts on the output Deployment definition.
+# volumeMounts: []
+# # - name: foo
+# #   mountPath: "/etc/foo"
+# #   readOnly: true
+# 
+# nodeSelector: {}
+# 
+# tolerations: []
+# 
+# affinity: {}

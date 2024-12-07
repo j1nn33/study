@@ -7,9 +7,9 @@
    my-values.yaml
    Файл _helpers.tpl
    реадктирвоание deployment
-   -   Встроенные объекты
-   -   Labels
-   -   Annotations
+  -   Встроенные объекты
+  -   Labels
+  -   Annotations
    Проверка работы шаблонов
    Переопределение параметров по умолчанию
    Работа с приложением
@@ -22,8 +22,9 @@
    реадктирвоание Service
    реадктирвоание Ingress
    реадктирвоание NOTE.txt
-   VARIANT 1
-   VARIANT 2
+   ConfigMap
+    VARIANT 1
+    VARIANT 2
    Удалить лишнее
    Добавить нужное
    Создать файл чарта
@@ -35,7 +36,7 @@
 
 Приложение - openresty, которое запускаем в кластере kubernetes. 
 Файлы приложения 
-./K8S/helm/teach_example/base-application
+./K8S/helm/teach_example_chart/base-application
 
 На основе этих манифестов создается helm chart 
 ```
@@ -128,7 +129,7 @@ openresty-art.serviceAccountName   - имя SeviceAccount. При условии
 ##### реадктирвоание deployment
 ```
 
-# - исходник (оригинал который не helm)           ./K8S/helm/teach_example/base-application/deployment.yaml
+# - исходник (оригинал который не helm)           ./K8S/helm/teach_example_chart/base-application/deployment.yaml
 # - образец  (оригинал который сгенерирован helm) ./K8S/helm/teach_example_chart/old-templates/deployment-orig.yaml
 # - целевой  (итоговый файл helm)                 ./K8S/helm/teach_example_chart/openresty-art/templates/deployment.yaml
 # - бибилотека шаблонов                           ./K8S/helm/teach_example_chart/openresty-art/templates/_helpers.tpl
@@ -622,7 +623,7 @@ application:
 ```
 #####  Service
 ```
-# - исходник (оригинал который не helm)           ./K8S/helm/teach_example/base-application/service.yaml
+# - исходник (оригинал который не helm)           ./K8S/helm/teach_example_chart/base-application/service.yaml
 # - образец  (оригинал который сгенерирован helm) ./K8S/helm/teach_example_chart/old-templates/service-orig.yaml
 # - целевой  (итоговый файл helm)                 ./K8S/helm/teach_example_chart/openresty-art/templates/service.yaml
 
@@ -683,12 +684,12 @@ helm template app ./openresty-art/ -f my-values.yaml > app.yaml
 ```
 ##### Ingress
 ```
-# - исходник (оригинал который не helm)           ./K8S/helm/teach_example/base-application/ingress.yaml
+# - исходник (оригинал который не helm)           ./K8S/helm/teach_example_chart/base-application/ingress.yaml
 # - образец  (оригинал который сгенерирован helm) ./K8S/helm/teach_example_chart/old-templates/ingress-orig.yaml
 # - целевой  (итоговый файл helm)                 ./K8S/helm/teach_example_chart/openresty-art/templates/ingress.yaml
 
 Сначала в values.yaml перенесем всю секцию ingress. Так же скопируем эту секцию в my-values.yaml и немного её отредактируем.
-на основении ./K8S/helm/teach_example/base-application/ingress.yaml
+на основении ./K8S/helm/teach_example_chart/base-application/ingress.yaml
 ```
 ```yaml
 ingress:
@@ -835,10 +836,246 @@ spec:
 {{- end }}
 
 ```
-##### VARIANT 1
-##### VARIANT 2
+##### ConfigMap
+```
+Целевая тема это монтирование конфигов через volumes
+для тестовой версии можно через configmap
+В директории templates:
+
+  configmap-conf.yaml - содержит конфигурационный файл default.conf.
+  configmap-html.yaml - содержит html файлы.
+```
+###### VARIANT 1
+```
+Файлы, которые находятся непосредственно в ConfigMaps, неудобно редактировать. Редакторы теряются в формате. Например, в configmap-html.yaml основной формат - yaml, а формат вложенных файлов html.
+Идея вынести содержимое вложенных файлов в отдельный файл. А в шаблоне, в нужном месте вставлять его содержимое.
+
+configmap-conf.yaml
+Конфигурационный файла приложения. 
+-  default.conf  (./K8S/helm/teach_example_chart/openresty-art/default.conf)
+                  и поместим в него конфигурационные параметры openresty.
+                  (./K8S/helm/teach_example_chart/base-application/configmap-conf.yaml)
+
+Созаем директорию html (./K8S/helm/teach_example_chart/openresty-art/html)
+                        где будут находиться дополнительные файлы 
+index.html - берем из  (./K8S/helm/teach_example_chart/base-application/configmap-html.yaml)
+50x.html   - берем из  (./K8S/helm/teach_example_chart/base-application/configmap-html.yaml)
+
+configmap-conf-var1.yaml  (./K8S/helm/teach_example_chart/openresty-art/templates/configmap-conf-var1.yaml)
+configmap-html-var1.yaml  (./K8S/helm/teach_example_chart/openresty-art/templates/configmap-html-var1.yaml)
+
+В файле configmap-conf.yaml удалим содержимое секции data и вставим следующий шаблон.
+```
+```yaml
+data:
+  default.conf: |-
+{{ .Files.Get "default.conf" | indent 4 }}
+```
+В шаблоне мы использовали встроенный объект Files. При помощи которого мы можем работать с файлами, находящимися внутри чарта.
+
+При помощи функции Get получаем содержимое файла default.conf. Сдвигаем каждую строку на 4 символа. 
+Шаблон должен быть помещен строго в начало строки.
+
+Проверим, работает шаблон или нет.
+
+helm template app ./openresty-art/ -f my-values.yaml > app.yaml
+configmap-html.yaml
+
+В фале configmap-html.yaml удалим все в разделе data и добавим следующий шаблон:
+```yaml
+data:
+{{- range $path, $_ :=  .Files.Glob  "html/*" }}
+  {{ base $path }}: |
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}
+```
+```
+При помощи функции Glob мы получаем список файлов из указанной директории, подходящих под шаблон. 
+Glob - возвращает 2 значения путь $path и ошибку $_
+При помощи range перебираем его. В каждой итерации в переменной %path получаем путь к файлу.
+Функция base возвращает имя файла из полного пути 
+$.Files.Get читает его содержимое.
+В итоге, в configMap мы получим столько файлов, сколько их есть в директории html.
+
+Проверяем:
+
+helm template app ./openresty-art/ -f my-values.yaml > app.yaml
+
+При использовании .Files мы не сможем изменить содержимое файлов при помощи кастомных файлов values и параметров --set. 
+```
+###### VARIANT 2
+```
+Позволяет реально заменять данные при установки helm чарта 
+для этого
+- в ./K8S/helm/teach_example_chart/openresty-art
+  выносим каталог html на дирректорию выше в ./K8S/helm/teach_example_chart/ 
+
+Добавить содержимое файлов default.conf и из каталога html  в файл values.yaml.
+
+```
+```yaml
+conf:
+  defaultConf: |-
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location / {
+            root   /usr/local/openresty/nginx/html;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/local/openresty/nginx/html;
+        }
+    }
+html:
+  index: |-
+    <html>
+      <head>
+        <title>Тестовая страница</title>
+        <meta charset="UTF-8">
+      </head>
+      <body>
+        <h1>Тестовая страница</h1>
+      </body>
+    </html>
+  50x: |-
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <title>Error</title>
+    <style>
+        body {
+            width: 35em;
+            margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif;
+        }
+    </style>
+    </head>
+    <body>
+    <h1>An error occurred.</h1>
+    <p>Sorry, the page you are looking for is currently unavailable.<br/>
+    Please try again later.</p>
+    </body>
+    </html>
+```    
+В файле configmap-conf-var2.yaml (./K8S/helm/teach_example_chart/openresty-art/templates/configmap-conf-var2.yaml)
+
+нам необходимо подставить всего один файл с известным именем. Поэтому шаблон будет простой.
+
+```yaml
+data:
+  default.conf: |-
+{{ .Values.conf.defaultConf | indent 4 }}
+```
+В файле configmap-html-var2.yaml (./K8S/helm/teach_example_chart/openresty-art/templates/configmap-conf-var2.yaml),  количество html файлов заранее не известно. Поэтому шаблон будет чуть сложнее.
+```yaml
+data:
+{{- range $file, $value :=  .Values.html }}
+  {{ $file }}.html: |
+{{ $value | indent 4 }}
+{{- end }}
+```
+```
+Проверяем работу шаблона по умолчанию:
+
+helm template app ./openresty-art/ -f my-values.yaml > app.yaml
+
+Теперь посмотрим, как подставить свои файлы, при вызове helm. 
+1 способ - перенести это в файл my-values/yaml
+2 способ 
+Создадим в директории (./K8S/helm/teach_example_chart)
+          директорию html и поместим в неё файла index.html
+
+Сначала подставим только my-default.conf:
+
+# --set-file conf.defaultConf=my-default.conf
+# заменяем conf.defaultConf=<имя файла>
+
+helm template app ./openresty-art/ -f my-values.yaml \
+                  --set-file conf.defaultConf=my-default.conf  > app.yaml
+
+helm template app ./openresty-art/ -f my-values.yaml \
+                  --set-file conf.defaultConf=my-default.conf \
+                  --set-file html.index=html/index.html > app.yaml
+
+Добавим 3-й html файл:
+
+helm template app ./openresty-art/ -f my-values.yaml \
+                  --set-file conf.defaultConf=my-default.conf \
+                  --set-file html.test=html/index.html > app.yaml
+```
 ##### Удалить лишнее
+```
+B файле values.yaml удаляем все параметры, не используемые в чарте. (в нашем случае все что не нужно закоменчено)
+Проверка 
+
+helm template app ./openresty-art > app.yaml
+```
 ##### Добавить нужное
+```
+B первую очередь должна быть сформирована документация к чарту. Что бы другие люди могли без проблем его использовать.
+
+Chart.yaml
+Начнём с простого, добавим дополнительную информацию в Chart.yaml.
+```
+```yaml
+home: https://github.com/j1nn33/study/blob/master/K8S/helm/teach_example_chart/README.md
+maintainers:
+  - name: teach helm chart
+    email: 
+    url: https://
+```
+```
+values.yaml
+В файле values.yaml добавить комментарии, описывающие параметры.
+
+README.md
+README.md - это основной файл документации по чарту.
+
+```
 ##### Создать файл чарта
+```
+Для создания чарта используем команду package:
+cd ./K8S/helm/teach_example_chart
+helm package openresty-art
+Итого будет создан файл openresty-art-0.1.0.tgz
+```
 ##### Опубликовать чарт
-###### Описание
+```
+# Для публикации чарта подойдёт любой WEB серверер. https://github.com/ 
+# Создадим свое хранилище 
+# 
+# В директории helm создадим директорию charts.
+# Перенесём в неё файл openresty-art-0.1.0.tgz. 
+# 
+# Перейдём в эту директорию и создадим файл index.yaml
+# Для заполнения файла index.yaml  
+
+# для каталога 
+helm repo index .
+
+# для https://github.com/ 
+# helm repo index . --url по которому доступен этот бинарник https://raw.githubusercontent.com/j1nn33/study/blob/master/K8S/helm/charts
+
+helm repo index . --url https://raw.githubusercontent.com/j1nn33/study/blob/master/K8S/helm/charts
+
+# Запушим в github эту директорию со всеми файлами.
+# После этого можно пользоваться чартом, находящимся в https://raw.githubusercontent.com/j1nn33/study/blob/master/K8S/helm/charts
+
+# Добавление нового чарта 
+#  - добавить файл с архивов в ./K8S/helm/charts
+#  - helm repo index . --url https://raw.githubusercontent.com/j1nn33/study/blob/master/K8S/helm/charts
+
+# Подключим репозиторий.
+
+helm repo add openresty-art https://raw.githubusercontent.com/j1nn33/study/blob/master/K8S/helm/charts
+helm repo update
+helm repo list
+helm search repo | grep openresty
+Если git приватный, т.е. для доступа к нему требуется логин и пароль. При добавлении репозитория потребуется ввести эти логин и пароль.
+```
