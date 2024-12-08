@@ -50,8 +50,8 @@ MetalLB    192.168.1.180
       - Namespaces                - ./K8S/infra/utils/ 
       - Metrics server            - ./K8S/infra/utils/  
       - Priority class            - ./K8S/infra/utils/
-      - Reloader                  - ./K8S/infra/utils/                                     TODO
-      - Cert-manager              - ./K8S/infra/utils/                                     TODO
+      - Reloader                  - ./K8S/infra/utils/                                     
+      - Cert-manager              - ./K8S/infra/utils/                                     
   4.  Test                        - ./K8S/useful/test_case/
   5.  ingress                     - ./K8S/infra/ingress/README.md
   6.  Устанвока K8S dasboard      - ./K8S/infra/kubernetes-dashboar
@@ -66,7 +66,7 @@ MetalLB    192.168.1.180
   2.  Vault                       -                                                        TODO
   3.  Jenkins                     -                                                        TODO
   4.  Nexus                       -                                                        TODO
-  5.  Helm                        - ./K8S/helm/READ.ME                                     TODO
+  5.  Helm                        - ./K8S/helm/READ.ME                                     
   6.  арр                         - ./K8S/app/README.md
   7.  Docker_Podman               - ./K8S/docker_podman/README.md
   8.  metallb                     - ./K8S/infra/metallb
