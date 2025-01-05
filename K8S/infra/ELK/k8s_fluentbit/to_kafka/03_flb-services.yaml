@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: logging
+  labels:
+    k8s-app: kafka
+spec:
+  type: ClusterIP
+  ports:
+  - name: kafka
+    port: 9092
+    targetPort: 9092
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: kafka
+  namespace: logging
+  labels:
+    k8s-app: kafka
+subsets:
+  - addresses:
+    - ip: 192.168.1.250
+    ports:
+    - name: kafka
+      port: 9092

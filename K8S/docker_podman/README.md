@@ -1,6 +1,7 @@
 
 ## Podan                                    
 
+######    - docker cli https://docs.docker.com/reference/cli/docker/container/rm/
 ######    - Install podman       
 ######    - Подключение к репозиторию        
 ######    - Создание локального репозитория    

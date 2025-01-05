@@ -19,6 +19,8 @@
     - ./K8S/useful/
     - network                   - сеть и тестирование сети
     - pod_tuning                - настройка параметров пода
+    - tets_case                 - тестовые кейсы
+    - timezone                  - настройка времени в поде
            
 #### Задачи по изучению K8S
     - ./K8S/tasks/
@@ -55,8 +57,8 @@ MetalLB    192.168.1.180
   4.  Test                        - ./K8S/useful/test_case/
   5.  ingress                     - ./K8S/infra/ingress/README.md
   6.  Устанвока K8S dasboard      - ./K8S/infra/kubernetes-dashboar
-  7.  Monitoring                  -                                                        TODO
-  8.  ELK                         -  ./K8S/infra/ELK/README.md                             
+  7.  Monitoring                  - ./K8S/infra/monotoring/README.md  
+  8.  ELK                         - ./K8S/infra/ELK/README.md                         
   
 ```  
 ### OTHER 
@@ -70,7 +72,10 @@ MetalLB    192.168.1.180
   6.  арр                         - ./K8S/app/README.md
   7.  Docker_Podman               - ./K8S/docker_podman/README.md
   8.  metallb                     - ./K8S/infra/metallb
-  9.  Security                    - ./K8S/security                                         TODO
+  9.  Security                    - ./K8S/security                                         
+        - Network Policies        - ./K8S/tasks/kryukov/network_policies/README.md       
+        - Calico Network Polices  - ./K8S/tasks/kryukov/calico_network_polices/README.md      
+        - RBAC                    - ./K8S/security/RBAC.md
      
 ```
 ### Ресурсы & и теория

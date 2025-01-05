@@ -22,6 +22,8 @@ helm delete <relesase_name> [--purge]
 
 # список всех установленых релизов
 helm list [flags]
+helm list -A
+
 
 # инфо о состоянии конкретного релиза
 helm status <relesase_name> [flags]

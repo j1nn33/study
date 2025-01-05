@@ -2,6 +2,7 @@
 
 ####
 #### annotations
+#### other
 
 
 ###### annotations: 
@@ -15,4 +16,9 @@
 annotations:
   reloader.stakater.com/auto: "true"
   configmap.reloader.stakater.com/reload: "index-html"
-```  
+```
+
+###### other
+```
+imagePullPolicy: IfNotPresent   если в локальном хранилище нет образа, то только тогда его скачивать
+```
