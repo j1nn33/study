@@ -37,9 +37,12 @@ vector
 fluentbit - логи пода смотрим соединение с кафкой и топиками 
 # [2025/01/05 09:21:56] [ info] [output:kafka:kafka.0] brokers='kafka:9092' topics='kube'
 # [2025/01/05 09:21:56] [ info] [output:kafka:kafka.1] brokers='kafka:9092' topics='host'
+
 kafka     - наличие сообщений в топиках
 
+vector    - логи пода смотрим соединение c ELK и отсутствием ошибок в парсинге
 
+ELK       - наличие сообщений 
 ```
 
 
