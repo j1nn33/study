@@ -1,13 +1,20 @@
 #### Описание 
 #### Установка 
 ```
-для архитектуры на                                ./K8S/infra/monotoring/images/image1.jpg
+для архитектуры на (v1)                             ./K8S/infra/monotoring/images/image2.jpg
+для архитектуры на (v2)                             ./K8S/infra/monotoring/images/image3.jpg
+для архитектуры на (v3)                             ./K8S/infra/monotoring/images/image1.jpg
 ```
+#### Доступ 
 #### Dashboards 
+#### WORK
+```
+   - как допилить дашборд
+   - как смотреть запросы в victoriametrics
+```
 ```
 
 ```
-
 
 ###### Описание 
 ```
@@ -18,22 +25,38 @@ node-exporter dashboard: https://grafana.com/grafana/dashboards/1860
 ```
 ###### Установка 
 ```
+
+```
+###### для архитектуры на (v1)                             ./K8S/infra/monotoring/images/image2.jpg
+```
 для архитектуры на                                              ./K8S/infra/monotoring/images/image1.jpg
 statefullstate - сервис 
 Установка производится в кластер k8s с учетом созданного NFS    ./study/K8S/infra/NFS/readme.md
 в конфигурацию добавляем datasource victoriametrics
 с учетом созднного ingress                                      ./K8S/infra/monotoring/utils/ingress.yml
 
+kubectl apply -f v1_01-configmaps.yaml
+kubectl apply -f v1_02-grafana-deployment.yaml
 
-kubectl apply -f 01-configmaps.yaml
-kubectl apply -f 02-grafana-deployment.yaml
+```
+###### для архитектуры на (v2)                             ./K8S/infra/monotoring/images/image3.jpg
+```
+изменено      url": "http://victoriametrics-sys-connect:8428/vm"
 
-Доступ 
 
+kubectl apply -f v2_01-configmaps.yaml
+kubectl apply -f v2_02-grafana-deployment.yaml
+
+```
+###### для архитектуры на (v3)                             ./K8S/infra/monotoring/images/image1.jpg
+```
+```
+
+###### Доступ 
+```
 https://192.168.1.171:30443/grafana/login
 admin
 admin
-
 
 ```
 ###### Dashboards 
@@ -45,8 +68,11 @@ node-exporter dashboard: https://grafana.com/grafana/dashboards/11074
 
 k8s                      https://grafana.com/grafana/dashboards/8685
 
+victoriametrics          10229  (важна версия )
 ```
 
+
+###### WORK
 ```
 как допилить дашборд
 
@@ -60,5 +86,10 @@ kube_node_status_capacity{instance="kube-state-metrics.kube-system.svc.cluster.l
 kube_node_status_capacity{resource="cpu"}
 sum(kube_node_status_capacity{resource="cpu"})
 игарем по значениям sum() не sum
+
+```
+
+```
+как смотреть запросы в victoriametrics  использовать  -  explore 
 
 ```

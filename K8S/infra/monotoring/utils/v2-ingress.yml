@@ -1,0 +1,32 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: monitoring
+  namespace: monitoring
+  annotations:
+    ingress.kubernetes.io/rewrite-target: "/"
+    kubernetes.io/ingress.class: "nginx"
+spec:
+#  tls:
+#    - hosts:
+#        - mon.control1.kube.local
+#      secretName: mon-tls
+  rules:
+    #- host: "mon.control1.kube.local"
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /grafana
+            backend:
+              service:
+                name: grafana-sys-connect
+                port:
+                  number: 3000
+          - pathType: Prefix
+            path: /vm
+            backend:
+              service:
+                name: victoriametrics-sys-connect
+                port:
+                  number: 8428

@@ -1,7 +1,13 @@
 #### Мониторинг
+
 ##### Архитектра 
 ##### Компоненты мониторинга
 ##### Установка 
+```
+Реализация архитектуры на (v1)          ./K8S/infra/monotoring/images/image2.jp
+Реализация архитектуры на (v2)           ./K8S/infra/monotoring/images/image3.jp
+Реализация архитектуры на (v3)         ./K8S/infra/monotoring/images/image1.jp
+```
 ##### Доступы 
 ### --------------------------------------------------------------------------------
 ```
@@ -16,6 +22,7 @@
   по составу компонетов 
     - ./K8S/infra/monotoring/images/image1.jpg
     - ./K8S/infra/monotoring/images/image2.jpg
+    - ./K8S/infra/monotoring/images/image3.jpg
 ```
 ###### Компоненты мониторинга
 ```
@@ -30,8 +37,9 @@ Grafana            - Приложение для создания дашборд
 kube-state-metrics - это простой сервис, который обращается к Kubernetes API и генерирует метрики о состоянии объектов.
 ```
 ###### Установка 
+###### Реализация архитектуры на (v1)         ./K8S/infra/monotoring/images/image2.jpg
+
 ```
-Реализация архитектуры на           ./K8S/infra/monotoring/images/image1.jpg
     - victoriametrics               ./K8S/infra/monotoring/victoriametrics/README.md   
     - exporter                      ./K8S/infra/monotoring/exporter/README.md
     - prometheus                    ./K8S/infra/monotoring/prometheus/README.md    
@@ -47,30 +55,25 @@ kube-state-metrics - это простой сервис, который обра
         - Метрики ingress-nginx-endpoints   
         - сбор метрик с etcd  
     - grafana                       ./K8S/infra/monotoring/grafana/README.md
+    - ingress                       ./K8S/infra/monotoring/utils/readme.md
+```
+###### Реализация архитектуры на (v2)          ./K8S/infra/monotoring/images/image3.jpg
+```
+    - exporter                      ./K8S/infra/monotoring/exporter/README.md               (не изменилось по сравнению с v1)
+    - victoriametrics               ./K8S/infra/monotoring/victoriametrics/README.md             
+    - grafana                       ./K8S/infra/monotoring/grafana/README.md
+    - ingress                       ./K8S/infra/monotoring/utils/readme.md
+    - vmagent                       ./K8S/infra/monotoring/victoriametrics/README.md
+
+
+
+
+
+
 
 ```
-###### Доступы 
+###### Реализация архитектуры на (v3)         ./K8S/infra/monotoring/images/image1.jpg
 ```
-Реализованы на осное ingress          ./K8S/infra/monotoring/utils/readme.md
-https://192.168.1.171:30443/prometheus/
-https://192.168.1.171:30443/grafana/login
-
-```
-
-
-
-
-
-
-
-
-
-
-
-
-==================================================================
-==================================================================
-==================================================================
 
 Принцип установки приложений
 Структура git
@@ -101,3 +104,14 @@ Kubernetes monitoring [07]. Vmalert
 — Файлы правил.
 — Подключение файлов правил.
 — Запускаем vmalert.
+
+
+
+```
+###### Доступы 
+```
+Реализованы на осное ingress          ./K8S/infra/monotoring/utils/readme.md
+https://192.168.1.171:30443/prometheus/
+https://192.168.1.171:30443/grafana/login
+
+```
