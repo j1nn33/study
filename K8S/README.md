@@ -64,19 +64,21 @@ MetalLB    192.168.1.180
 ### OTHER 
 ```
 
-  1.  NFS                         - ./K8S/infra/NFS/
-  2.  Vault                       -                                                        TODO
-  3.  Jenkins                     -                                                        TODO
-  4.  Nexus                       -                                                        TODO
-  5.  Helm                        - ./K8S/helm/READ.ME                                     
-  6.  арр                         - ./K8S/app/README.md
-  7.  Docker_Podman               - ./K8S/docker_podman/README.md
-  8.  metallb                     - ./K8S/infra/metallb
-  9.  Security                    - ./K8S/security                                         
+   1. NFS                         - ./K8S/infra/NFS/
+   2. Vault                       -                                                        TODO
+   3. Jenkins                     -                                                        TODO
+   4. Nexus                       -                                                        TODO
+   5. Helm                        - ./K8S/helm/READ.ME                                     
+   6. арр                         - ./K8S/app/README.md
+   7. Docker_Podman               - ./K8S/docker_podman/README.md
+   8. metallb                     - ./K8S/infra/metallb
+   9. Security                    - ./K8S/security                                         
         - Network Policies        - ./K8S/tasks/kryukov/network_policies/README.md       
         - Calico Network Polices  - ./K8S/tasks/kryukov/calico_network_polices/README.md      
         - RBAC                    - ./K8S/security/RBAC.md
-     
+  10. ArgoCD                      - 
+  11. istio     
+  12. tracing   
 ```
 ### Ресурсы & и теория
 ##### Kubernetes                                   https://kubernetes.io/ru/docs/home/
