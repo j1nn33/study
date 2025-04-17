@@ -8,7 +8,7 @@
 ##### INSTALL и тестовый стенд 
 ###### Генератор логов  
 
----bash
+```bash
 mkdir logging
 cd logging
 
@@ -18,8 +18,8 @@ cd log_gen
 sudo mkdir /var/log/loggen
 vim loggen.sh
 
----
----bash
+```
+```bash
 #!/bin/bash
 # function creates a log entry in the JSON format
 # {"status": 200, "ip": "127.0.0.1", "level": 30, "emailAddress": "user@mail.com", "msg": "Task completed successfully", "pid": 12655, "ssn": "407-01-2433", "time": 1694551048}
@@ -45,11 +45,11 @@ while true; do
     sleep 3
 done
 
----
+```
 
 ###### INSTALL VECTOR
 
----bash
+```bash
 
 bash -c "$(curl -L https://setup.vector.dev)"
 sudo apt install vector
@@ -72,7 +72,7 @@ sudo systemctl stop vector
 #   <unique_destination_name>:
 #     # sink configuration properties go here
 	
----yaml
+```yaml
 sources:
   app_logs:
     type: "file"
@@ -86,15 +86,15 @@ sinks:
       - "app_logs"
     encoding:
       codec: "json"
----
+```
 
----bash
+```bash
 vector validate /etc/vector/vector.yaml
 
----
+```
 
 ###### Парсинг 
----bash 
+```bash 
 # Работа с  парсером https://playground.vrl.dev/
 
 # Входящий лог 
@@ -205,7 +205,7 @@ ends_when = '''
   
 ### В этом случае поле merge_strategies  добавляет символ новой строки в поле сообщения. 
 
----	  
+```	  
 
 
 

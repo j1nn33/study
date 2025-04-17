@@ -6,7 +6,7 @@ BASH
 #### -----------------------------------
 
 ##### Циклы
----bash
+```bash
 
 i=0
 while (( i < 1000 ))
@@ -49,4 +49,4 @@ done
 # here is an argument: bash
 # here is an argument: is
 # here is an argument: fun 
----
+```
