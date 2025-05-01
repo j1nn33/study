@@ -1,9 +1,9 @@
 #### INSTALL и тестовый стенд 
 ###### Генератор логов 
 ###### INSTALL
-#### Парсинг 
-####
-####
+#### WORK 
+#### Парсинг VRL
+#### Парсинг grok to json
 
 ##### INSTALL и тестовый стенд 
 ###### Генератор логов  
@@ -92,8 +92,29 @@ sinks:
 vector validate /etc/vector/vector.yaml
 
 ```
+###### WORK
 
-###### Парсинг 
+```bash
+systemctl restart vector
+# смотреть логи в режиме реального времени
+vector --watch-config
+vector --config /etc/vector/vector.yaml
+vector --config /etc/vector/*.yaml
+
+
+# Multiple files
+vector --config vector1.yaml --config vector2.yaml
+
+# config 
+vector validate /etc/vector/vector.yaml
+
+# куда кидать лог
+
+echo '{"status": 200, "ip": "127.0.0.1", "level": 30, "emailAddress": "user@mail.com", "msg": "Task completed successfully", "pid": 12655, "ssn": "407-01-2433", "time": 1694551048}' >> /var/log/loggen/app.log
+
+
+```
+###### Парсинг VRL
 ```bash 
 # Работа с  парсером https://playground.vrl.dev/
 
@@ -207,5 +228,58 @@ ends_when = '''
 
 ```	  
 
+###### Парсинг grok to json
+```bash 
+#  Преобразование и обогащение лога в json
 
+# как докинуть лог 
+echo 'time="2023-12-12T17:32:44Z" level=info msg="getRepoObjs stats" application=argocd/longhorn build_options_ms=0 helm_ms=14 plugins_ms=0 repo_ms=13 time_ms=126 unmarshal_ms=97 version_ms=0' >> app.log
+
+# как проверить 
+
+vector --watch-config
+vector --config /etc/vector/vector.yaml
+
+# Исходный лог
+time="2023-12-12T17:32:44Z" level=info msg="getRepoObjs stats" application=argocd/longhorn build_options_ms=0 helm_ms=14 plugins_ms=0 repo_ms=13 time_ms=126 unmarshal_ms=97 version_ms=0
+
+# grok parser
+https://www.javainuse.com/grok
+# Что получили на выходе 
+
+{"file":"/var/log/loggen/app.log","host":"bastion","message":"time=\"2023-12-12T17:32:44Z\" level=info msg=\"getRepoObjs stats\" application=argocd/longhorn build_options_ms=0 helm_ms=14 plugins_ms=0 repo_ms=13 time_ms=126 unmarshal_ms=97 version_ms=0","source_type":"file","timestamp":"2025-04-27T09:09:04.387686470Z"}
+
+# конифиг 
+
+cat  /etc/vector/vector.yaml
+---
+sources:
+  app_logs:
+    type: "file"
+    include:
+      - "/var/log/loggen/app.log"
+
+transforms:
+  app_logs_parser:
+    inputs:
+      - "app_logs"
+    type: "remap"
+    source: |
+      parsed, err_parsed = parse_grok(
+        .message,
+        "time=\"%{TIMESTAMP_ISO8601:timestamp}\" level=%{LOGLEVEL:level} msg=\"%{GREEDYDATA:msg}\" application=%{GREEDYDATA:application} build_options_ms=%{NUMBER:build_options_ms:int} helm_ms=%{NUMBER:helm_ms:int} plugins_ms=%{NUMBER:plugins_ms:int} repo_ms=%{NUMBER:repo_ms:int} time_ms=%{NUMBER:time_ms:int} unmarshal_ms=%{NUMBER:unmarshal_ms:int} version_ms=%{NUMBER:version_ms:int}"
+      )
+
+sinks:
+  print:
+    type: "console"
+    inputs:
+      - "app_logs_parser"
+    encoding:
+      codec: "json"
+---
+
+
+
+```
 
