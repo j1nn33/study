@@ -1,7 +1,9 @@
 # Обновление сертификатов  
 Исходная статься  https://github.com/BigKAA/youtube/blob/master/kubeadm/certificates.md
+
 Дополнительно     https://facsiaginsa.com/kubernetes/renew-kubernetes-certificate
-документация      https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-certs/
+
+Документация      https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-certs/
 
 Обновление сертификатов происходит автоматически при обновлении версии кластера.
 
@@ -48,8 +50,9 @@ cp -r /etc/kubernetes/pki /tmp/k8s-backup
 
 при установке кластера при помощи kubeadm сертификаты CA выписываются на 10 лет.
 
-Обновление сертификатов необходимо проводить на каждой control ноде кластера - это важно. При помощи kubeadm 
-возможно обновление всех сертификатов кластера (кроме сертификатов CA) или каждый сертификат можно 
+Обновление сертификатов необходимо проводить на каждой control ноде кластера - это важно. 
+#### обновляемся на каждой control ноде кластера
+При помощи kubeadm возможно обновление всех сертификатов кластера (кроме сертификатов CA) или каждый сертификат можно 
 обновлять отдельно.
 
 ```shell
