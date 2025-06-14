@@ -1,0 +1,28 @@
+sources:
+  app_logs:
+    type: "file"
+    include:
+      - "/root/logging/ip_tables.log"
+
+transforms:
+  app_logs_parser:
+    inputs:
+      - "app_logs"
+    type: "remap"
+    source: |
+      . =  parse_grok!(
+        .message, "%{SYSLOGTIMESTAMP:date} %{HOSTNAME:hostname} kernel: IP limit exceeded %{NOTSPACE:IN} %{NOTSPACE:OUT} %{NOTSPACE:MAC} SRC=%{IP:source_ip} DST=%{IP:destination_ip}"
+      )
+      .environment = "dev"
+      #del(.url)
+      .hostname_1 = get_hostname!()
+      #.mes = .
+      #.mesorg = .original
+      del(.MAC)
+sinks:
+  print:
+    type: "console"
+    inputs:
+      - "app_logs_parser"
+    encoding:
+      codec: "json"
