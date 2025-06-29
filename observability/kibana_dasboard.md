@@ -4,8 +4,15 @@
 
 
 https://habr.com/ru/articles/441214/
+
 https://habr.com/ru/articles/441264/
+
 https://habr.com/ru/articles/441362/
+
+
+Распределение логов по ошибкам 
+https://javarush.com/quests/lectures/ru.javarush.docker.fullstack.lecture.level07.lecture07
+
 
  Создание дашборда Vertical bar
  ![alt text](/study/observability/IPA/image/kibana_image_1.png)
@@ -47,3 +54,9 @@ https://habr.com/ru/articles/441362/
 
 Сохранение 
 ![alt text](/study/observability/IPA/image/kibana_image_12.png)
+
+
+----------------------------
+вертикальная диаграмма 
+![alt text](/study/observability/IPA/image/kibana_image_13.png)
+

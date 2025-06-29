@@ -105,7 +105,9 @@ vector(1) ---> kafak ---> vector(2) ---> elasticsearch ---> kibana (dashboard)
 
 - примеры логов source.txt 
 - пример 1 (принцип логированя )   ./study/ELK/VECTOR/example_1.md
-- track пример                     ./study/observability/IPA/trackt.md
+- track пример                     ./study/observability/IPA/trackt.md    
+- лог парсер                       ./study/observability/ipa_parser.md
+.//study/observability/IPA/ipa_vector_client_v1.yaml
 
 
 =================================

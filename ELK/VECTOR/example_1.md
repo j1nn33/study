@@ -203,4 +203,108 @@ sinks:
 }
 
 ```
+#### Много патерная конфигурация
+```
+В чем суть в логах могут быть строки лога попадающие под разные патерны  
 
+Алгоритм разбора такой 
+ - производим первичный парсинг полей до поля который будет срабатывать по условию
+ - далее строим конструкцию if else 
+
+---------------------
+
+Рабочий пример для однострочных логов разбираемых grok фильтром example_4_multipatern.yaml
+отправляются на вход
+
+
+echo "May 25 16:40:10 freeipa.local.lan" >> /root/logging/ip_tables.log
+echo "May 25 16:40:10 closing down fd 12" >> /root/logging/ip_tables.log
+echo "May 25 16:40:10 20" >> /root/logging/ip_tables.log
+```
+в Кафке получаем 
+
+```
+{"@timestamp":"2025-06-29T15:53:04.473606487Z","date":"May 25 16:40:10","environment":"dev","file":"/root/logging/ip_tables.log","host":"bastion","hostname":"freeipa.local.lan","pattern":"krba","payload":"freeipa.local.lan","raw_message":"May 25 16:40:10 freeipa.local.lan","status":"freeipa.local.lan","success":true}
+{"@timestamp":"2025-06-29T15:53:04.473695565Z","date":"May 25 16:40:10","environment":"dev","file":"/root/logging/ip_tables.log","host":"bastion","pattern":"krbb","payload1":"closing down fd","payload2":"12","raw_message":"May 25 16:40:10 closing down fd 12","status":"closing down fd 12","success":true}
+{"@timestamp":"2025-06-29T15:53:05.516553037Z","environment":"dev","file":"/root/logging/ip_tables.log","host":"bastion","log_type":"unknown_pattern_krb5","parse_error":"failed_to_match_any_pattern","raw_message":"May 25 16:40:10 20","status":"20","success":false}
+```
+
+
+```yaml
+sources:
+  app_logs:
+    type: "file"
+    include:
+      - "/root/logging/ip_tables.log"
+
+transforms:
+  app_logs_parser:
+    inputs:
+      - "app_logs"
+    type: "remap"
+    source: |
+    
+      # Определяем кастомные паттерны
+      patterns = {
+        "krba": "%{SYSLOGTIMESTAMP:date} %{HOSTNAME:hostname}",
+        "krbb": "%{SYSLOGTIMESTAMP:date} %{GREEDYDATA:krb5kdc_action} %{NUMBER:krb5kdc_fd}"
+      }
+      # Производим первичный парсинг полей до поля который будет срабатывать по условию  %{GREEDYDATA:action}    freeipa.local.lan или closing down fd 12
+      .raw_message = .message      
+      .message = parse_grok!(
+        .message, "%{SYSLOGTIMESTAMP:date} %{GREEDYDATA:action}"
+      )
+      #.environment = "dev"
+      #del(.source_type)
+	  # Получили значение поля 
+      .status = .message.action
+      #.@timestamp = del(.timestamp)
+
+
+      if .status == "freeipa.local.lan" 
+        {
+        #.raw_message_1 = .raw_message
+        .message = parse_grok!(.raw_message, patterns.krba) 
+        .environment = "dev"
+        del(.source_type)
+        .@timestamp = del(.timestamp)
+        .date = .message.date
+        .hostname = .message.hostname
+        .pattern = "krba"
+        .success = true
+        .payload = .message.hostname
+        del(.message)
+      } else if .status == "closing down fd 12"  
+        {
+        #.raw_message_1 = .raw_message 
+        .message = parse_grok!(.raw_message, patterns.krbb)
+        .environment = "dev"
+        del(.source_type)
+        .@timestamp = del(.timestamp)
+        .date = .message.date
+        .pattern = "krbb"
+        .success = true
+        .payload1 = .message.krb5kdc_action
+        .payload2 = .message.krb5kdc_fd
+        del(.message)
+      } else {
+        .log_type = "unknown_pattern_krb5"
+        .@timestamp = del(.timestamp)
+        .parse_error = "failed_to_match_any_pattern"
+        .environment = "dev"
+        .success = false
+        del(.source_type)
+        del(.message)
+      }
+
+
+sinks:
+  vector_kafka:
+    type: kafka
+    inputs:
+      - app_logs_parser
+    bootstrap_servers: 192.168.1.230:9092
+    topic: ipa-topic
+    encoding:
+      codec: "json"
+```

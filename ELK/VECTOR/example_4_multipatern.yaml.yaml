@@ -1,0 +1,75 @@
+sources:
+  app_logs:
+    type: "file"
+    include:
+      - "/root/logging/ip_tables.log"
+
+transforms:
+  app_logs_parser:
+    inputs:
+      - "app_logs"
+    type: "remap"
+    source: |
+    
+      # Определяем кастомные паттерны
+      patterns = {
+        "krba": "%{SYSLOGTIMESTAMP:date} %{HOSTNAME:hostname}",
+        "krbb": "%{SYSLOGTIMESTAMP:date} %{GREEDYDATA:krb5kdc_action} %{NUMBER:krb5kdc_fd}"
+      }
+     
+      .raw_message = .message      
+      .message = parse_grok!(
+        .message, "%{SYSLOGTIMESTAMP:date} %{GREEDYDATA:action}"
+      )
+      #.environment = "dev"
+      #del(.source_type)
+      .status = .message.action
+      #.@timestamp = del(.timestamp)
+
+
+      if .status == "freeipa.local.lan" 
+        {
+        #.raw_message_1 = .raw_message
+        .message = parse_grok!(.raw_message, patterns.krba) 
+        .environment = "dev"
+        del(.source_type)
+        .@timestamp = del(.timestamp)
+        .date = .message.date
+        .hostname = .message.hostname
+        .pattern = "krba"
+        .success = true
+        .payload = .message.hostname
+        del(.message)
+      } else if .status == "closing down fd 12"  
+        {
+        #.raw_message_1 = .raw_message 
+        .message = parse_grok!(.raw_message, patterns.krbb)
+        .environment = "dev"
+        del(.source_type)
+        .@timestamp = del(.timestamp)
+        .date = .message.date
+        .pattern = "krbb"
+        .success = true
+        .payload1 = .message.krb5kdc_action
+        .payload2 = .message.krb5kdc_fd
+        del(.message)
+      } else {
+        .log_type = "unknown_pattern_krb5"
+        .@timestamp = del(.timestamp)
+        .parse_error = "failed_to_match_any_pattern"
+        .environment = "dev"
+        .success = false
+        del(.source_type)
+        del(.message)
+      }
+
+
+sinks:
+  vector_kafka:
+    type: kafka
+    inputs:
+      - app_logs_parser
+    bootstrap_servers: 192.168.1.230:9092
+    topic: ipa-topic
+    encoding:
+      codec: "json"
