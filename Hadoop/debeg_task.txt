@@ -1,0 +1,8 @@
+echo ################### start DEBUG ###################
+echo $0
+ls
+klist
+echo "username=$USERNAME"
+
+
+echo ################### end DEBUG   ###################

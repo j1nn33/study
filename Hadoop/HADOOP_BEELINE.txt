@@ -41,6 +41,7 @@ CREATE DATABASE userdb;
 #--Show and describe database with wildcards
 SHOW DATABASES;
 DESCRIBE DATABASE hivetest;
+SHOW TABLES FROM ----;
 
 # Для переключения на соответствующую базу данных используем команду USE:
 USE userdb;

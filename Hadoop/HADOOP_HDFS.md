@@ -29,4 +29,5 @@ HDFS - DEBUG LOGGING
 
 HADOOP_ROOT_LOGGER=DEBUG,console hdfs dfs -ls /
 HADOOP_ROOT_LOGGER=WARN,console hdfs dfs -ls /
+
 ```

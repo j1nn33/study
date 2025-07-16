@@ -1,4 +1,8 @@
 ============================================================
+curl -XGET -u <user> --insecure http://elasticsearch:9200/_cluster/health?pretty
+
+
+============================================================
 	Cluster Health:
 
 curl -XGET http://elasticsearch:9200/_cluster/health?pretty
