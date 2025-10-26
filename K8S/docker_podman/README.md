@@ -158,4 +158,9 @@ podman image push localhost:5000/demo_multistage:v1.1
 podman run localhost:5000/demo_multistage:v1.1
 # HELLO FROM DOCKER
 # version == 
+
+# узнать под каким пользователем запускается приложение в контейнере
+podman run <image> id
+
+
 ```

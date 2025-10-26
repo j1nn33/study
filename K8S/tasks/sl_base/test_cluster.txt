@@ -53,7 +53,12 @@ kubectl delete service my-service
 ===================
 
 kubectl port-forward service/my-service-lb 3000:80
+curl http://localhost:3000 
 
+
+для запуска с любого интерфеса 
+kubectl port-forward --address 0.0.0.0 service/my-service-lb 3000:80
+http://192.168.1.171:3000
 \\\\\\\\\\\\\\\\\\\\\\
 test2
 \\\\\\\\\\\\\\\\\\\\\\
