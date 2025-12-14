@@ -1,0 +1,112 @@
+klist -s -c /file || kinit -c /file -kt /file.keytab user
+klist -s || kinit -kt /file.keytab user
+
+ipa user-mod <user> --password-expiration="2040-01-01 00:00:00Z"
+
+
+ipa-getkeytab -p -P <name>@<REALM.RU> -k <name_keytab>
+ipa-getkeytab -p -P <name_spn>/<name>@<REALM.RU> -k <name_keytab>
+
+
+kinit -kt <name_keytab> <name>
+klist -ket <name_keytab>
+
+kvno <name>@<REALM.RU>
+# посмотреть kvno под root на машине ipa
+kadmin.local -q "name@REALM>RU"
+
+
+===================
+# Получение кеша и поделиться с ним 
+
+kinit -c ./name.ccache
+export KRB5CCNAME=/home/user/file.ccache
+
+sudo -i
+export KRB5CCNAME=/home/user/file.ccache
+klist
+
+# убрать KRB5CCNAME
+uset KRB5CCNAME
+
+
+===================
+# сохранение кеша 
+export KRB5CCNAME=/$UID/$USER.ccache
+klist -s || kinit -kt <neme>.keytab $USER@REALM.RU
+
+# Получение dtltgation token и сохранение в файл
+
+hdfs fetchdt --renewer yarn /tmp/hadoop.token
+
+INFO hdfs.DFSClient: Created token for 
+
+# Определение системной переменной для токена hadoop
+export HADOOP_TOKEN_FILE_LOCATION=/tmp/hadoop.token
+
+# Если удалить билет 
+kdestroy
+
+# то запросы будут идти по токену 
+hdfs dfs -ls /tmp
+
+===================
+
+# - разблокировать пользователя
+pam_tally2 -u <user> -r
+===================
+
+# ADD HOST TO IPA 
+
+111.222.333.444 - ip addres
+
+333.222.111.in-addr.arpa.
+
+ipa host-add name.realm.ru --desc="describe for host" --password=pass --ip-address=111.222.333.4444
+
+yum install -y ipa-client libicu tci rnd-tool libsss sudo
+
+/usr/sbin/ipa-client-install --domain=realm.ru --mkhomedir -w pass --realm=REALM.RU --server=<ipa_name_fqdn> --hostname=<host_name.realm.ru> --unattended
+
+
+===================
+# SUDO 
+
+
+# Проверяем гран для sudo 
+
+ipa hbactest --user=<name_user> --host=<name_host> --server=sudo
+===================
+
+sss_cache -u <user> 
+systemctl restart sssd
+
+==================
+ADMIN
+
+ipa-replica-manage list -v 'hostname_ipa'
+
+
+==================
+
+
+ldapsearch -LLL -Y GSSAPI -b "cn=roles,cn=accounts,dc=realm,dc=ru"
+
+ldapsearch -LLL -o ldif-wrap=no -H <ipa_host> -D <auth_type -Y GSSAPI/ -b dc=realm,dc=com '(objectClass=ipahost)' + '*'
+ldapsearch -LLL -o ldif-wrap=no -H <ipa_host> -D <auth_type -Y GSSAPI/ -b dc=realm,dc=com '(objectClass=ipausergroup)' + '*'
+ldapsearch -LLL -o ldif-wrap=no -H <ipa_host> -D <auth_type -Y GSSAPI/ -b dc=realm,dc=com '(objectClass=ipahostgroup)' + '*'
+ldapsearch -LLL -o ldif-wrap=no -H <ipa_host> -D <auth_type -Y GSSAPI/ -b dc=realm,dc=com '(objectClass=ipahbacrule)' + '*'
+ldapsearch -LLL -o ldif-wrap=no -H <ipa_host> -D <auth_type -Y GSSAPI/ -b dc=realm,dc=com '(objectClass=ipasudorule)' + '*'
+
+
+# Валидно 
+
+ldapsearch -LLL -Y GSSAPI -b "cn=roles,cn=accounts,dc=realm,dc=ru"
+ldapsearch -LLL -Y GSSAPI -b "cn=hbac,cn=accounts,dc=realm,dc=ru"
+ldapsearch -LLL -Y GSSAPI -b "cn=roles,cn=accounts,dc=realm,dc=ru"
+ldapsearch -LLL -Y GSSAPI -b "cn=hbac,cn=accounts,dc=realm,dc=ru"
+ldapsearch -LLL -Y GSSAPI -b "cn=sudo,cn=accounts,dc=realm,dc=ru"
+
+ldapsearch -LLL -Q GSSAPI -b "cn=sudo,cn=accounts,dc=realm,dc=ru" "(uid=ADD_SPN)" ("uid=name_spn")
+
+===================

@@ -1,4 +1,7 @@
+SPARK_MAJOR_VERSION=3 spark_shell
+SPARK_MAJOR_VERSION=3.5.1 spark_shell
 
+scala> 1+1
 
 ============
 spark-submit -v --class org.apache.spark.examples.SparkPi --master yarn --queue root.default <path_jar> 100
@@ -36,3 +39,9 @@ spark.sql(""" analyze table <name_schema.name.table> statistics""")
 
 # выйти 
 System.exit(0)
+
+
+spark.table("").show
+spark.database("").show
+spark.sql("show partititons table_name").show
+spark.sql("show create table table_name").show

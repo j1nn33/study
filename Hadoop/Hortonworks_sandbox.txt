@@ -1,0 +1,58 @@
+
+https://hackmd.io/@firasj/BkSQJQ8eh
+
+или файлы 
+
+
+Installing HDP Sandbox   8/16
+
+The download links of HDP Sandbox on VirtualBox:
+
+HDP 2.5.0 (https://archive.cloudera.com/hwx-sandbox/hdp/hdp-2.5.0/HDP_2.5_virtualbox.ova)
+HDP 2.6.5 (https://archive.cloudera.com/hwx-sandbox/hdp/hdp-2.6.5/HDP_2.6.5_virtualbox_180626.ova)
+HDP 3.0.1 (https://archive.cloudera.com/hwx-sandbox/hdp/hdp-3.0.1/HDP_3.0.1_virtualbox_181205.ova)
+The download links of HDP Sandbox on VMware:
+
+HDP 2.5.0 (https://archive.cloudera.com/hwx-sandbox/hdp/hdp-2.5.0/HDP_2.5_vmware.ova)
+HDP 2.6.5 (https://archive.cloudera.com/hwx-sandbox/hdp/hdp-2.6.5/HDP_2.6.5_vmware_180622.ova)
+HDP 3.0.1 (https://archive.cloudera.com/hwx-sandbox/hdp/hdp-3.0.1/HDP_3.0.1_vmware_181205.ova)
+
+
+После того как развернется docker на машине ее надо REBOOT OC (иначе в ambari хост будет под вопросом и сервисы не запустятся)
+
+Access HDP Sandbox cluster
+
+
+welcome screen http://loaclhost:1080
+               http://192.168.1.151:1080
+
+ssh            http://127.0.0.1:4200         root   hadoop   hdpIU2023
+               http://192.168.1.151:4200     root   hadoop  предложит сменить  hdpIU2023 hdpIU2023
+			   
+console        ssh root@localhost -p 2222    root  hdpIU2023
+
+Ambari      maria_dev/maria_dev    - учетка на просмотр 
+
+
+Для достпа к админке идем по ssh root@localhost -p 2222    root  hdpIU2023
+и меняем пароль             
+--------
+reset the password of Ambari Admin by running the command ambari-admin-password-reset via ssh as follows:
+
+[root@sandbox-hdp ~]# ambari-admin-password-reset
+                      admin hdpIU2023  
+---------------- 
+
+
+Работа с Sandbox
+
+
+ssh root@localhost -p 2222    root  hdpIU2023
+
+hdfs dfs -ls /
+
+Права RANGER
+
+
+
+-----------------

@@ -11,13 +11,29 @@
 #### REST 
 #### CERT
 #### Нагрузочное тестирование  
+#### АНАЛИЗ OS
 #### АНАЛИЗ ППО 
 #### Text-Editors
 #### NET
+#### USER
+#### Time
+#### Sysctl
+#### Python 
 
  
 ####
 ```
+ssh user@ip
+ssh -i /id_rsa user@ip
+
+scp /source_dir/ user@ip:/destination_dir
+
+chattr -i /file
+
+
+swappoff -a
+# как память вернется 
+swapon -a
 ```
 
 #### other
@@ -27,7 +43,10 @@ scp <path_source> user@ip:<path_tagert>
 
 systemctl -a | grep fail
 
+systemctl start\stop\restart <service_name>
+systemctl list-units | grep graf
 
+systemctl show graf*
 
 ```
 #### search   
@@ -58,6 +77,8 @@ du -sh .
 du -sh /etc
 # размеры разделов
 df -h
+
+du -h /tmp | grep M
 
 ```
 #### DISK
@@ -120,6 +141,19 @@ yum clean all
 ```
 # если файл логов большое и не вариант его убить, то можно его обнлить
 echo "" > /var/log/log.txt
+
+/var/log/------
+
+grep CentOS /var/log/messages
+grep 'CentOS Stream' /var/log/messages
+cat /var/log/dpkg.log.1 | grep status | grep curl
+grep installed.python[23][.] /var/log/messages
+egrep '^[^#]' /etc/passwd
+grep -R <name> /etc/config
+
+find /etc/ -type f -size +40k
+grep -A 10 -B 10
+find /var -mount -type f -ls 2>/dev/null | sort -rnk7 | head -10
 ```
 #### DNS   
 ```
@@ -225,6 +259,33 @@ sudo sysctl -w fs.file-max=10000 && $HOME/utils/filedescrutilize --file 150 -tim
 sudo sysctl -w fs.file-max=$FILE_MAX
 ```
 
+#### АНАЛИЗ OS
+```
+- анализ состояния ОС
+	- systemctl
+	- анализ логов (где\какие)
+	- htop
+	- ps
+	- netstat
+	- df, du
+
+top
+i - то что жрет проц
+
+lsof /var | grep "/var/log/" | grep deleted
+
+--------------------------------
+du -d l -h /var/log | sort
+du -d l -h /var/log | sort -nr | head -10
+
+
+du -sh /dir/
+
+du -mbh | sort -nr | head -10
+du -a | sort -nr | head -10
+
+```
+
 #### АНАЛИЗ ППО
 ```
 which <name_app>
@@ -283,5 +344,67 @@ iftop   nload    -  мониторинг сетевых интерфейсов
 ip route
 ping  10.0.0.1 -s 1500
 locate file_name
+
+```
+
+#### USER
+```
+- работа с локальными УЗ\группами  /etc/sudores
+
+useradd
+
+usermod -aG <group1, group2> <user>   - накинуть групп
+usermod -G <group1, group2> <user>    - грохнуть групп
+
+groups <user>  - список групп
+
+visudo
+/etc/sudoers
+
+root    ALL=(ALL:ALL)       ALL
+<user>  host=(<от каких пользователей: от каких групп>)     какие команды
+
+%wheel ALL=(root)NOPASSWD: /bin/mount, /bin/umount
+sudo -l
+```
+
+#### TIME
+```
+- ntp chrony (настройка проверка)
+systemctl restart ntpdate
+systemctl restart chronyd
+
+/etc/ntp.conf
+/etc/chrony.conf
+ntpq -p
+ntpq -q
+```
+#### Sysctl
+```
+
+sysctl -a
+
+sysctl -w parametr=value 
+echo "net.ipv4.tcp_synack_retries = 5" >> /etc/sysctl.conf
+```
+#### Python 
+```
+python3 -m pip install -r requirements.txt
+
+pip install -U pip
+pip install <name>
+pip search 
+
+yum install pyhton36
+alternatives --config python
+
+```
+#### IPTABLES
+```
+iptables -L
+iptables -L --line-numbers -n -v
+
+ipatables -D INPUT 10
+ipatables -I INPUT -s 111.222.333.4444/32 -j DROP
 
 ```

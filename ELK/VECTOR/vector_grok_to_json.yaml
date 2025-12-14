@@ -1,0 +1,24 @@
+sources:
+  app_logs:
+    type: "file"
+    include:
+      - "/var/log/loggen/app.log"
+
+transforms:
+  app_logs_parser:
+    inputs:
+      - "app_logs"
+    type: "remap"
+    source: |
+      parsed, err_parsed = parse_grok(
+        .message,
+        "time=\"%{TIMESTAMP_ISO8601:timestamp}\" level=%{LOGLEVEL:level} msg=\"%{GREEDYDATA:msg}\" application=%{GREEDYDATA:application} build_options_ms=%{NUMBER:build_options_ms:int} helm_ms=%{NUMBER:helm_ms:int} plugins_ms=%{NUMBER:plugins_ms:int} repo_ms=%{NUMBER:repo_ms:int} time_ms=%{NUMBER:time_ms:int} unmarshal_ms=%{NUMBER:unmarshal_ms:int} version_ms=%{NUMBER:version_ms:int}"
+      )
+
+sinks:
+  print:
+    type: "console"
+    inputs:
+      - "app_logs_parser"
+    encoding:
+      codec: "json"

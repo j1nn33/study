@@ -1,0 +1,41 @@
+sources:
+  kafka-iptables:
+    type: "kafka"
+    bootstrap_servers: "192.168.1.230:9092"
+    group_id: "loggers"
+    key_field: "message_key"
+    topics:
+      - ipa-topic
+
+transforms:
+  transform-iptables:
+    type: remap
+    inputs:
+      - kafka-iptables
+    timezone: local
+    source: |-
+      . = parse_json!(.message)
+      del(.source_type)
+      del(.topic)
+      del(.partition)
+      del(._score)
+      del(.message_key)
+      del(.offset)
+sinks:
+  es-iptables:
+    inputs:
+      - transform-iptables 
+    type: elasticsearch
+    # endpoint: "https://opensearch-cluster-master.es.svc:9200"
+    endpoints:
+      - "http://192.168.1.162:9200"
+    # suppress_type_name: true
+    bulk:
+      action: "create"
+      index: 'iptables-%Y-%m-%d-%H'
+    #tls:
+    #  verify_certificate: false
+    auth:
+      user: admin
+      password: admin
+      strategy: basic

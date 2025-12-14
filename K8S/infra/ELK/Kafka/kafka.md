@@ -96,7 +96,7 @@ docker run -d --rm -p 9000:9000 \
 # Доступ 
 http://<IP>:9000/
 
-docker зы
+docker ps
 docker rm <name_pod> --force
 
 ```

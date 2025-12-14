@@ -24,4 +24,10 @@ hadoop discp hdfs<name_node_source>:8020/<path>/* hdfs<name_node_tagert>:8020/<p
 ============
 hdfs dfs -chown -R <name>:<name> /<name_dir>
 ============
+
+HDFS - DEBUG LOGGING
+
+HADOOP_ROOT_LOGGER=DEBUG,console hdfs dfs -ls /
+HADOOP_ROOT_LOGGER=WARN,console hdfs dfs -ls /
+
 ```

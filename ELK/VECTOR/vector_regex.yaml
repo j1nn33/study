@@ -1,0 +1,22 @@
+sources:
+  app_logs:
+    type: "file"
+    include:
+      - "/var/log/messages"
+
+transforms:
+  app_logs_parser:
+    inputs:
+      - "app_logs"
+    type: "remap"
+    source: |
+      parse_regex!(.message, r'[a-zA-Z]{3}.\d{2}.\d{2}\:\d{2}\:\d{2}.+')
+      .enviroment = "dev"
+
+sinks:
+  print:
+    type: "console"
+    inputs:
+      - "app_logs_parser"
+    encoding:
+      codec: "json"
