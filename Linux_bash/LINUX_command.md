@@ -1,6 +1,7 @@
 #### Комманды 
 #### other 
 #### search  
+#### cut
 #### Файловая система 
 #### DISK
 #### RPM
@@ -13,6 +14,13 @@
 #### Нагрузочное тестирование  
 #### АНАЛИЗ OS
 #### АНАЛИЗ ППО 
+#### LINUX Troubleshooting
+```
+LOG
+RPM
+NETWORK
+APP
+```
 #### Text-Editors
 #### NET
 #### USER
@@ -48,6 +56,11 @@ systemctl list-units | grep graf
 
 systemctl show graf*
 
+
+#### Передача данных
+
+scp some_system.tar.gz bob@10.0.0.45:/home/bob/some_system.tar.gz
+
 ```
 #### search   
 ```
@@ -65,7 +78,32 @@ grep -ri "ca.ru" .
 vi
 :%s/ca.ru/delta.ru/g
 
+#### Поиск по имени файла
+find /home -iname '*password*'
+
+find /home -size +5G | sort -n -r | head -5
+
+#### Поиск контента (файлов которые содержат password)
+
+grep -i -r /home -e 'password'
+
+
 ```
+#### cut   
+```
+cat cutfile.txt
+
+#12/05/2017 192.168.10.14 test.html
+#12/30/2017 192.168.10.185 login.html
+
+$ cut -d' ' -f2 cutfile.txt
+# 192.168.10.14
+# 192.168.10.185
+Параметр -d' ' указывает, что в качестве разделителя полей используется пробел  
+Параметр -f2 определяет, что команде нужно вырезать и отобразить второе поле, в данном случае IP-адреса.
+
+```
+
 #### Файловая система   
 ```
 tree -L 1 /
@@ -296,7 +334,89 @@ rpm -qf  /etc/pam.d
 
 dpkg-query -S 
 ```
+#### LINUX Troubleshooting
 
+###### LOG
+```bash
+journalctl
+journalctl /dev/vda
+journalctl -b _SYSTEMD_UNIT=httpd.service
+journalctl -b _SYSTEMD_UNIT=httpd.service _PID=5874
+
+journalctl --list-boots
+```
+###### RPM
+```bash
+yum install -v <name_package>
+yum deplist <name_package>
+rpm -q --requires <name_package>
+# Listing All Versions of a Package
+yum list --showduplicates <name_package>
+
+yum history
+yum history info 7
+yum history undo 7
+yum history redo 7
+
+
+# Решение проблемы 
+# (try to add '--skip-broken' to skip uninstallable packages or '--nobest' to use not only best candidate packages)
+
+yum -v install <name_package>
+yum deplist <name_package>
+yum list --showduplicates <name_package>
+
+yum versionlock
+yum versionlock delete <name_package_version>
+yum versionlock
+yum install  <name_package>
+
+yum update <name_package>
+# (try to add '--skip-broken' to skip uninstallable packages or '--nobest' to use not only best candidate packages)
+yum versionlock add <name_package>
+yum versionlock
+
+ ```
+ ###### Network
+ ```bash
+nmcli connection show
+nmcli connection show "Wired connection 1"
+nmcli device
+
+ip route
+
+ncat mailserver 25
+
+# monitoting traffic
+iptraf-ng  
+ 
+ ```
+  
+  ###### Applications
+ ```bash
+ 
+# displaying shared library information
+
+objdump -p /usr/lib64/libpthread-2.28.so | grep SONAME
+
+# run application
+application
+echo $?
+
+which application
+# /usr/bin/application
+
+# displays all of the shared libraries that an application uses
+ldd /usr/bin/application
+
+# yum provides command identifies the package that provides the specified shared library.
+
+yum provides '*/lib/name'
+
+yum install 'Provide'
+
+yum reinstall APP --downloadonly --destdir /home/user/
+``` 
 #### Text-Editors
 ```
 NANO
@@ -344,6 +464,11 @@ iftop   nload    -  мониторинг сетевых интерфейсов
 ip route
 ping  10.0.0.1 -s 1500
 locate file_name
+
+
+#### проверить доступность порта 
+
+nc -zv <ip> <port>
 
 ```
 
