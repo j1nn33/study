@@ -78,7 +78,7 @@ MetalLB    192.168.1.180
         - Calico Network Polices  - ./K8S/tasks/kryukov/calico_network_polices/README.md      
         - RBAC                    - ./K8S/security/RBAC.md
   10. ArgoCD                      - 
-  11. GATE WAY API                - 
+  11. GATEWAY API                 - ./K8S/gateway_api/gateway_api.md
   12. istio                       - ./K8S/istio/istio.md
   13. tracing                     - 
 ```
