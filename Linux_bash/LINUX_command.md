@@ -295,6 +295,10 @@ echo $FILE_MAX > file_max.conf;
 sudo sysctl -w fs.file-max=10000 && $HOME/utils/filedescrutilize --file 150 -time 600;
 # Освобождение дескрипторов, востановление прежних значений 
 sudo sysctl -w fs.file-max=$FILE_MAX
+
+# Следующая команда выполняет по 100 запросов, всего 10 000, к локальной машине, на которой запущен Nginx:
+
+ab -c 100 -n 10000 http://localhost/
 ```
 
 #### АНАЛИЗ OS

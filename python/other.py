@@ -14,3 +14,11 @@ USER, PASS = func1()
 log_level = getattr (loggint, "DEBUG")
 logging.basicConfig(level=log_level)
 logger = logging.getLogger()
+
+
+######
+
+import os
+os.system('pwd')
+
+######
