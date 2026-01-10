@@ -80,13 +80,13 @@ CLIENT   ---> ROUTE ---> Ingress GATEWAY service ---> istio ingress Gateway pod 
 
 ```
 ```
-GATEWAY        - описывате хосты и потры 
-VirtualService - описывает маршрутизацию тарфика и отправляте его на service
+GATEWAY        - описывате хосты и потры, listner L4
+VirtualService - описывает маршрутизацию тарфика и отправляте его на service L7
 
                GATEWAY и VirtualService - управляют конфигурацие Envoy (Ingress Gateway controller)
                Ingress Gateway - состоит из envoy pod и k8s ingress
 
-ROUTE          - привязывается к service и необходим для вызова сервиса снаружи кластера        
+ROUTE          - привязывается к service и необходим для вызова сервиса снаружи кластера url        
 ```
 ```
 ######  Прохождение пакета 
@@ -161,19 +161,56 @@ spec:
 ```
 
 
+##### деинсталляция Istio
+```
+kubectl delete -f samples/addons
+istioctl uninstall -y --purge
+kubectl delete namespace istio-system
+kubectl label namespace default istio-injection-
+
+### If you ran any tasks that required the experimental version of the CRDs:
+
+kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd/experimental?ref=v1.4.0" | kubectl delete -f -
+
+### Otherwise:
+
+kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v1.4.0" | kubectl delete -f -
+
+
+kubectl get crds
+kubectl get pods
 
 ```
-Про балансировщик ./K8S/istio/balance.md
-```
 
-###### Примеры 
+##### установка с помощью Helm
+
 ```
-- example_1  ./K8S/istio/example_1/README.md
-- example_2  ./K8S/istio/example_2/README.md
-- example_3  ./K8S/istio/example_3/README.md
-```
+kubectl create namespace istio-system
+helm template install/kubernetes/helm/istio-init --name istio-init --namespace istio-system | kubectl apply -f 
+helm template install/kubernetes/helm/istio --name istio --namespace istio-system | kubectl apply -f 
+
+# докинуть параметры при установки
+helm install install/kubernetes/helm/istio --name istio --namespace istio-system \
+     --set global.controlPlaneSecurityEnabled=true \
+	 --set mixer.adapters.useAdapterCRDs=false \
+	 --set grafana.enabled=true --set grafana.security.enabled=true \
+	 --set tracing.enabled=true \
+	 --set kiali.enabled=true
+	 
+	 
+# Проверка сетки после установки
+
+kubectl get svc -n istio-system
+kubectl get pods -n istio-system
 
 
+# Деинсталляция с помощью Helm
+
+helm template install/kubernetes/helm/istio --name istio --namespace istio-system | kubectl delete -f -
+kubectl delete -f install/kubernetes/helm/istio-init/files
+kubectl delete namespace istio-system
+
+```
 
 
 

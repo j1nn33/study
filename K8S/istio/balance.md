@@ -35,3 +35,85 @@ Direct Server Return, DSR когда ответ от сервера идет к 
  -  активный (keepalives, балансировщик сам опрашивает серверы) и
  - пассивный (In-Band, контролируются текущие соединения, ответы сервиса).
 ```
+##### Балансировка нагрузки со стороны клиента
+```
+- ROUND_ROBIN
+- на основе хеша IP-адреса вызывающего абонента
+- также можно использовать HTTP-заголовки и cookies
+
+Обнаружение аномалий – это способ отключения конечных точек, возвращающих плохие ответы
+
+ DestinationRule настраивает прокси на исключение из набора баланси
+ровки нагрузки любой конечной точки, давшей подряд пять ошибок, на период 
+не менее трех минут. Каждую минуту прокси сканирует набор всех конечных 
+точек, чтобы решить, нужно ли исключать какие-то конечные точки и можно 
+ли вернуть исключенные точки обратно в набор для балансировки
+```
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: foo-default
+spec:
+  host: foo.default.svc.cluster.local
+  trafficPolicy:
+    outlierDetection:
+      consecutiveErrors: 5 
+      interval: 1m
+      baseEjectionTime: 3m
+```
+```
+Политика повторных попыток, определенная в VirtualService, согласуется 
+с настройками пула соединений, определенными в DestinationRule получателя, 
+чтобы контролировать общее количество одновременных незавершенных попыток получить ответ от этого получателя.
+
+Тайм-аут можно присвоить любому HTTP-маршруту в VirtualService
+```
+
+##### Имитация ошибок
+
+```
+Istio позволяет настраивать имитацию ошибок для HTTP-трафика, вводить 
+произвольные задержки или возвращать определенные коды ответа (например, 500) для определенного процента трафика
+
+VirtualService вводит 5-секундную за держку для всего трафика
+
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: foo-default
+spec:
+  hosts:
+  – foo.default.svc.cluster.local
+  http:
+  – route:
+	– destination:
+        host: foo.default.svc.cluster.local
+    fault:
+      delay:
+        fixedDelay: 5s
+        percentage: 100
+```
+
+```
+сервер отвечает на 10 % запросов кодом ошибки 500
+```
+
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: foo-default
+spec:
+  hosts:
+  – foo.default.svc.cluster.local
+  http:
+  – route:
+	– destination:
+        host: foo.default.svc.cluster.local
+    fault:
+      abort:
+        httpStatus: 500
+        percentage: 10
+```

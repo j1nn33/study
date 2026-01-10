@@ -26,9 +26,14 @@ export PATH=$PWD/bin:$PATH
 
 istioctl version
 
+# или полный путь 
+./istio-1.27.2/bin/istioctl version
+
 ```
 ```
 На примере https://istio.io/docs/examples/bookinfo/
+
+https://istio.io/latest/docs/setup/getting-started/
 
 # Install Istio using the demo profile, without any gateways:
 istioctl install -f samples/bookinfo/demo-profile-no-gateways.yaml -y
@@ -53,23 +58,51 @@ kubectl get crd gateways.gateway.networking.k8s.io &> /dev/null || \
 { kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v1.3.0" | kubectl apply -f -; }
 
 kubectl api-resources | grep istio
-wasmplugins                                                                       extensions.istio.io/v1alpha1        true         WasmPlugin
-destinationrules                  dr                                              networking.istio.io/v1              true         DestinationRule
-envoyfilters                                                                      networking.istio.io/v1alpha3        true         EnvoyFilter
-gateways                          gw                                              networking.istio.io/v1              true         Gateway
-proxyconfigs                                                                      networking.istio.io/v1beta1         true         ProxyConfig
-serviceentries                    se                                              networking.istio.io/v1              true         ServiceEntry
-sidecars                                                                          networking.istio.io/v1              true         Sidecar
-virtualservices                   vs                                              networking.istio.io/v1              true         VirtualService
-workloadentries                   we                                              networking.istio.io/v1              true         WorkloadEntry
-workloadgroups                    wg                                              networking.istio.io/v1              true         WorkloadGroup
-authorizationpolicies             ap                                              security.istio.io/v1                true         AuthorizationPolicy
-peerauthentications               pa                                              security.istio.io/v1                true         PeerAuthentication
-requestauthentications            ra                                              security.istio.io/v1                true         RequestAuthentication
-telemetries                       telemetry                                       telemetry.istio.io/v1               true         Telemetry
+# wasmplugins                                                                       extensions.istio.io/v1alpha1        true         WasmPlugin
+# destinationrules                  dr                                              networking.istio.io/v1              true         DestinationRule
+# envoyfilters                                                                      networking.istio.io/v1alpha3        true         EnvoyFilter
+# gateways                          gw                                              networking.istio.io/v1              true         Gateway
+# proxyconfigs                                                                      networking.istio.io/v1beta1         true         ProxyConfig
+# serviceentries                    se                                              networking.istio.io/v1              true         ServiceEntry
+# sidecars                                                                          networking.istio.io/v1              true         Sidecar
+# virtualservices                   vs                                              networking.istio.io/v1              true         VirtualService
+# workloadentries                   we                                              networking.istio.io/v1              true         WorkloadEntry
+# workloadgroups                    wg                                              networking.istio.io/v1              true         WorkloadGroup
+# authorizationpolicies             ap                                              security.istio.io/v1                true         AuthorizationPolicy
+# peerauthentications               pa                                              security.istio.io/v1                true         PeerAuthentication
+# requestauthentications            ra                                              security.istio.io/v1                true         RequestAuthentication
+# telemetries                       telemetry                                       telemetry.istio.io/v1               true         Telemetry
+
+
+kubectl get svc -n istio-system
+# NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                                          AGE
+# grafana            ClusterIP   10.233.39.70    <none>        3000/TCP                                         79d
+# istiod             ClusterIP   10.233.60.184   <none>        15010/TCP,15012/TCP,443/TCP,15014/TCP            79d
+# jaeger-collector   ClusterIP   10.233.30.185   <none>        14268/TCP,14250/TCP,9411/TCP,4317/TCP,4318/TCP   79d
+# kiali              ClusterIP   10.233.3.216    <none>        20001/TCP,9090/TCP                               79d
+# loki               ClusterIP   10.233.13.117   <none>        3100/TCP,9095/TCP                                79d
+# loki-headless      ClusterIP   None            <none>        3100/TCP                                         79d
+# loki-memberlist    ClusterIP   None            <none>        7946/TCP                                         79d
+# prometheus         ClusterIP   10.233.38.209   <none>        9090/TCP                                         79d
+# tracing            ClusterIP   10.233.30.211   <none>        80/TCP,16685/TCP                                 79d
+# zipkin             ClusterIP   10.233.32.226   <none>        9411/TCP                                         79d
+
+kubectl get pod -n istio-system
+# NAME                          READY   STATUS    RESTARTS      AGE
+# grafana-6c8c9948b6-r6k25      1/1     Running   1 (44m ago)   79d
+# istiod-f65f49fb5-vfrdd        1/1     Running   1 (44m ago)   79d
+# jaeger-7fdd85f699-r9qhx       1/1     Running   1 (44m ago)   79d
+# kiali-744ff9cb54-qkvps        1/1     Running   1 (44m ago)   79d
+# loki-0                        0/2     Pending   0             79d
+# prometheus-6586f47dcc-shvs9   2/2     Running   2 (44m ago)   79d
+
+
 
 ```
 ###### Deploy the sample application
+```
+Установка базовго приложения и проверка доступности приклада во внутренней сети 
+```
 
 ```bash 
 kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
@@ -94,14 +127,34 @@ kubectl get pods
 # reviews-v2-75f48cdfc6-ln2j9       2/2     Running   0          97s
 # reviews-v3-7ffcc4f88d-d9v2r       2/2     Running   0          97s
 
+
+# Проверка что в контейнер приложения заехал istio как sidecar 
+# Проверить в поде 
+# kubectl describe pod <pod_name> -n <namespace_name>
+
+kubectl describe pod productpage-v1-59ffbf8b65-2sdth -n default
+
+#istio-proxy:
+#    Container ID:  containerd://ffbe24a074bf182617eb6c310dfce705e692d11139d8f3bf4703827d17c97a1c
+#    Image:         docker.io/istio/proxyv2:1.27.2
+#    Image ID:      docker.io/istio/proxyv2@sha256:b00a23cb37e7b8e422b57e617c1bb7304955e368308b5c166e38f0444e0f5a08
+#    Port:          15090/TCP
+#    Host Port:     0/TCP
+#    Args:
+#      proxy
+#      sidecar
+
+
 # Validate that the app is running inside the cluster by checking for the page title in the response
 
 kubectl exec "$(kubectl get pod -l app=ratings -o jsonpath='{.items[0].metadata.name}')" -c ratings -- curl -sS productpage:9080/productpage | grep -o "<title>.*</title>"
 
 <title>Simple Bookstore App</title>
 
+```
+###### Open the application to outside traffic
 
-# Open the application to outside traffic
+```bash
 kubectl apply -f samples/bookinfo/gateway-api/bookinfo-gateway.yaml
 
 # gateway.gateway.networking.k8s.io/bookinfo-gateway created

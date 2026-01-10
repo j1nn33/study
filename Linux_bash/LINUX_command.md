@@ -301,6 +301,20 @@ sudo sysctl -w fs.file-max=$FILE_MAX
 ab -c 100 -n 10000 http://localhost/
 ```
 
+```bash
+while true; do \
+   curl -i http://$EXTERNAL_IP/sentiment \
+   -H "Content-type: application/json" \
+   -d '{"sentence": "I love yogobella"}' \
+   --silent -w "Time: %{time_total}s \t Status: %{http_code}\n" \
+   -o /dev/null; sleep .1; done
+# Time: 0.153075s Status: 200
+# Time: 0.137581s Status: 200
+# Time: 0.139345s Status: 200
+# Time: 30.291806s Status: 500
+
+```
+
 #### АНАЛИЗ OS
 ```
 - анализ состояния ОС

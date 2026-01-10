@@ -69,7 +69,7 @@ MetalLB    192.168.1.180
    2. Vault                       -                                                        TODO
    3. Jenkins                     -                                                        TODO
    4. Nexus                       -                                                        TODO
-   5. Helm                        - ./K8S/helm/READ.ME                                     
+   5. Helm                        - ./K8S/helm/README.md                                     
    6. арр                         - ./K8S/app/README.md
    7. Docker_Podman               - ./K8S/docker_podman/README.md
    8. metallb                     - ./K8S/infra/metallb
@@ -79,8 +79,9 @@ MetalLB    192.168.1.180
         - RBAC                    - ./K8S/security/RBAC.md
   10. ArgoCD                      - 
   11. GATEWAY API                 - ./K8S/gateway_api/gateway_api.md
-  12. istio                       - ./K8S/istio/istio.md
+  12. istio                       - ./K8S/istio/README.md
   13. tracing                     - 
+  14. PodDisruptionBudget  PDB    - ./K8S/tasks/kryukov/pdb/README.md
 ```
 ### Ресурсы & и теория
 ##### Kubernetes                                   https://kubernetes.io/ru/docs/home/
