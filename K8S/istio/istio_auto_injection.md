@@ -19,3 +19,10 @@ kubectl get namespace -L istio-injection
  
 В случае Istio init-контейнеры используются для настройки сетевых фильтров – iptables, – управляющих трафиком.
 ```
+
+```
+# Удалить автовнедрение с namespace
+
+kubectl label namespace default istio-injection-
+# namespace/default unlabeled
+```
