@@ -1,0 +1,37 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: sa-external-services
+  namespace: demo
+spec:
+  parentRefs:
+  - name: http-gateway
+    namespace: demo
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    - path:
+        type: PathPrefix
+        value: /static
+    - path:
+        type: RegularExpression
+        value: '^.*\.(ico|png|jpg)$'
+    backendRefs:
+    - name: sa-frontend
+      port: 80
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /sentiment
+    backendRefs:
+    - name: sa-webapp
+      port: 80
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /feedback
+    backendRefs:
+    - name: sa-feedback
+      port: 80

@@ -53,4 +53,5 @@
 - example_1  ./K8S/istio/example_1/README.md
 - example_2  ./K8S/istio/example_2/README.md
 - example_3  ./K8S/istio/example_3/README.md
+- example_4  ./K8S/istio/example_4/README.md
 ```
