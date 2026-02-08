@@ -102,9 +102,10 @@ kubectl describe HTTPRoute sa-external-services -n demo
 kubectl port-forward --address 0.0.0.0 service/http-gateway-istio 8080:80
 kubectl port-forward -n demo svc/http-gateway-istio --address 0.0.0.0 8080:80
 http://localhost:8080/
+http://192.168.1.171:8080
  
 ```
-##### Observability
+###### Observability
 ```bash
 # Prometheus  for collecting metrics
 # Grafana     for visualizing those
@@ -138,6 +139,16 @@ http://192.168.1.171:3000
 kubectl port-forward --address 0.0.0.0 -n istio-system svc/tracing 16686:80
 #Forwarding from 0.0.0.0:16686 -> 16686
 http://192.168.1.171:16686
+
+
+istioctl dashboard kiali
+kubectl port-forward --address 0.0.0.0 -n istio-system svc/kiali 20001:20001
+http://192.168.1.171:20001/kiali 
+
+
+# Без полезной нагрузки pic_kiali_1.png
+# С полезной нагрузкой  pic_kiali_2.png
+
 ```
 
 
@@ -145,15 +156,16 @@ http://192.168.1.171:16686
 
 ###### generate traffic
 ```bash
+#!/bin/bash
 while true; do \
-  curl -i http://localhost:8080/sentiment \
+  curl -i http://192.168.1.171:8080/sentiment \
   -H "Content-type: application/json" \
   -d '{"sentence": "I love yogobella"}'; \
   sleep .$RANDOM; done
 
 ```
 
-##### LOG
+###### LOG
 ```
 
 [2026-02-01T16:29:24.710Z] "GET /static/js/main.f7659dbb.js HTTP/1.1"                      200             -                via_upstream            -                                 "-"                                    0                 279879       0         0                                      "10.233.66.16"             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36" "8fcedd10-23a4-9b4d-8caa-ade8a92a66a8" "192.168.1.171:8080"      "10.233.66.32:80"  inbound|80||        127.0.0.6:40305         10.233.66.32:80            10.233.66.16:0              outbound_.80_._.sa-frontend.demo.svc.cluster.local default
@@ -161,25 +173,199 @@ while true; do \
 
 ```
 
+###### A/B Testing
+```
+we have two versions of an application
+deploy a second version of the frontend (a green button instead of the white one)
+https://github.com/rinormaloku/istio-mastery
 
+Манифест deployment для «зелёной версии» отличается в двух местах:
+Образ основан на ином теге — istio-green,
+Pod'ы имеют лейбл version: green.
 
+оба deployment'а имеют лейбл app: sa-frontend, запросы, маршрутизируемые виртуальным сервисом sa-external-services на сервис sa-frontend, будут перенаправлены на все его экземпляры и нагрузка распределится посредством алгоритма round-robin
+см pic_4.png
 
+Посмотреть измения можно на pic_3.png (менятся один файл)
+Посмотреть на мониторинге  pic_mon_1.png
 
-# Access the Kiali dashboard.
-
-# This gateway is exposed by a Kubernetes Service of type LoadBalancer
-
-
-istioctl dashboard kiali
-kubectl port-forward --address 0.0.0.0 -n istio-system svc/kiali 20001:20001
-
-
-http://192.168.1.171:20001/kiali 
+Без полезной нагрузки pic_kiali_1.png
+С полезной нагрузкой  pic_kiali_2.png
+```
+```bash
+kubectl apply -f  ./K8S/istio/example_4/source/kube/ab-test/sa-frontend-green-deployment.yaml -n demo
 ```
 
+```bash
+# При такой балансировке 
+# на новом приложении файлы отличаются 
+# index.html, запрашивающий одну версию статических файлов, может быть отправлен балансировщиком нагрузки на pod'ы,
+# имеющие другую версию, где, по понятным причинам, таких файлов не существует.
+
+$ curl --silent http://192.168.1.171:8080/ | tr '"' '\n' | grep main
+/static/css/main.c7071b22.css
+/static/js/main.059f8e9c.js
+$ curl --silent http://192.168.1.171:8080/ | tr '"' '\n' | grep main
+/static/css/main.f87cd8c9.css
+/static/js/main.f7659dbb.js
 
 
 
+для того, чтобы приложение заработало, нам необходимо поставить ограничение: 
+«та же версия приложения, что отдала index.html, должна обслужить и последующие запросы».
+
+# Используем непротиворечивой балансировки нагрузки на основе хэшей (Consistent Hash Loadbalancing). 
+# В этом случае запросы от одного клиента отправляются в один и тот же экземпляр бэкенда, 
+# для чего используется предопределённое свойство — например, HTTP-заголовок. Реализуется с помощью DestinationRules.
+
+# в Destination Rules мы можем настроить балансировку нагрузки так, чтобы использовались непротиворечивые 
+# хэши и гарантировались ответы одного и того же экземпляра сервиса одному и тому же пользователю
+
+kubectl apply -f ./K8S/istio/example_4/source/kube/ab-test/destinationrule-sa-frontend.yaml -n demo
+# destinationrule.networking.istio.io/sa-frontend created
+
+kubectl -n demo get DestinationRule
+# NAME          HOST          AGE
+# sa-frontend   sa-frontend   3s
+
+
+kubectl describe DestinationRule sa-frontend -n demo
+
+# Удалить 
+kubectl delete DestinationRule sa-frontend -n demo
+kubectl -n demo delete deployment sa-frontend-green
+```
+###### Зеркалирование
+```
+Shadowing («экранирование») или Mirroring («зеркалирование») применяется в тех случаях, 
+когда мы хотим протестировать изменение в production, 
+не затронув конечных пользователей: для этого мы дублируем («зеркалируем») 
+запросы на второй экземпляр, где произведены нужные изменения, и смотрим на последствия. 
+
+```
+```bash
+# создадим второй экземпляр SA-Logic с багами 
+kubectl apply -f ./K8S/istio/example_4/source/kube/shadowing/sa-logic-service-buggy.yaml -n demo
+
+kubectl get pods -l app=sa-logic --show-labels -n demo
+# NAME                              READY   STATUS    RESTARTS       AGE     LABELS
+# sa-logic-7978b89489-jlv4c         2/2     Running   6 (153m ago)   8d      app=sa-logic,version=v1
+# sa-logic-7978b89489-mfzbb         2/2     Running   6 (153m ago)   8d      app=sa-logic,version=v1
+# sa-logic-buggy-77d79c9ddb-426wn   2/2     Running   0              2m44s   app=sa-logic,version=v2
+# sa-logic-buggy-77d79c9ddb-4tj7f   2/2     Running   0              2m44s   app=sa-logic,,version=v2
+
+# Сервис sa-logic нацелен на pod'ы с лейблом app=sa-logic, поэтому все запросы будут распределены между всеми экземплярами
+# чтобы запросы направлялись на экземпляры с версией v1 и зеркалировались на экземпляры с версией v2
+# Добьёмся этого через VirtualService в комбинации с DestinationRule, 
+# где правила определят подмножества и маршруты VirtualService к конкретному подмножеству.
+
+# ./K8S/istio/example_4/source/kube/ab-test/destinationrule-sa-frontend.yaml
+
+```
+
+```bash 
+# Без зеркалирования скрипт нагрузочного тестирования показывает ошибки, после включения зеркалирования 
+# ошибки уходят 
+
+# {"timestamp":1770551150289,"status":500,"error":"Internal Server Error","exception":"org.springframework.web.client.HttpServerErrorException","message":"500 Internal Server Error","path":"/sentiment"}HTTP/1.1 500 Internal Server Error
+# content-type: application/json;charset=UTF-8
+# date: Sun, 08 Feb 2026 11:46:20 GMT
+# x-envoy-upstream-service-time: 30046
+# server: istio-envoy
+# transfer-encoding: chunked
+# 
+# {"timestamp":1770551180454,"status":500,"error":"Internal Server Error","exception":"org.springframework.web.client.HttpServerErrorException","message":"500 Internal Server Error","path":"/sentiment"}HTTP/1.1 200 OK
+# content-type: application/json;charset=UTF-8
+# date: Sun, 08 Feb 2026 11:46:20 GMT
+# x-envoy-upstream-service-time: 9
+# server: istio-envoy
+# transfer-encoding: chunked
+
+```
+
+```
+```yaml 
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: sa-logic
+spec:
+  host: sa-logic    # определяет, что это правило применяется только к случаям, когда маршрут идёт в сторону сервиса sa-logic;
+  subsets:
+  - name: v1        # Названия (name) подмножеств используются при маршрутизации на экземпляры подмножества
+    labels:
+      version: v1   # Лейбл (label) определяет пары ключ-значение, которым должны соответствовать экземпляры, чтобы стать частью подмножества
+  - name: v2
+    labels:
+      version: v2
+```
+
+```bash
+
+kubectl apply -f ./K8S/istio/example_4/source/kube/ab-test/sa-logic-subsets-destinationrule.yaml -n demo
+
+kubectl -n demo get DestinationRule
+# NAME       HOST       AGE
+# sa-logic   sa-logic   23s
+
+kubectl apply -f ./K8S/istio/example_4/source/kube/ab-test/sa-logic-subsets-shadowing-vs.yaml -n demo
+# cм pic_kiali_3.png
+
+
+```
+```bash
+# Запустими нагрузку 
+while true; do curl -v  http://192.168.1.171:8080/sentiment \
+    -H "Content-type: application/json" \
+    -d '{"sentence": "I love yogobella"}'; \
+    sleep .8; done
+
+```
+
+```bash
+# на мониторинге можно увидеть что багованя верся отдает нормально от 20 -40 % запросов 
+# в отличии от нормальной версии 
+
+```
+###### Canary Deployments
+```bash
+# Canary Deployment — процесс выкатывания новой версии приложения для небольшого числа пользователей.
+# сразу отправим 20 % пользователей на версию с багами (она и будет представлять наш канареечный выкат), 
+# а оставшиеся 80 % — на нормальный сервис
+
+# Обновим прошлую конфигурацию VirtualService для sa-logic следующей командой:
+
+kubectl apply -f ./K8S/istio/example_4/source/kube/canary/sa-logic-subsets-canary-vs.yaml -n demo
+
+# часть запросов приводит к сбоям
+```
+```bash 
+while true; do \
+   curl -i http://192.168.1.171:8080/sentiment \
+   -H "Content-type: application/json" \
+   -d '{"sentence": "I love yogobella"}' \
+   --silent -w "Time: %{time_total}s \t Status: %{http_code}\n" \
+   -o /dev/null; sleep .1; done
+
+# Time: 0.111355s          Status: 500
+# Time: 0.020223s          Status: 200
+
+```
+###### Таймауты и повторные попытки
+```
+
+# добавить таймаут, если сервис отвечает дольше 8 секунд,
+# предпринимать повторную попытку, если у запроса происходит сбой.
+# тк добавили повторные попытки - успешных ответов стало больше 
+# cм pic_mon_3.png
+```
+kubectl apply -f ./K8S/istio/example_4/source/kube//time_out/sa-logic-retries-timeouts-vs.yaml -n demo
+
+
+```bash 
+# Удалить 
+kubectl delete DestinationRule sa-logic -n demo
+```
 
 
 
