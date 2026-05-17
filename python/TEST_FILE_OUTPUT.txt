@@ -1,0 +1,8 @@
+---------------------------------------------
+name alias prod
+server1 server1 elk
+unknow1 server2 pcb
+---------------------------------------------
+name alias prod
+server1 server1 elk
+unknow1 server2 pcb
