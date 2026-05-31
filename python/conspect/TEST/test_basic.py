@@ -1,4 +1,6 @@
+
+# assert проверяет, является ли выражение истинным
 def test_simple():
-    assert True
+    assert True     # True Истина - тест проходит
 def test_fails():
-    assert False
+    assert False    # False не явлется истиной - тест проваливается

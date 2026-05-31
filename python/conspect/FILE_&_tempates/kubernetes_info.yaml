@@ -1,0 +1,4 @@
+Namespaces: A way to divide cluster resources between users.
+Pod: Basic building block of Kubernetes.
+Service: An abstraction for dealing with Pods.
+Volume: A directory accessible to containers in a Pod.
