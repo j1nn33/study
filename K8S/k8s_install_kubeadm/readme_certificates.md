@@ -55,3 +55,22 @@ reboot
 ```
 cp -f /etc/kubernetes/admin.conf ~/.kube/config
 ```
+
+##### Проблемы 
+/var/log/messages
+
+```log
+ control1 kubelet[5359]: E0613 13:21:25.991981    5359 bootstrap.go:266] part of the existing bootstrap client certificate in /etc/kubernetes/kubelet.conf is expired: 2026-05-25 08:18:10 +0000 UTC
+ control1 kubelet[5359]: E0613 13:21:25.992025    5359 run.go:74] "command failed" err="failed to run Kubelet: unable to load bootstrap kubeconfig: stat /etc/kubernetes/bootstrap-kubelet.conf: no such file or directory"
+ control1 systemd[1]: kubelet.service: Main process exited, code=exited, status=1/FAILURE
+ control1 systemd[1]: kubelet.service: Failed with result 'exit-code'.
+ control1 systemd[1]: kubelet.service: Service RestartSec=10s expired, scheduling restart.
+ control1 systemd[1]: kubelet.service: Scheduled restart job, restart counter is at 236.
+```
+
+```bash
+systemctl status kubelet
+journalctl -u kubelet
+
+cp /etc/kubernetes/kubelet.conf /etc/kubernetes/bootstrap-kubelet.conf
+```

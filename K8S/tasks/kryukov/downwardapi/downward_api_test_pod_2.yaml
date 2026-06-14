@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: downward-api-demo-volume
+  labels:
+    app.kubernetes.io/name: downward-demo-volume
+    app.kubernetes.io/instance: test
+    app.kubernetes.io/version: v0.0.1
+spec:
+  containers:
+    - name: main
+      image: busybox:1.37
+      command:
+        - sh
+        - -c
+      args:
+        - |
+          echo "-------";
+          echo "Pod Name: $(cat /etc/podinfo/pod_name)";
+          echo "Pod Namespace: $(cat /etc/podinfo/pod_namespace)";
+          echo "App Label:
+          $(cat /etc/podinfo/labels)
+          ";
+          echo "Annotations:
+          $(cat /etc/podinfo/annotations)
+          ";
+          echo "CPU Limit" $(cat /etc/podinfo/cpu_limit)";
+          echo "Memory Limits $(cat /etc/podinfo/memory_limit)";
+          sleep infinity
+      resources:
+        limits:
+          cpu: "200m"
+          memory: "64Mi"
+        requests:
+          cpu: "200m"
+          memory: "32Mi"
+      volumeMounts:
+        - name: podinfo
+          mountPath: /etc/podinfo   
+  volumes:
+    - name: podinfo
+      downwardAPI:
+        items:
+          # Pod fields
+          - path: "pod_name"
+            fieldRef:
+              fieldPath: metadata.name
+          - path: "pod_namespace"
+            fieldRef:
+              fieldPath: metadata.namespace
+          - path: "labels"
+            fieldRef:
+              fieldPath: metadata.labels
+          - path: "annotations"
+            fieldRef:
+              fieldPath: metadata.annotations
+          # Container fields
+          - path: "cpu_limit"
+            resourceFieldRef:
+              containerName: main 
+              resource: limits.cpu
+              divisor: "1"
+          - path: "memory_limit"
+            resourceFieldRef:
+              containerName: main 
+              resource: limits.memory
+              divisor: 1Mi
+  restartPolicy: Never
+

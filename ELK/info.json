@@ -1,0 +1,12 @@
+{ "index": { "_id": "2" } }
+{"title": "The Wolf of Wall Street", "type": "camedy", "year": 2013}
+{ "index": { "_id": "4" } }
+{"title": "Ted", "type": "camedy", "year": 2012}
+{ "index": { "_id": "5" } }
+{"title": "Inglourious basterds", "type": ["crime", "drama", "camedy"], "year": 2009}
+{ "index": { "_id": "6" } }
+{"title": "The Hangover", "type": "camedy", "year": 2009}
+{ "index": { "_id": "7" } }
+{"title": "The Hangover Part II", "type": "camedy", "year": 2011}
+{ "index": { "_id": "8" } }
+{"title": "The Hangover Part III"," type": "camedy", "year": 2013}

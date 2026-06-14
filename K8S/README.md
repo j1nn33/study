@@ -82,6 +82,7 @@ MetalLB    192.168.1.180
   12. istio                       - ./K8S/istio/README.md
   13. tracing                     - 
   14. PodDisruptionBudget  PDB    - ./K8S/tasks/kryukov/pdb/README.md
+  15. Downward API                - ./K8S/tasks/kryukov/downwardapi/README.md
 ```
 ### Ресурсы & и теория
 ##### Kubernetes                                   https://kubernetes.io/ru/docs/home/
@@ -97,7 +98,7 @@ MetalLB    192.168.1.180
          - hostPath                                https://www.kryukov.biz/kubernetes/lokalnye-volumes/hostpath/
          - configMap                               https://www.kryukov.biz/kubernetes/lokalnye-volumes/configmap/
          - secrets                                 https://www.kryukov.biz/kubernetes/lokalnye-volumes/secrets/
-         - downwardAPI                             https://www.kryukov.biz/kubernetes/lokalnye-volumes/downwardapi/
+         - downward API                            https://www.kryukov.biz/kubernetes/lokalnye-volumes/downwardapi/
          - projected                               https://www.kryukov.biz/kubernetes/lokalnye-volumes/projected/
                                                    ./K8S/tasks/kryukov/pv_volumes
          - persistent Volume                       ./K8S/tasks/kryukov/pv_volumes_static
