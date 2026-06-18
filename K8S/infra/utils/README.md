@@ -83,9 +83,19 @@ kubectl apply -f reloader.yaml
 # cert-manager - утилита для управления сертификатами.
 # документация -  https://cert-manager.io/docs/installation/kubernetes/
 
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.2.0/cert-manager.yaml
+# kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.2.0/cert-manager.yaml
+
+ kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.14.0/cert-manager.yaml
 kubectl get pods --namespace cert-manager
 # Namespace cert-manager создаётся автоматически.
+
+# Проверить 
+
+kubectl get mutatingwebhookconfigurations -o yaml | grep -A2 apiVersion
+kubectl logs -n cert-manager deployment/cert-manager-cainjector
+
+
+
 
 # Пример испольования
 # во внешний мир выставляются ingress на которых терминируются ssl соединения

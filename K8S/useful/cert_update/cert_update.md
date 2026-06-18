@@ -122,3 +122,5 @@ cp -f /etc/kubernetes/admin.conf ~/.kube/config
 ## Интересное
 
 Статья на Хабре "[Ломаем и чинимKubernetes](https://habr.com/ru/post/541118/)".
+
+study/K8S/k8s_install_kubeadm/readme_certificates.md

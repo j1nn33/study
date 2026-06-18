@@ -12,8 +12,8 @@
 ###### Создание configMap, включая в него все файлы в текущей директории
 ###### Как через переменные закинуть несколько команд 
 ###### В манифесте для label если надо указать числа в виде строки то берем его "2"
-###### 
-###### 
+###### проброс портов 
+###### NET fast
 ###### 
 
 ### Ответы 
@@ -98,3 +98,107 @@ var_2: "2"  - строка
 
 selector - за какими объектами следим
 ```
+
+###### проброс портов 
+```bash 
+kubectl -n argocd get service
+
+# NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+# argocd-dex-server       ClusterIP   10.233.1.44     <none>        5556/TCP,5557/TCP,5558/TCP   4h34m
+# argocd-metrics          ClusterIP   10.233.24.13    <none>        8082/TCP                     4h34m
+# argocd-redis            ClusterIP   10.233.36.175   <none>        6379/TCP                     4h34m
+# argocd-repo-server      ClusterIP   10.233.62.110   <none>        8081/TCP,8084/TCP            4h34m
+# argocd-server           ClusterIP   10.233.7.62     <none>        80/TCP,443/TCP               4h34m
+# argocd-server-metrics   ClusterIP   10.233.39.95    <none>        8083/TCP                     4h34m
+
+# открываем порт 
+# kubectl port-forward [resource-type]/[resource-name] [local-port]:[resource-port]
+# resource-type — тип ресурса (например, pod, svc, deployment)
+
+kubectl port-forward -n argocd service/argocd-server --address 0.0.0.0 8888:443
+
+http://192.168.1.171:8888
+
+https://192.168.1.171:8888
+
+```
+###### открываем порт 
+```bash 
+kubectl proxy --address 0.0.0.0 --port=9090
+
+# обращение к любому севрису 
+http://localhost:9090/api/v1/proxy/namespaces/services/<SERVICE-NAME>:<PORT-NAME>/
+
+http://192.168.1.171:9090/api/v1/proxy/argocd/services/argocd-server:80
+https://192.168.1.171:9090/api/v1/proxy/argocd/services/argocd-server:443/
+```
+###### NET - FAST
+```bash
+###### Сервис NodePort.
+# работает сам по себе, ничего дополнительного не надо 
+nodeport.yaml
+```
+```yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  # имя сервиса
+  name: nginx-nodeport   
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+      # 80 port если обратиться внутри кластера
+    - port: 80
+      name: http
+      protocol: TCP
+	  # порт куда пересылаются запросы в приложение k8s-app: nginx 
+	  # имя порта http или номер порта 80 (зависит от конфига приложения )
+      targetPort: http
+	  # какой порт выставлять наружу 
+      nodePort: 31080
+  selector:
+    # метка приложения куда пересылается трафик
+    k8s-app: nginx          #
+```
+```
+http://<IP>:31080
+
+# кусок конфига приложения 
+k8s-app: nginx
+```
+```yaml
+ containers:
+        - name: nginx
+          image: nginx:1.23.1
+          imagePullPolicy: IfNotPresent
+          # имя порта и номер на которое слушает приклад
+		  ports:
+            - containerPort: 80
+              name: http
+```
+```
+###### Сервис LoadBalancer.
+# сам по себе не работает - нужны доп сущности типа metallb
+http://<IP>:8080
+```
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-loadbalancer
+  namespace: default
+spec:
+  type: LoadBalancer
+  ports:
+      # порт доступа к приложению как внутри так и снаружи 
+    - port: 8080
+      name: http
+      protocol: TCP
+      targetPort: http
+  selector:
+    k8s-app: nginx
+```
+
+

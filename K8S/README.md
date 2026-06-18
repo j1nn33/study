@@ -54,7 +54,7 @@ MetalLB    192.168.1.180
       - Metrics server            - ./K8S/infra/utils/  
       - Priority class            - ./K8S/infra/utils/
       - Reloader                  - ./K8S/infra/utils/                                     
-      - Cert-manager              - ./K8S/infra/utils/                                     
+      - Cert-manager              - ./K8S/infra/utils/                                                                  
   4.  Test                        - ./K8S/useful/test_case/
   5.  ingress                     - ./K8S/infra/ingress/README.md
   6.  Устанвока K8S dasboard      - ./K8S/infra/kubernetes-dashboar

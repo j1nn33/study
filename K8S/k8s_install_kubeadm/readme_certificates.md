@@ -57,6 +57,8 @@ cp -f /etc/kubernetes/admin.conf ~/.kube/config
 ```
 
 ##### Проблемы 
+см также study/K8S/useful/cert_update/cert_update.md
+
 /var/log/messages
 
 ```log
