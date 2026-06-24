@@ -1,0 +1,16 @@
+[Unit]
+Description=Prometheus exporter for machine metrics
+Documentation=https://github.com/prometheus/blackbox_exporter
+After=network.target
+
+[Service]
+Restart=always
+User=root
+EnvironmentFile=/etc/sysconfig/blackbox_exporter
+ExecStart=/usr/local/bin/blackbox_exporter ${OPTIONS}
+
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

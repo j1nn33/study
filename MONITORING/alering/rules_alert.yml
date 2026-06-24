@@ -1,0 +1,43 @@
+groups:
+  - name: PrometheusGroup
+    rules:
+      - alert: PrometheusConfigurationReload
+        expr: prometheus_config_last_reload_successful != 1
+        for: 1m
+        labels:
+          severity: critical
+          service: prom
+        annotations:
+          summary: "Prometheus configuration reload (instance {{ $labels.instance }})"
+          description: "Prometheus configuration reload error\n VALUE = {{ $value }}\n LABELS: {{$labels }}"
+
+  - name: NodeExporterGroup
+    rules:
+      - alert: ExporterDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: error
+          service: prom
+        annotations:
+          summary: "Exporter down (instance {{ $labels.instance }})"
+          description: "Prometheus exporter down\n VALUE = {{ $value }}\n LABELS: {{ $labels }}"
+
+      - alert: HighCpuLoad
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU load (instance {{ $labels.instance }})"
+          description: "CPU load is > 80%\n VALUE = {{ $value }}\n LABELS: {{ $labels }}"
+      
+      - alert: SystemdServiceCrashed
+        expr: node_systemd_unit_state{state="failed"} == 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "SystemD service crashed (instance {{ $labels.instance }})"
+          description: "SystemD service crashed\n VALUE = {{ $value }}\n LABELS: {{ $labels }}"
+

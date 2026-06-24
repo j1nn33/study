@@ -1,0 +1,38 @@
+global:
+  smtp_smarthost: smtp.yandex.ru:465
+  smtp_from: '<user name>@mail.ru'
+  smtp_auth_username: '<user name>@mail.ru'
+  smtp_auth_password: '<Password>'
+
+route:
+  group_by: ['alertname', 'service']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 1h
+  receiver: team-monitoring
+
+routes:
+  - match:
+      service: prom
+    receiver: team-ops
+  - match:
+      severity: (warnings|error|critical)
+    receiver: team-monitoring
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+      alertname: PrometheusConfigurationReload
+    target_match:
+      severity: 'error'
+
+receivers:
+  - name: 'team-ops'
+    email_configs:
+      - to: '<email_1>'
+          send_resolved: true
+          require_tls: false
+  - name: 'team-monitoring'
+    email_configs:
+      - to: '<email_2>'
+          send_resolved: true

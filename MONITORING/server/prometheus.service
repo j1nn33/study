@@ -1,0 +1,21 @@
+[Unit]
+Description=Prometheus Server
+Documentation=https://github.com/prometheus/prometheus
+After=network.target
+
+[Service]
+Restart=always
+User=prometheus
+Group=prometheus
+EnvironmentFile=/etc/sysconfig/prometheus
+#ExecStart=/usr/local/bin/prometheus ${OPTIONS}
+ExecStart=/usr/local/bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/var/lib/prometheus/
+
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5s
+
+
+[Install]
+WantedBy=multi-user.target
+

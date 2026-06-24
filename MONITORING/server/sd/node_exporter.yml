@@ -1,0 +1,5 @@
+- targets:
+  - localhost:9100
+  - 192.168.1.236:9100
+  labels:
+    sd: file

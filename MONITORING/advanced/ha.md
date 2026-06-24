@@ -1,0 +1,70 @@
+###### Настройка Prometheus в режиме HA
+
+```
+установить Prometheus на серверы 
+                         server1 
+                         server2
+
+заменить <server1_ip> и <server2_ip> на реальные ip
+```
+```
+cat /etc/prometheus/prometheus.yml
+
+```
+```yaml 
+
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - localhost:9093
+
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  - rules.yml
+  - rules_*.yml  
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "prometheus"
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ["localhost:9090"]
+       # The label name is added as a label `label_name=<label_value>` to any timeseries scraped from this config.
+        labels:
+          app: "prometheus"
+  - job_name: 'static_config'
+    static_configs:
+      - targets:
+         - localhost:9100
+         - 192.168.1.236:9100
+         - <server1_ip>:9100
+         - <server2_ip>:9100
+        labels:
+          sd: static
+  - job_name: 'file_sd'
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/sd/*.yml
+        refresh_interval: 1m
+  - job_name: pushgateway
+    honor_labels: true
+    static_configs:
+      - targets:
+         - localhost:9091
+
+```
