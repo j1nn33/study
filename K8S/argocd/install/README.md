@@ -104,10 +104,15 @@ kubectl -n argocd get service
 
 kubectl port-forward -n argocd service/argocd-server --address 0.0.0.0 8888:443
 
-http://192.168.1.171:8888
+https://192.168.1.171:8888
 
 
-###### Пароль админа
+# Второй вариант через NodePort
+kubectl pply -f ./argocd/node_port_argocd.yaml
+
+http://192.168.1.171:30443
+
+# Пароль админа
 ```bash
 # Добавим в /etc/hosts имя argocd.kube.local
 
@@ -120,24 +125,93 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 # argocd login argocd.kube.local:31443 --grpc-web
 # argocd account update-password --grpc-web
 
-argocd login 192.168.1.171:8888 --grpc-web
+argocd login 192.168.1.171:30443 --grpc-web
 WARNING: server is not configured with TLS. Proceed (y/n)? y
 Username: admin
 Password:
 'admin:login' logged in successfully
-Context '192.168.1.171:8888' updated
+Context '192.168.1.171:30443' updated
 
+# Креды также можно посмотреть здесь cat ~/.argocd/config
+# изменить установленый пароль
+argocd account update-password --grpc-web
 
-# Второй вариант через NodePort
-kubectl pply -f ./argocd/node_port_argocd.yaml
+# Добавление пользователя, репы и добавить ему права
+# через ГУИ пользоваетелй добавить нельзя 
+
+kubectl -n argocd apply -f ./argocd/03-argocd-cm.yaml
+kubectl -n argocd apply -f ./argocd/04-argocd-rbac-cm.yaml
+
+# Посмотреть список пользователей в системе 
+argocd account list --grpc-web
+
+# NAME   ENABLED  CAPABILITIES
+# admin  true     login
+# const  true     apiKey, login
+
+# сменить пароль
+argocd account update-password --account const --grpc-web
+
+# *** Enter current password:        <---- admin password
+# *** Enter new password:
+# *** Confirm new password:
+# Password updated
+
+# Логинимся новым пользователем в систему
+argocd login argocd.const.local:30443 --grpc-web
+argocd cluster list
+# SERVER                          NAME        VERSION  STATUS  MESSAGE
+# https://kubernetes.default.svc  in-cluster
+
+# Заходим в WEB интерфейс
 
 http://192.168.1.171:30443
 
+```
+###### Добавление project
+```bash
+# project - заливает на кластер базовые утилиты и следит за ними 
+# найти можно в CRD (k8s dashboard)
+kubectl -n argocd apply -f ./argocd/05-project-system.yaml
+
+# добавить приложения в argocd через WEB
+# приложение находится тут 
+# https://github.com/j1nn33/study/tree/master/K8S/argocd/01-clusterapp/01-base
+
+# NEW APP
+# Application Name        base
+# Project Name            system-utils
+# SYNC POLICY             MANUAL
+# Repository URL 
+# Path                    K8S/argocd/01-clusterapp/01-base
+# Cluster URL             https://kubernetes.default.svc
+# Namespace               
+
+
+# добавить приложения в argocd через manifest
+./study/K8S/argocd/applications/01-base.yaml
+
+# применить его 
+kubectl apply -f ./argocd/applications/01-base.yaml
 ```
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+```bash 
+# ----------------------------------------------------
+```
 ###### ingress для доступа.
 
 

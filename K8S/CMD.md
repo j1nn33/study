@@ -1,6 +1,8 @@
 https://kubernetes.io/ru/docs/reference/kubectl/cheatsheet/
 
+
 # ###################################################
+```bash
 kubectl get pods -ALL -o wide
 kubectl get all -o wide
 
@@ -186,4 +188,4 @@ kubectl taint nodes control1.kube.local node-role.kubernetes.io/master:NoSchedul
 kubectl api-resources
 kubectl api-versions
 
-
+```

@@ -1,4 +1,5 @@
 #### Комманды 
+#### scp rsyns
 #### other 
 #### search  
 #### cut
@@ -30,7 +31,7 @@ APP
 
  
 ####
-```
+```bash
 ssh user@ip
 ssh -i /id_rsa user@ip
 
@@ -43,9 +44,19 @@ swappoff -a
 # как память вернется 
 swapon -a
 ```
-
-#### other
+# scp rsyns
+```bash 
+# Скопировать файл на удаленный хост
+scp file.txt user@host:/path/
+# Скопировать с удаленного хоста
+scp user@host:/path/file.txt ./
+# Синхронизировать каталоги
+rsync -avz localdir/ user@host:/remotedir/
+# Rsync с прогрессом
+rsync -avz --progress src/ dest/
 ```
+#### other
+```bash
 ssh user@ip
 scp <path_source> user@ip:<path_tagert>
 
@@ -61,9 +72,42 @@ systemctl show graf*
 
 scp some_system.tar.gz bob@10.0.0.45:/home/bob/some_system.tar.gz
 
+# Создать архив tar
+tar -cf archive.tar files/
+# Создать сжатый архив
+tar -czf archive.tar.gz files/
+# Извлечь архив
+tar -xf archive.tar
+# Извлечь сжатый архив
+tar -xzf archive.tar.gz
+# Листинг содержимого архива
+tar -tf archive.tar
+
+
+# Сжать файл с помощью gzip
+gzip filename
+# Распаковать файл gzip
+gunzip filename.gz
+# Создать zip архив
+zip archive.zip file1 file2
+# Извлечь zip архив
+unzip archive.zip
+# Листинг содержимого zip
+unzip -l archive.zip
+
+# Создать архив со сжатием
+tar -czvf backup.tar.gz /home/user/
+# Извлечь в указанный каталог
+tar -xzf archive.tar.gz -C /destination/
+# Добавить файлы в существующий архив
+tar -rf archive.tar newfile.txt
+# Обновить архив более новыми файлами
+tar -uf archive.tar files/
+
+
 ```
 #### search   
-```
+```bash
 
 grep "^[^#*/;]" <name_config>
 
@@ -88,9 +132,52 @@ find /home -size +5G | sort -n -r | head -5
 grep -i -r /home -e 'password'
 
 
+# Поиск шаблона в файле
+grep "pattern" filename
+# Поиск без учета регистра
+grep -i "pattern" filename
+# Рекурсивный поиск в каталогах
+grep -r "pattern" /path/
+# Показать номера строк
+grep -n "pattern" filename
+# Посчитать совпадающие строки
+grep -c "pattern" filename
+
+# Заменить текст в файле
+sed 's/old/new/g' filename
+# Удалить строки, содержащие шаблон
+sed '/pattern/d' filename
+# Вывести указанные поля
+awk '{print $1, $3}' filename
+# Суммировать значения в столбце
+awk '{sum += $1} END {print sum}' filename
+
+# Сортировать содержимое файла
+sort filename
+# Числовая сортировка
+sort -n numbers.txt
+# Удалить повторяющиеся строки
+uniq filename
+# Сортировать и удалить дубликаты
+sort filename | uniq
+# Подсчет строк, слов, символов
+wc filename
+# Подсчет только строк
+wc -l filename
+
 ```
 #### cut   
-```
+```bash
+
+# Извлечь первый столбец
+cut -d',' -f1 file.csv
+# Извлечь диапазон символов
+cut -c1-10 filename
+# Объединить файлы бок о бок
+paste file1.txt file2.txt
+# Использовать пользовательский разделитель
+cut -d':' -f1,3 /etc/passwd
+
 cat cutfile.txt
 
 #12/05/2017 192.168.10.14 test.html
@@ -105,7 +192,7 @@ $ cut -d' ' -f2 cutfile.txt
 ```
 
 #### Файловая система   
-```
+```bash
 tree -L 1 /
 
 # размер файлов 
@@ -118,9 +205,21 @@ df -h
 
 du -h /tmp | grep M
 
+
+# Показать размеры каталогов
+du -h /path/
+# Сводка общего размера
+du -sh /path/
+# Показать размеры всех подкаталогов
+du -h --max-depth=1 /path/
+# Сначала самые большие каталоги
+du -h | sort -hr | head -10
+
+
+
 ```
 #### DISK
-```
+```bash
 sda1	sda2	sdb	sdc  |  	PV физические диски
 		VG00	 		 |	VG   группа томов
 root	usr	home	var	 |	LV логические диски (нарезаются поверх группы томов)
@@ -156,7 +255,7 @@ fatrace -f W
 ```
 
 #### RPM
-```
+```bash
 yum update -y 
 yum -y install epel-release
 yum install <name>
@@ -176,7 +275,7 @@ yum clean all
 ```
 
 #### Logs  
-```
+```bash
 # если файл логов большое и не вариант его убить, то можно его обнлить
 echo "" > /var/log/log.txt
 
@@ -194,7 +293,7 @@ grep -A 10 -B 10
 find /var -mount -type f -ls 2>/dev/null | sort -rnk7 | head -10
 ```
 #### DNS   
-```
+```bash
 # Тестирование DNS
 
 dig -x <ip>
@@ -204,7 +303,7 @@ dig -x <hostname> +short @<DNS_server>
 dig -x <ip> +short @<DNS_server>
 ```
 #### TIPS  
-```
+```bash
 dos2unix <file_name>    - заменить \n\r
 
 $ cat <<EOF > file.txt
@@ -220,7 +319,7 @@ $0     - имя скрипта
 
 ```
 #### BASH 
-```
+```bash
 command1; command2                 - выполнить команды последовательно
 command1 && command2               - command2 выполнится только после успешного выполнения command1
 command1 || command2               - command2 выполнится только после не успешного выполнения command1
@@ -258,7 +357,7 @@ tree -L 1 /opt/users/
 
 ```
 #### REST   
-```
+```bash
 URI = URL + URN
 URL - адрес ресурса в сети и способ обращения к нему
 URN - имя ресурса в сети (только его название), не не как подключиться к нему
@@ -268,12 +367,12 @@ curl -k -x POST https://-------- \
      -d "{\"fields:......}"
 ```
 #### CERT
-```
+```bash
 Посмотреть сертификат на удаленном ресурсе
 openssl s_client -connect host:443 -showcert
 ```
 #### Нагрузочное тестирование  
-```
+```bash
 # Эмуляция задержки на сетевой интерфейс
 sudo tc qdisc add dev ens192 root netem delay 100ms 250ms 25%
 sleep 600
@@ -316,7 +415,7 @@ while true; do \
 ```
 
 #### АНАЛИЗ OS
-```
+```bash
 - анализ состояния ОС
 	- systemctl
 	- анализ логов (где\какие)
@@ -343,7 +442,7 @@ du -a | sort -nr | head -10
 ```
 
 #### АНАЛИЗ ППО
-```
+```bash
 which <name_app>
 locate <file_name>
 
@@ -436,7 +535,7 @@ yum install 'Provide'
 yum reinstall APP --downloadonly --destdir /home/user/
 ``` 
 #### Text-Editors
-```
+```bash
 NANO
 ---------------------------------------
 Выделение				|	Alt-A    + стрелочка
@@ -464,7 +563,7 @@ SHIFT + F5 		Вставка текста из файла.
 ```
 
 #### NET 
-```
+```bash
 nmtui
 
 /etc/sysconfig/network-scripts/ifcfg-eth0
@@ -491,7 +590,7 @@ nc -zv <ip> <port>
 ```
 
 #### USER
-```
+```bash
 - работа с локальными УЗ\группами  /etc/sudores
 
 useradd
@@ -512,7 +611,7 @@ sudo -l
 ```
 
 #### TIME
-```
+```bash
 - ntp chrony (настройка проверка)
 systemctl restart ntpdate
 systemctl restart chronyd
@@ -523,7 +622,7 @@ ntpq -p
 ntpq -q
 ```
 #### Sysctl
-```
+```bash
 
 sysctl -a
 
@@ -531,7 +630,7 @@ sysctl -w parametr=value
 echo "net.ipv4.tcp_synack_retries = 5" >> /etc/sysctl.conf
 ```
 #### Python 
-```
+```bash
 python3 -m pip install -r requirements.txt
 
 pip install -U pip
@@ -543,7 +642,7 @@ alternatives --config python
 
 ```
 #### IPTABLES
-```
+```bash
 iptables -L
 iptables -L --line-numbers -n -v
 

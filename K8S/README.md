@@ -1,7 +1,9 @@
 ### Структура 
     - K8S/k8s_install_kubeadm    - Установка кластера с помощью kubeadm
     - K8S/k8s_install_kubespray  - Установка кластера с помощью kubespray
-    - K8S/minicube               - Установка minicube            
+    - K8S/minicube               - Установка minicube  
+    - K8S/k3s                    - Установка k3s
+              
 
 ### Aвтоматизация ansible
     - ./K8S/ansible/

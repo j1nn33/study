@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: base
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: system-utils
+  source:
+    repoURL: 'https://github.com/j1nn33/study.git'
+    path: K8S/argocd/01-clusterapp/01-base
+    targetRevision: HEAD
+  destination:
+    server: 'https://kubernetes.default.svc'
+  syncPolicy: { }
